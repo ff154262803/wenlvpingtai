@@ -9,75 +9,71 @@ import Home from './views/Home.vue'
 
 
 // //首页内容
-import pay from './views/tongji/a'//家庭版支付统计
-// import person from './views/weChart/person'//家庭版人数统计
-// import sencePay from './views/weChart/sencePay'//现场支付统计
-// import sencePerson from './views/weChart/sencePerson'//现场人数统计
+import pay from './views/tongji/a'//概览
+import garden from './views/garden/garden'//园区管理
+import user from './views/user/user'//用户管理
 
 //基本设置
-// import basicPage from './basic/basicPage'
-// import classificationPage from './basic/classificationPage'
+import basic from './views/basic/basic'
+import classification from './views/basic/classification'
 
 const router = new VueRouter({
     routes: [
         {path: '/login', component: Login, name: '', hidden: true, meta: {requireAuth: true}},
-        {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}},
-        {
+        {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}}, {
             path: '/',
             component: Home,
             name: '返回',
             hidden: true,
             back: true,
             meta: {requireAuth: true}
-        }, 
-        {
+        }, {
             path: '/',
             component: Home,
-            name: '概览',
+            name: 'pay',
             hidden: false,
             // iconCls: 'fa fa-bar-chart',
             children: [
                 {path: '/pay', component: pay, name: '概览', meta: {requireAuth: true}},
             ],
             meta: {requireAuth: true}
-        },
-        //  {
-        //     path: '/',
-        //     component: Home,
-        //     name: '园区管理',
-        //     hidden: false,
-        //     children: [
-        //         {path: '/sencePay', component: sencePay, name: '园区管理', meta: {requireAuth: true}},
-        //     ],
-        //     meta: {requireAuth: true}
-        // }, {
-        //     path: '/',
-        //     component: Home,
-        //     name: '用户管理',
-        //     hidden: false,
-        //     children: [
-        //         {path: '/sencePerson', component: sencePerson, name: '用户管理', meta: {requireAuth: true}},
-        //     ],
-        //     meta: {requireAuth: true}
-        // }, {
-        //     path: '/',
-        //     component: Home,
-        //     name: '基本设置',
-        //     hidden: false,
-        //     children: [
-        //         {path: '/basicPage', component: basicPage, name: '基本设置', meta: {requireAuth: true}},
-        //     ],
-        //     meta: {requireAuth: true}
-        // }, {
-        //     path: '/',
-        //     component: Home,
-        //     name: '分类管理',
-        //     hidden: true,
-        //     children: [
-        //         {path: '/classificationPage', component: classificationPage, name: '分类管理', meta: {requireAuth: true}},
-        //     ],
-        //     meta: {requireAuth: true}
-        // }
+        }, {
+            path: '/',
+            component: Home,
+            name: 'garden',
+            hidden: false,
+            children: [
+                {path: '/garden', component: garden, name: '园区管理', meta: {requireAuth: true}},
+            ],
+            meta: {requireAuth: true}
+        }, {
+            path: '/',
+            component: Home,
+            name: 'user',
+            hidden: false,
+            children: [
+                {path: '/user', component: user, name: '用户管理', meta: {requireAuth: true}},
+            ],
+            meta: {requireAuth: true}
+        }, {
+            path: '/',
+            component: Home,
+            name: 'basic',
+            hidden: false,
+            children: [
+                {path: '/basic', component: basic, name: '基本设置', meta: {requireAuth: true}},
+            ],
+            meta: {requireAuth: true}
+        }, {
+            path: '/',
+            component: Home,
+            name: 'classification',
+            hidden: true,
+            children: [
+                {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true}},
+            ],
+            meta: {requireAuth: true}
+        }
     ]
 });
 
@@ -94,17 +90,17 @@ router.beforeEach((to, from, next) => {
         } else {
             next()
         }
-    }else{
+    } else {
         next()
     }
 });
-export const initArr = ['概览','园区管理','用户管理','基本设置'];
-export const initSet = ['返回','基本设置','分类管理'];
+export const initArr = ['概览', '园区管理', '用户管理', '基本设置'];
+export const initSet = ['返回', '基本设置', '分类管理'];
 export const init = function (arr) {
-    router.options.routes.map(n=>{
+    router.options.routes.map(n => {
         n.hidden = true;
-        arr.map(m=>{
-            if(n.name == m){
+        arr.map(m => {
+            if (n.name == m) {
                 n.hidden = false;
             }
         })

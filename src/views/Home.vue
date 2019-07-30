@@ -41,12 +41,12 @@
             <section class="content-container">
                 <div class="grid-content bg-purple-light">
                     <el-col :span="24" class="breadcrumb-container">
-                        <strong class="title">{{$route.name}}</strong>
-                        <el-breadcrumb separator="/" class="breadcrumb-inner">
-                            <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-                                {{ item.name }}
-                            </el-breadcrumb-item>
-                        </el-breadcrumb>
+                        <h2 class="title">{{$route.name}}</h2>
+                        <!--<el-breadcrumb separator="/" class="breadcrumb-inner">-->
+                            <!--<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">-->
+                                <!--{{ item.name }}-->
+                            <!--</el-breadcrumb-item>-->
+                        <!--</el-breadcrumb>-->
                     </el-col>
                     <el-col :span="24" class="content-wrapper">
                         <transition name="fade" mode="out-in">

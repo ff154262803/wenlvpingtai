@@ -63,9 +63,9 @@
 			<el-button @click="resetForm('ruleForm')">重置</el-button>
 		</el-form-item>
 		</el-form>
-        
+
     </div>
-    
+
 </template>
 <script>
  export default {
@@ -146,9 +146,9 @@
             console.log(response, file, fileList)
         },
     }
-    
+
 }
 </script>
 <style lang="scss" scoped>
-    
+
 </style>
