@@ -82,19 +82,7 @@
                 collapsed: false,
                 sysUserName: '',
                 sysUserAvatar: '',
-                child: [],
-                children:[],
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: false,
-                    type: [],
-                    resource: '',
-                    desc: ''
-                },
-
+                child: []
             }
         },
         created() {
@@ -108,19 +96,16 @@
                 }
             },
             backRoute() {
-                console.log(this.$route.meta);
                 if(this.$store.state.child.length){
                     this.$store.state.child = [];
                     if(this.$route.meta.parent){
-                        console.error(this.$route.meta.parent,this.$router.options.routes)
                         var to = this.$router.options.routes.filter(n=>{
                             if(n.name == this.$route.meta.parent) return true;
                         });
-                        console.log(to[0].children);
                         this.$store.state.child = to[0].children
                     }
                 }
-                this.$router.replace({path:this.$route.meta.parent || '/pay'})
+                this.$router.replace({path:this.$route.meta.parent || '/'})
 
             },
             onSubmit() {

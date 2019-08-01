@@ -9,75 +9,59 @@ import NotFound from './views/404.vue'
 import Home from './views/Home.vue'
 
 
-// //首页内容
-import pay from './views/tongji/a'//概览
-import garden from './views/garden/garden'//园区管理
+
+//首页内容
+import tongjihome from './views/tongji/home'//统计首页
 import user from './views/user/user'//用户管理
+import parklist from './views/park/parklist'//园区列表
+
+// 园区管理
+import base from './views/park/base'//园区基础信息
+import routerlist from './views/park/routerlist'//路线列表
+import scenicdetail from './views/park/scenicdetail'//景点详情
+import sceniclist from './views/park/sceniclist'//景点列表
 
 //基本设置
 import basic from './views/basic/basic'
 import classification from './views/basic/classification'
-import three from './views/basic/three'
 
 const router = new VueRouter({
     routes: [
         {path: '/login', component: Login, name: '', hidden: true, meta: {requireAuth: true}},
-        {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}}, {
-            path: '/',
-            component: Home,
-            name: '返回',
-            hidden: true,
-            back: true,
-            meta: {requireAuth: true}
-        }, {
-            path: '/',
-            component: Home,
-            name: 'pay',
-            hidden: false,
-            // iconCls: 'fa fa-bar-chart',
+        {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}}, 
+        {path: '/back',component: Home,name: '返回',hidden: true,back: true,meta: {requireAuth: true}},
+        {path: '/',component: Home,name: 'tongjihome',hidden: false,meta: {requireAuth: true,isparent:false},
             children: [
-                {path: '/pay', component: pay, name: '概览', meta: {requireAuth: true}},
-            ],
-            meta: {requireAuth: true}
-        }, {
-            path: '/',
-            component: Home,
-            name: 'garden',
-            hidden: false,
-            children: [
-                {path: '/garden', component: garden, name: '园区管理', meta: {requireAuth: true}},
-            ],
-            meta: {requireAuth: true}
-        }, {
-            path: '/',
-            component: Home,
-            name: 'user',
-            hidden: false,
+                {path: '/', component: tongjihome, name: '概览', meta: {requireAuth: true}},
+            ]
+        }, 
+        {path: '/',component: Home,name: 'parklist',hidden: false,meta: {requireAuth: true},
+        children: [
+            {path: '/parklist', component: parklist, name: '园区列表', meta: {requireAuth: true}},
+        ],
+    }, 
+    {path: '/',component: Home,name: 'base',hidden: false,meta: {requireAuth: true},
+        children: [
+            {path: '/base', component: base, name: '基础信息', meta: {requireAuth: true,parent:'parklist'}},
+            {path: '/routerlist', component: routerlist, name: '路线列表', meta: {requireAuth: true,parent:'parklist'}},
+            {path: '/sceniclist', compoanent: sceniclist, name: '景点列表', meta: {requireAuth: true,parent:'parklist'}}
+        ],
+    }, 
+        {path: '/',component: Home,name: 'user',hidden: false,meta: {requireAuth: true},
             children: [
                 {path: '/user', component: user, name: '用户管理', meta: {requireAuth: true}},
             ],
-            meta: {requireAuth: true}
-        }, {
-            path: '/',
-            component: Home,
-            name: 'basic',
-            hidden: false,
-            unfold: true,
+        }, 
+        {path: '/',component: Home,name: 'basic',hidden: true,unfold: true, meta: {requireAuth: true},
             children: [
                 {path: '/basic', component: basic, name: '基本设置', meta: {requireAuth: true}},
                 {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true}}
-            ],
-            meta: {requireAuth: true}
-        }, {
-            path: '/',
-            component: Home,
-            name: 'three',
-            hidden: true,
-            unfold: true,
+            ]
+        }, 
+        {path: '/',component: Home, name: 'scenicdetail',hidden: true,unfold: true,meta: {requireAuth: true},
             children: [
-                {path: '/three', component: three, name: '第三级', meta: {requireAuth: true, parent: 'basic', class: 3}},
-            ],
-            meta: {requireAuth: true}
+                {path: '/scenicdetail', component: scenicdetail, name: '第三级', meta: {requireAuth: true, parent: 'base'}},
+            ]
         }
     ]
 });
@@ -94,17 +78,6 @@ router.beforeEach((to, from, next) => {
             next({path: '/login'})
         } else {
             next();
-            // console.warn(to);
-            // router.options.routes.map(n => {
-            //     console.log(n);
-            //     if (n.name == to.fullPath.substr(1)) {
-            //         // console.log(n);
-            //         if(to.meta.parent){
-            //             console.error(n.children)
-            //             store.state.child = n.children
-            //         }
-            //     }
-            // })
         }
     } else {
         next()
@@ -114,7 +87,6 @@ export const init = function (route) {
     var child = router.options.routes.filter(n => {
         if (~n.name.indexOf(route)) return true
     });
-    // console.error(child[0].children)
     store.state.child = child[0].children
 };
 export default router;

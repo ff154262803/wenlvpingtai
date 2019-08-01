@@ -10,8 +10,8 @@
         name: "user",
         methods:{
             aaaa(){
-                init('scenicdetail')
-                this.$router.push('scenicdetail');
+                init('base')
+                this.$router.push('base');
             }
         }
     }

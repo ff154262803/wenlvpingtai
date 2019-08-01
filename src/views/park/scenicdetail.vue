@@ -1,15 +1,13 @@
 <template>
     <div>
-        园区管理
+        景点详情
     </div>
 </template>
 
 <script>
     export default {
-        name: "garden"
     }
 </script>
-
 <style scoped>
 
 </style>
