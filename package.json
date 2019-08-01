@@ -2,19 +2,18 @@
   "name": "admin",
   "version": "1.0.0",
   "description": "vue admin project",
-  "author": "guohanyang <17600879161@163.com>",
+  "author": "zs <13472100150@163.com>",
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "node build/dev-server.js",
+    "dev": "node build/dev-server.js --hosts 192.168.2.211",
     "start": "node build/dev-server.js",
     "build": "node build/build.js"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "0.0.37",
     "axios": "^0.18.0",
-    "echarts": "^3.3.2",
-    "element-ui": "^2.11.1",
+    "element-ui": "^2.4.2",
     "font-awesome": "^4.7.0",
     "nprogress": "^0.2.0",
     "vue": "^2.5.2",

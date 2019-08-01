@@ -1,14 +1,13 @@
 <template>
     <div>
-        \\111111111111111
-        <button @click="aaaa">用户管理</button>
+        <button @click="aaaa">景点列表</button>
     </div>
 </template>
 
 <script>
     import {init} from '../../routes'
     export default {
-        name: "scencelist",
+        name: "senceList",
         methods:{
             aaaa(){
                 init('scenicdetail')

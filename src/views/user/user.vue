@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="aaaa">用户管理</button>
+        用户管理
     </div>
 </template>
 

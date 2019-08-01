@@ -22,7 +22,7 @@
                          unique-opened router v-show="!collapsed">
                     <!--返回按钮-->
                     <template v-if="$store.state.child.length">
-                        <el-menu-item  @click="backRoute" align="center">
+                        <el-menu-item index="" @click="backRoute" align="center">
                             <span slot="title">返回</span>
                         </el-menu-item>
                     </template>
@@ -98,12 +98,13 @@
             backRoute() {
                 if(this.$store.state.child.length){
                     this.$store.state.child = [];
-                    if(this.$route.meta.parent){
-                        var to = this.$router.options.routes.filter(n=>{
-                            if(n.name == this.$route.meta.parent) return true;
-                        });
-                        this.$store.state.child = to[0].children
-                    }
+                    // if(this.$route.meta.parent){
+                    //     var to = this.$router.options.routes.filter(n=>{
+                    //         if(n.name.indexOf(this.$route.meta.parent)) return true;
+                    //     });
+                    //     console.log(to)
+                    //     // this.$store.state.child = to[0].children
+                    // }
                 }
                 this.$router.replace({path:this.$route.meta.parent || '/'})
 

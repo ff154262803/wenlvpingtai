@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="aaa">分类管理</button>
+        分类管理
     </div>
 </template>
 
