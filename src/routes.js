@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from './vuex/store'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,7 @@ import user from './views/user/user'//用户管理
 //基本设置
 import basic from './views/basic/basic'
 import classification from './views/basic/classification'
+import three from './views/basic/three'
 
 const router = new VueRouter({
     routes: [
@@ -60,17 +62,20 @@ const router = new VueRouter({
             component: Home,
             name: 'basic',
             hidden: false,
+            unfold: true,
             children: [
                 {path: '/basic', component: basic, name: '基本设置', meta: {requireAuth: true}},
+                {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true}}
             ],
             meta: {requireAuth: true}
         }, {
             path: '/',
             component: Home,
-            name: 'classification',
+            name: 'three',
             hidden: true,
+            unfold: true,
             children: [
-                {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true}},
+                {path: '/three', component: three, name: '第三级', meta: {requireAuth: true, parent: 'basic', class: 3}},
             ],
             meta: {requireAuth: true}
         }
@@ -88,24 +93,29 @@ router.beforeEach((to, from, next) => {
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({path: '/login'})
         } else {
-            next()
+            next();
+            // console.warn(to);
+            // router.options.routes.map(n => {
+            //     console.log(n);
+            //     if (n.name == to.fullPath.substr(1)) {
+            //         // console.log(n);
+            //         if(to.meta.parent){
+            //             console.error(n.children)
+            //             store.state.child = n.children
+            //         }
+            //     }
+            // })
         }
     } else {
         next()
     }
 });
-export const initArr = ['概览', '园区管理', '用户管理', '基本设置'];
-export const initSet = ['返回', '基本设置', '分类管理'];
-export const init = function (arr) {
-    router.options.routes.map(n => {
-        n.hidden = true;
-        arr.map(m => {
-            if (n.name == m) {
-                n.hidden = false;
-            }
-        })
-
-    })
+export const init = function (route) {
+    var child = router.options.routes.filter(n => {
+        if (~n.name.indexOf(route)) return true
+    });
+    // console.error(child[0].children)
+    store.state.child = child[0].children
 };
 export default router;
 

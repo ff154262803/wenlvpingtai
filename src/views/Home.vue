@@ -21,8 +21,8 @@
                          @close="handleclose" @select="handleselect"
                          unique-opened router v-show="!collapsed">
                     <!--返回按钮-->
-                    <template v-for="item in $router.options.routes" v-if="!item.hidden&&item.back">
-                        <el-menu-item index="0" @click="backRoute" align="center">
+                    <template v-if="$store.state.child.length">
+                        <el-menu-item  @click="backRoute" align="center">
                             <span slot="title">返回</span>
                         </el-menu-item>
                     </template>
@@ -30,10 +30,21 @@
                     <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden&&!item.back">
                         <el-menu-item :index="item.children[0].path"
                                       :key="item.children[0].path"
-                                      v-if="!item.children[0].hidden"
+                                      v-if="item.children && !($store.state.child.length)"
                                       align="center"
+                                      @click="clickOne(item,$router.options.routes)"
                         >
                             {{item.children[0].name}}
+                        </el-menu-item>
+                    </template>
+                    <!--二级标题-->
+                    <template v-for="(item,index) in $store.state.child" v-if="$store.state.child.length">
+                        <el-menu-item :index="item.path"
+                                      :key="item.path"
+                                      v-if="!item.hidden"
+                                      align="center"
+                        >
+                            {{item.name}}
                         </el-menu-item>
                     </template>
                 </el-menu>
@@ -43,9 +54,9 @@
                     <el-col :span="24" class="breadcrumb-container">
                         <h2 class="title">{{$route.name}}</h2>
                         <!--<el-breadcrumb separator="/" class="breadcrumb-inner">-->
-                            <!--<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">-->
-                                <!--{{ item.name }}-->
-                            <!--</el-breadcrumb-item>-->
+                        <!--<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">-->
+                        <!--{{ item.name }}-->
+                        <!--</el-breadcrumb-item>-->
                         <!--</el-breadcrumb>-->
                     </el-col>
                     <el-col :span="24" class="content-wrapper">
@@ -62,7 +73,7 @@
 <script>
     // import axios from 'axios'
     import {logoutLogin} from '../api/api';
-    import {init,initArr, initSet} from '../routes'
+    import {init, initArr, initSet} from '../routes'
 
     export default {
         data() {
@@ -71,6 +82,8 @@
                 collapsed: false,
                 sysUserName: '',
                 sysUserAvatar: '',
+                child: [],
+                children:[],
                 form: {
                     name: '',
                     region: '',
@@ -85,11 +98,30 @@
             }
         },
         created() {
+            window.v = this;
         },
         methods: {
+            clickOne(item) {
+                // console.error(item);
+                if (item.unfold) {
+                    this.$store.state.child = item.children
+                }
+            },
             backRoute() {
-                init(initArr);
-                this.$router.go(-1)
+                console.log(this.$route.meta);
+                if(this.$store.state.child.length){
+                    this.$store.state.child = [];
+                    if(this.$route.meta.parent){
+                        console.error(this.$route.meta.parent,this.$router.options.routes)
+                        var to = this.$router.options.routes.filter(n=>{
+                            if(n.name == this.$route.meta.parent) return true;
+                        });
+                        console.log(to[0].children);
+                        this.$store.state.child = to[0].children
+                    }
+                }
+                this.$router.replace({path:this.$route.meta.parent || '/pay'})
+
             },
             onSubmit() {
                 console.log('submit!');
@@ -99,9 +131,9 @@
             handleclose() {
             },
             handleselect: function (a, b) {
-                if (~a.indexOf('basicPage')) {
-                    init(initSet);
-                }
+                // if (~a.indexOf('basicPage')) {
+                //     init(initSet);
+                // }
             },
             //退出登录
             logout: function () {
