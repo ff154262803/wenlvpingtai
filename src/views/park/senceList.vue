@@ -5,7 +5,6 @@
 </template>
 
 <script>
-    import {init} from '../../routes'
     export default {
         name: "senceList",
         methods:{

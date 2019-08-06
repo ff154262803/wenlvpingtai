@@ -10,7 +10,7 @@
         </el-form-item>
         <!--<el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>-->
         <el-form-item style="width:100%;">
-            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit2" :loading="logining">登录
+            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit" :loading="logining">登录
             </el-button>
             <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
         </el-form-item>
@@ -23,8 +23,8 @@
             return {
                 logining: false,
                 ruleForm2: {
-                    phone_num: '',
-                    user_password: ''
+                    phone_num: 'admin',
+                    user_password: '123456'
                 },
                 rules2: {
                     phone_num: [
@@ -46,27 +46,46 @@
             handleReset2() {
                 this.$refs.ruleForm2.resetFields();
             },
-            handleSubmit2(ev) {
-                var _this = this;
-                this.$refs.ruleForm2.validate((valid) => {
-                    if (valid) {
-                        this.logining = true;
-                        var loginParams = {
-                            phone_num: this.ruleForm2.phone_num,
-                            user_password: this.ruleForm2.user_password
-                        };
-                        console.log(loginParams)
-                        this.$ajax.requestLogin(loginParams, data => {
-                            this.logining = false;
-                            console.log(data.data.uKey)
-                            sessionStorage.setItem('user', data.data.uKey);
+            handleSubmit(ev) {
+                if (this.ruleForm2.phone_num && this.ruleForm2.user_password) {
+                    this.logining = true;
+                    this.$ajax.login({
+                        "account": this.ruleForm2.phone_num,
+                        "password": this.ruleForm2.user_password
+                    }, res => {
+                        this.logining = false;
+                        if (res.isenable) {
+                            sessionStorage.setItem('account', res.account);
+                            sessionStorage.setItem('uid', res.uid);
+                            sessionStorage.setItem('uKey', res.ukey);
                             this.$router.push({path: '/'});
-                        })
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
+                        }else{
+                            this.$message.error('账号禁用')
+                        }
+                    })
+                } else {
+                    this.$message.error('请输入完整')
+                }
+                // var _this = this;
+                // this.$refs.ruleForm2.validate((valid) => {
+                //     if (valid) {
+                //         this.logining = true;
+                //         var loginParams = {
+                //             phone_num: this.ruleForm2.phone_num,
+                //             user_password: this.ruleForm2.user_password
+                //         };
+                //         console.log(loginParams)
+                //         this.$ajax.requestLogin(loginParams, data => {
+                //             this.logining = false;
+                //             console.log(data.data.uKey)
+                //             sessionStorage.setItem('user', data.data.uKey);
+                //             this.$router.push({path: '/'});
+                //         })
+                //     } else {
+                //         console.log('error submit!!');
+                //         return false;
+                //     }
+                // });
             }
         }
     }

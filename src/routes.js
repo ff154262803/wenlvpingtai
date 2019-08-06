@@ -21,21 +21,24 @@ import scenicdetail from './views/park/scenicdetail'//景点详情
 import sencelist from './views/park/senceList'//景点详情
 
 //基本设置
-import basic from './views/basic/basic'
-import classification from './views/basic/classification'
+import basic from './views/basic/basic'//基本设置
+import classification from './views/basic/classification'//分类管理
+import manage from './views/basic/manage'//管理员
+
+const metaTrue = {meta: {requireAuth: true}}
 
 const router = new VueRouter({
     routes: [
-        {path: '/login', component: Login, name: '', hidden: true, meta: {requireAuth: true}},
+        {path: '/login', component: Login, name: '', hidden: true, ...metaTrue},
         {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}},
-        {path: '/back', component: Home, name: '返回', hidden: true, back: true, meta: {requireAuth: true}},
+        {path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue},
         {path: '/', component: Home, name: 'tongjihome', hidden: false, meta: {requireAuth: true, isparent: false, level: 1},
             children: [
-                {path: '/', component: tongjihome, name: '概览', meta: {requireAuth: true}},
+                {path: '/', component: tongjihome, name: '概览', ...metaTrue},
             ]
         }, {path: '/', component: Home, name: 'parklist', hidden: false, meta: {requireAuth: true, level: 1},
             children: [
-                {path: '/parklist', component: parklist, name: '园区列表', meta: {requireAuth: true}},
+                {path: '/parklist', component: parklist, name: '园区列表', ...metaTrue},
             ],
         }, {path: '/', component: Home, name: 'base/sencelist/routerlist', hidden: true, meta: {requireAuth: true, level: 2},
             children: [
@@ -45,12 +48,13 @@ const router = new VueRouter({
             ],
         }, {path: '/', component: Home, name: 'user', hidden: false, meta: {requireAuth: true, level: 1},
             children: [
-                {path: '/user', component: user, name: '用户管理', meta: {requireAuth: true}},
+                {path: '/user', component: user, name: '用户管理', ...metaTrue},
             ],
         }, {path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: {requireAuth: true, level: 2},
             children: [
-                {path: '/basic', component: basic, name: '基本设置', meta: {requireAuth: true}},
-                {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true}}
+                {path: '/basic', component: basic, name: '基本设置', ...metaTrue},
+                {path: '/classification', component: classification, name: '分类管理', ...metaTrue},
+                {path: '/manage', component: manage, name: '管理员', ...metaTrue}
             ]
         }, {path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: {requireAuth: true, level: 3},
             children: [
@@ -66,7 +70,7 @@ router.beforeEach((to, from, next) => {
     if (to.path == '/login') {
         sessionStorage.removeItem('user');
     }
-    let user = sessionStorage.getItem('user');
+    let user = sessionStorage.getItem('uid');
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({path: '/login'})
@@ -87,11 +91,5 @@ router.beforeEach((to, from, next) => {
         next()
     }
 });
-export const init = function (route) {
-    var child = router.options.routes.filter(n => {
-        if (~n.name.indexOf(route)) return true
-    });
-    store.state.child = child[0].children
-};
 export default router;
 
