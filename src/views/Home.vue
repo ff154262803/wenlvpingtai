@@ -81,7 +81,6 @@
                 sysName: '文旅平台管理系统',
                 collapsed: false,
                 sysUserName: '',
-                sysUserAvatar: '',
                 child: []
             }
         },
@@ -147,10 +146,9 @@
             }
         },
         mounted() {
-            var user = sessionStorage.getItem('user');
+            var user = JSON.parse(sessionStorage.getItem('user'));
             if (user) {
                 this.sysUserName = user.name || 'admin';
-                this.sysUserAvatar = user.avatar || '';
             }
 
         }

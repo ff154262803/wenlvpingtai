@@ -23,8 +23,8 @@
             return {
                 logining: false,
                 ruleForm2: {
-                    phone_num: 'admin',
-                    user_password: '123456'
+                    phone_num: 'zs',
+                    user_password: 'a88556110'
                 },
                 rules2: {
                     phone_num: [
@@ -54,10 +54,14 @@
                         "password": this.ruleForm2.user_password
                     }, res => {
                         this.logining = false;
-                        if (res.data.isenable) {
-                            sessionStorage.setItem('account', res.data.account);
-                            sessionStorage.setItem('uid', res.data.uid);
-                            sessionStorage.setItem('uKey', res.data.ukey);
+                        console.log(res)
+                        if (res.data.isenable*1) {
+                            var storage = {
+                                uKey:res.data.ukey,
+                                uid:res.data.uid,
+                                name:res.data.account
+                            }
+                            sessionStorage.setItem('user',JSON.stringify(storage))
                             this.$router.push({path: '/'});
                         }else{
                             this.$message.error('账号禁用')
