@@ -140,6 +140,7 @@
             addBtn() {
                 this.addUser.show = true;
                 this.addUser.state = 'add';
+                if(this.$refs.addUser) this.$refs.addUser.resetFields();
             },
             //弹窗确定按钮
             addUserBtn(formName) {

@@ -1,8 +1,8 @@
 <template>
     <div class="classificationPage">
-        <el-input placeholder="请输入内容" v-model="condition" clearable style="width: 300px"></el-input>
+        <el-input placeholder="用户名、账号" v-model="condition" clearable style="width: 300px"></el-input>
         <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-        <el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>
+        <!--<el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>-->
         <div class="classify">
             <strong>分类:</strong>
             <el-button type="text">不限</el-button>
@@ -121,13 +121,13 @@
                     size: 20,
                     uKey: sessionStorage.getItem('user')
                 },
-                addUser: {
-                    show:false,
-                    account:'',
-                    isenable:'',
-                    managename:'',
-                    password:'',
-                },
+                // addUser: {
+                //     show:false,
+                //     account:'',
+                //     isenable:'',
+                //     managename:'',
+                //     password:'',
+                // },
                 multipleSelection: []
             }
         },
@@ -148,9 +148,9 @@
             search() {
                 console.log(this.$route);
             },
-            addBtn() {
-                this.addUser.show = true;
-            },
+            // addBtn() {
+            //     this.addUser.show = true;
+            // },
             handleSelectionChange(val) {
                 console.log(val)
                 this.multipleSelection = val;

@@ -31,7 +31,7 @@
         <el-card class="box-card">
             <div slot="header" class="clearfix">
                 <span>版本管理</span>
-                <el-button style="float: right; padding: 5px 10px" @click="newApp.show=true">发布新版本</el-button>
+                <el-button style="float: right; padding: 5px 10px" @click="newAppClick">发布新版本</el-button>
             </div>
             <el-row>
                 <el-col :span="12" class="title">Android</el-col>
@@ -161,14 +161,16 @@
                 this.status.show = true;
                 this.status.changeStatus = this.status.status;
             },
+            newAppClick (){
+                this.newApp.show = true;
+                if(this.$refs['newApp']) this.$refs['newApp'].resetFields();
+            },
             //修改状态
             changeStatus() {
-                console.log(this.status.changeStatus);
                 if (this.status.changeStatus != this.status.status) {
                     this.$ajax.updateServerStatus({
                         status: this.status.changeStatus
                     }, res => {
-                        console.log(res);
                         this.$message.success('修改成功');
                         this.getServerStatus();
                         this.status.show = false;
@@ -177,14 +179,12 @@
             },
             //上传新版本
             upDateNewApp(formName) {
-                console.log(this.newApp, formName, this.$refs);
-                // this.newApp.show = false;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        console.log(valid, this.newApp)
                         this.$ajax.addAppUpdate(this.newApp, res => {
                             this.$message.success('添加成功');
                             this.newApp.show = false;
+                            this.getAppVersion();
                         })
                     } else {
                         return false;
