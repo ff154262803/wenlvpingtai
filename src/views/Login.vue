@@ -54,10 +54,10 @@
                         "password": this.ruleForm2.user_password
                     }, res => {
                         this.logining = false;
-                        if (res.isenable) {
-                            sessionStorage.setItem('account', res.account);
-                            sessionStorage.setItem('uid', res.uid);
-                            sessionStorage.setItem('uKey', res.ukey);
+                        if (res.data.isenable) {
+                            sessionStorage.setItem('account', res.data.account);
+                            sessionStorage.setItem('uid', res.data.uid);
+                            sessionStorage.setItem('uKey', res.data.ukey);
                             this.$router.push({path: '/'});
                         }else{
                             this.$message.error('账号禁用')

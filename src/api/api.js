@@ -22,7 +22,7 @@ export default {
     ajaxNext(data, callback) {
         switch (data.resb) {
             case 200:
-                callback(data.data);
+                callback(data);
                 break;
             case 301:
                 Message.error(data.resbInfo);
@@ -65,4 +65,17 @@ export default {
     getAppVersion(data,callback){
         this.POST(`${base}/manage/getAppVersion`, data,callback);
     },
+    //发布新版本
+    addAppUpdate(data,callback){
+        this.POST(`${base}/manage/addAppUpdate`, data,callback);
+    },
+    //获取服务器状态
+    getServerStatus(data, callback) {
+        this.POST(`${base}/manage/getServerStatus`, data, callback);
+    },
+    //修改服务器状态
+    updateServerStatus(data, callback) {
+        this.POST(`${base}/manage/updateServerStatus`, data, callback);
+    },
+
 }

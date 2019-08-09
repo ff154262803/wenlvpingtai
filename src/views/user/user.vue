@@ -141,7 +141,7 @@
                     "count": 20,
                     "page": 0
                 }, res => {
-                    this.dataList = res;
+                    this.dataList = res.data;
                     console.log(res)
                 })
             },

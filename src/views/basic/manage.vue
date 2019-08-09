@@ -8,6 +8,7 @@
         <el-table
             ref="multipleTable"
             :data="dataList"
+            v-loading="dataLoading"
             tooltip-effect="dark"
             style="width: 100%;margin-top: 30px;"
             @selection-change="handleSelectionChange">
@@ -36,7 +37,11 @@
                 <el-button size="small" @click="dealState(multipleSelection,'1')">启用</el-button>
                 <el-button size="small" @click="dealState(multipleSelection,'0')">禁用</el-button>
             </div>
-            <el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange"
+            <el-pagination background
+                           layout="total,sizes, prev, pager, next, jumper"
+                           @current-change="handleCurrentChange"
+                           @size-change="handleSizeChange"
+                           :page-sizes="[10, 15, 20, 30, 50]"
                            :page-size="pageObj.size" :total="total">
             </el-pagination>
             <el-button size="small">确定</el-button>
@@ -74,15 +79,24 @@
     export default {
         name: "manage",
         data() {
+            var pass = (rule, val, callback) => {
+                if (val == '') {
+                    callback(new Error('请输入密码'));
+                } else if(val.length<6) {
+                    callback(new Error('密码长度应大于6位'));
+                } else {
+                    callback();
+                }
+            }
             return {
                 condition: '',
-                checked: true,
+                // checked: true,
                 total: 0,
                 dataList: [],
+                dataLoading: false,
                 pageObj: {
                     page: 1,
-                    size: 20,
-                    uKey: sessionStorage.getItem('user')
+                    size: 15,
                 },
                 addUser: {//添加账号的表单
                     state: 'add',
@@ -96,7 +110,7 @@
                 rules: {//验证规则
                     managename: [{required: true, message: '请输入姓名', trigger: 'change'}],
                     account: [{required: true, message: '请输入账号', trigger: 'change'}],
-                    password: [{required: true, message: '请输入密码', trigger: 'change'}],
+                    password: [{validator: pass, trigger: 'change'}],
                     isenable: [{required: true, message: '请选择状态', trigger: 'change'}],
                 }
             }
@@ -111,12 +125,15 @@
             },
             //查询
             queryManageUserList() {
+                this.dataLoading = true;
                 this.$ajax.queryManageUserList({
                     "condition": this.condition,
-                    "count": 10,
-                    "page": 0
+                    "count": this.pageObj.size,
+                    "page": this.pageObj.page
                 }, res => {
-                    this.dataList = res;
+                    this.dataLoading = false;
+                    this.total = res.total;
+                    this.dataList = res.data;
                 })
             },
             // 添加按钮
@@ -179,10 +196,14 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+            //切换页码
+            handleSizeChange(val) {
+                this.pageObj.size = val;
+                this.queryManageUserList();
+            },
             handleCurrentChange(val) { // 切换元页
-                this.pageObj.page = val.toString()
-                this.resLoading = true
-                this.getAccessToken()
+                this.pageObj.page = val;
+                this.queryManageUserList();
             }
         }
     }
