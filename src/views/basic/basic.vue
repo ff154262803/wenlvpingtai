@@ -161,9 +161,10 @@
                 this.status.show = true;
                 this.status.changeStatus = this.status.status;
             },
+            //添加app按钮点击
             newAppClick (){
                 this.newApp.show = true;
-                if(this.$refs['newApp']) this.$refs['newApp'].resetFields();
+                if(this.$refs.newApp) this.$refs.newApp.resetFields();
             },
             //修改状态
             changeStatus() {

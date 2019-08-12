@@ -57,7 +57,6 @@
                             "password": this.loginForm.user_password
                         }, res => {
                             this.logining = false;
-                            console.log(res)
                             if (res.data.isenable * 1) {
                                 var storage = {
                                     uKey: res.data.ukey,
@@ -76,17 +75,6 @@
                         this.$message.error('请输入完整');
                         return false;
                     }
-                    //         var loginParams = {
-                    //             phone_num: this.loginForm.phone_num,
-                    //             user_password: this.loginForm.user_password
-                    //         };
-                    //         console.log(loginParams)
-                    //         this.$ajax.requestLogin(loginParams, data => {
-                    //             this.logining = false;
-                    //             console.log(data.data.uKey)
-                    //             sessionStorage.setItem('user', data.data.uKey);
-                    //             this.$router.push({path: '/'});
-                    //         })
                 });
             }
         }

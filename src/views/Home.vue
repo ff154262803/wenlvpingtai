@@ -11,7 +11,7 @@
                         <!-- <img src="../../static/img/user.png" alt=""> -->
                         {{sysUserName}}</span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>设置</el-dropdown-item>
+                        <!--<el-dropdown-item>设置</el-dropdown-item>-->
                         <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -117,6 +117,7 @@
 							type: 'success',
 							message: '退出成功!'
 						});
+						this.$store.state.child = [];
                         sessionStorage.removeItem('user');
                         this.$router.push('/login');
 					})

@@ -142,7 +142,6 @@
                     "page": 0
                 }, res => {
                     this.dataList = res.data;
-                    console.log(res)
                 })
             },
             search() {

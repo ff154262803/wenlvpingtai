@@ -8,8 +8,7 @@ Vue.use(Vuex)
 // 应用初始状态
 const state = {
     count: 10,
-    child:[],
-    children:[],
+    child:[],//储存左侧导航栏内容
 }
 
 // 定义所需的 mutations

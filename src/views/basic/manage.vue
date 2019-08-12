@@ -48,7 +48,7 @@
         </el-col>
 
         <!--添加用户-->
-        <el-dialog title="添加用户" :visible.sync="addUser.show" class="demo-box">
+        <el-dialog :title="addUser.state == 'add'? '添加用户':'修改用户'" :visible.sync="addUser.show" class="demo-box">
             <el-form :model="addUser" :rules="rules" ref="addUser">
                 <el-form-item label="姓名：" label-width="120px" prop="managename">
                     <el-input v-model="addUser.managename"></el-input>
@@ -82,7 +82,7 @@
             var pass = (rule, val, callback) => {
                 if (val == '') {
                     callback(new Error('请输入密码'));
-                } else if(val.length<6) {
+                } else if (val.length < 6) {
                     callback(new Error('密码长度应大于6位'));
                 } else {
                     callback();
@@ -106,7 +106,7 @@
                     password: '',
                     isenable: '',
                 },
-                multipleSelection: [],
+                multipleSelection: [],//选中内容
                 rules: {//验证规则
                     managename: [{required: true, message: '请输入姓名', trigger: 'change'}],
                     account: [{required: true, message: '请输入账号', trigger: 'change'}],
@@ -140,30 +140,34 @@
             addBtn() {
                 this.addUser.show = true;
                 this.addUser.state = 'add';
-                if(this.$refs.addUser) this.$refs.addUser.resetFields();
+                if (this.$refs.addUser) this.$refs.addUser.resetFields();
+                this.addUser.managename = '';
+                this.addUser.account = '';
+                this.addUser.password = '';
+                this.addUser.isenable = '';
             },
             //弹窗确定按钮
             addUserBtn(formName) {
-                if (this.addUser.state == 'add') {//添加用户
-                    this.$refs[formName].validate((valid) => {
-                        if (valid) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        if (this.addUser.state == 'add') {//添加用户
                             this.$ajax.addManageUser(this.addUser, res => {
                                 this.$message.success('添加成功');
                                 this.addUser.show = false;
                                 this.queryManageUserList();
                             })
-                        } else {
-                            return false;
-                        }
-                    });
-                } else if (this.addUser.state == 'change') {//修改用户
-                    this.$ajax.updateManageUser(this.addUser, res => {
-                        this.$message.success('修改成功');
-                        this.addUser.show = false;
-                        this.queryManageUserList();
-                    })
-                }
 
+                        } else if (this.addUser.state == 'change') {//修改用户
+                            this.$ajax.updateManageUser(this.addUser, res => {
+                                this.$message.success('修改成功');
+                                this.addUser.show = false;
+                                this.queryManageUserList();
+                            })
+                        }
+                    } else {
+                        return false;
+                    }
+                });
             },
             //修改
             changeUser(data) {
@@ -187,12 +191,16 @@
             dealState(data, enable) {
                 if (data.constructor == Object) data = [data];
                 var idlist = data.map(n => n.uid);
-                this.$ajax.setManageUserEnableState({
-                    idlst: idlist,
-                    isenable: enable
-                }, res => {
-                    this.queryManageUserList();
-                })
+                if(idlist.length){
+                    this.$ajax.setManageUserEnableState({
+                        idlst: idlist,
+                        isenable: enable
+                    }, res => {
+                        this.queryManageUserList();
+                    })
+                }else{
+                    this.$message.error('请选择要处理的管理员');
+                }
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
@@ -202,7 +210,8 @@
                 this.pageObj.size = val;
                 this.queryManageUserList();
             },
-            handleCurrentChange(val) { // 切换元页
+            // 切换元页
+            handleCurrentChange(val) {
                 this.pageObj.page = val;
                 this.queryManageUserList();
             }
