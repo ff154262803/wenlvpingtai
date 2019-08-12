@@ -1,12 +1,15 @@
 <template>
     <el-row class="container">
         <el-col :span="24" class="header">
-            <el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
+            <el-col :span="20" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
+                <img src="../../static/img/zksw.png" alt="">
                 {{collapsed?'':sysName}}
             </el-col>
             <el-col :span="4" class="userinfo">
                 <el-dropdown trigger="hover">
-                    <span class="el-dropdown-link userinfo-inner">{{sysUserName}}</span>
+                    <span class="el-dropdown-link userinfo-inner">
+                        <!-- <img src="../../static/img/user.png" alt=""> -->
+                        {{sysUserName}}</span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>设置</el-dropdown-item>
                         <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
@@ -71,9 +74,6 @@
 </template>
 
 <script>
-    // import axios from 'axios'
-    import {logoutLogin} from '../api/api';
-    import {init, initArr, initSet} from '../routes'
 
     export default {
         data() {
@@ -85,11 +85,9 @@
             }
         },
         created() {
-            window.v = this;
         },
         methods: {
             clickOne(item) {
-                // console.error(item);
                 if (item.unfold) {
                     this.$store.state.child = item.children
                 }
@@ -97,56 +95,40 @@
             backRoute() {
                 if(this.$store.state.child.length){
                     this.$store.state.child = [];
-                    // if(this.$route.meta.parent){
-                    //     var to = this.$router.options.routes.filter(n=>{
-                    //         if(n.name.indexOf(this.$route.meta.parent)) return true;
-                    //     });
-                    //     console.log(to)
-                    //     // this.$store.state.child = to[0].children
-                    // }
                 }
                 this.$router.replace({path:this.$route.meta.parent || '/'})
 
-            },
-            onSubmit() {
-                console.log('submit!');
             },
             handleopen() {
             },
             handleclose() {
             },
             handleselect: function (a, b) {
-                // if (~a.indexOf('basicPage')) {
-                //     init(initSet);
-                // }
             },
             //退出登录
             logout: function () {
-                var _this = this,
-                  obj = {uKey: sessionStorage.getItem('user')}
                 this.$confirm('确认退出吗?', '提示', {
-                    //type: 'warning'
-                }).then(() => {
-                    logoutLogin(obj).then(data => {
-                        console.log(data)
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.$ajax.loginOut({}, res => {
+						this.$message({
+							type: 'success',
+							message: '退出成功!'
+						});
                         sessionStorage.removeItem('user');
-                        _this.$router.push('/login');
-                    })
-
-                }).catch(() => {
-
-                });
+                        this.$router.push('/login');
+					})
+				}).catch(() => {});
             },
             //折叠导航栏
             collapse: function () {
                 this.collapsed = !this.collapsed;
-            },
-            showMenu(i, status) {
-                this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' : 'none';
             }
         },
         mounted() {
-            var user = JSON.parse(sessionStorage.getItem('user'));
+            var user = sessionStorage.getItem('user');
             if (user) {
                 this.sysUserName = user.name || 'admin';
             }
@@ -168,14 +150,15 @@
             height: 60px;
             line-height: 60px;
             background: $color-primary;
-            color: #fff;
+            color: #000;
+            box-shadow: 0 1px 4px #d4d4d4,0 0 0 #fff, 0 0 0 #fff,0 0 0 #fff;
             .userinfo {
                 text-align: right;
                 padding-right: 35px;
                 float: right;
                 .userinfo-inner {
                     cursor: pointer;
-                    color: #fff;
+                    color: #000;
                     img {
                         width: 40px;
                         height: 40px;
@@ -191,11 +174,11 @@
                 font-size: 22px;
                 padding-left: 20px;
                 padding-right: 20px;
-                border-color: rgba(238, 241, 146, 0.3);
-                border-right-width: 1px;
-                border-right-style: solid;
+                // border-color: rgba(238, 241, 146, 0.3);
+                // border-right-width: 1px;
+                // border-right-style: solid;
                 img {
-                    width: 40px;
+                    width: 50px;
                     float: left;
                     margin: 10px 10px 10px 18px;
                 }
@@ -204,7 +187,7 @@
                 }
             }
             .logo-width {
-                width: 230px;
+                // width: 230px;
             }
             .logo-collapse-width {
                 width: 60px
@@ -221,7 +204,7 @@
             display: flex;
             // background: #324057;
             position: absolute;
-            top: 60px;
+            top: 62px;
             bottom: 0px;
             overflow: hidden;
             aside {

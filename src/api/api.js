@@ -80,5 +80,25 @@ export default {
     updateServerStatus(data, callback) {
         this.POST(`${base}/manage/updateServerStatus`, data, callback);
     },
+    //查询园区列表
+      queryParkList(data, callback) {
+        this.POST(`${base}/manage/queryParkList`, data, callback);
+    },
+    //批量删除园区
+    deletePark(data, callback) {
+        this.POST(`${base}/manage/deletePark`, data, callback);
+    },
+    //获取园区类型
+    getParkTypeList(data, callback) {
+        this.POST(`${base}/manage/getParkTypeList`, data, callback);
+    },
+    //获取含有园区的省市
+    getParkAreaList(data, callback) {
+        this.POST(`${base}/manage/getParkAreaList`, data, callback);
+    },
+    //新增园区
+    addPark(data, callback) {
+        this.POST(`${base}/manage/addPark`, data, callback);
+    },
 
 }
