@@ -1,8 +1,9 @@
 import axios from './axios';
 import {Message} from 'element-ui'
 import router from '../routes'
+import ip from '../vuex/store'
 
-let base = 'http://39.107.112.17:5000/api'; // 8091
+let base = ip.state.ip; // 'http://39.107.112.17:5000/api'
 export default {
     POST(url, data, callback, errback) {
         var storage = JSON.parse(sessionStorage.getItem('user'));
