@@ -6,15 +6,18 @@
                 {{collapsed?'':sysName}}
             </el-col>
             <el-col :span="4" class="userinfo">
-                <el-dropdown trigger="hover">
-                    <span class="el-dropdown-link userinfo-inner">
-                        <!-- <img src="../../static/img/user.png" alt=""> -->
-                        {{sysUserName}}</span>
-                    <el-dropdown-menu slot="dropdown">
-                        <!--<el-dropdown-item>设置</el-dropdown-item>-->
-                        <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+                {{sysUserName}}
+                <el-button type="text" @click="logout">退出登录</el-button>
+                <!--<el-dropdown trigger="hover">-->
+                    <!--<span class="el-dropdown-link userinfo-inner">-->
+                        <!--&lt;!&ndash; <img src="../../static/img/user.png" alt=""> &ndash;&gt;-->
+                        <!--{{sysUserName}}</span>-->
+                        <!--&lt;!&ndash;<el-button @click.native="logout">退出登录</el-button>&ndash;&gt;-->
+                    <!--<el-dropdown-menu slot="dropdown">-->
+                        <!--&lt;!&ndash;<el-dropdown-item>设置</el-dropdown-item>&ndash;&gt;-->
+                        <!--<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>-->
+                    <!--</el-dropdown-menu>-->
+                <!--</el-dropdown>-->
             </el-col>
         </el-col>
         <el-col :span="24" class="main">

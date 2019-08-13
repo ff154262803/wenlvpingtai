@@ -105,6 +105,14 @@
     export default {
         name: "basic",
         data() {
+            let rules = {
+                num(rule, val, callback) {
+                    val * 1 ? callback() : callback(new Error('请输入数字'));
+                },
+                string(rule, val, callback) {
+                    val * 1 ? callback(new Error('请输入字符串')) : callback();
+                }
+            }
             return {
                 status: {//服务器状态
                     show: false,
@@ -123,16 +131,15 @@
                     address: '',
                 },
                 rules: {
-                    versionName: [{required: true, message: '请输入版本名', trigger: 'change'}],
-                    version_code: [{required: true, message: '请输入版本号', trigger: 'change'}],
-                    min_version: [{required: true, message: '请输入最低版本号', trigger: 'change'}],
-                    content: [{required: true, message: '请输入更新说明', trigger: 'change'}],
-                    address: [{required: true, message: '请输入下载地址', trigger: 'change'}],
+                    versionName: [{trigger: 'change', validator: rules.string}],
+                    version_code: [{trigger: 'change', validator: rules.num}],
+                    min_version: [{trigger: 'change', validator: rules.num}],
+                    content: [{trigger: 'change', validator: rules.string}],
+                    address: [{trigger: 'change', validator: rules.string}],
                 },
             }
         },
         mounted() {
-            window.vm = this;
             //服务器状态
             this.getServerStatus();
             //版本管理
@@ -157,14 +164,14 @@
                     })[0]
                 })
             },
-            changeClick(){
+            changeClick() {
                 this.status.show = true;
                 this.status.changeStatus = this.status.status;
             },
             //添加app按钮点击
-            newAppClick (){
+            newAppClick() {
                 this.newApp.show = true;
-                if(this.$refs.newApp) this.$refs.newApp.resetFields();
+                if (this.$refs.newApp) this.$refs.newApp.resetFields();
             },
             //修改状态
             changeStatus() {

@@ -82,24 +82,24 @@ export default {
         this.POST(`${base}/manage/updateServerStatus`, data, callback, errback);
     },
     //查询园区列表
-      queryParkList(data, callback) {
-        this.POST(`${base}/manage/queryParkList`, data, callback);
+    queryParkList(data, callback, errback) {
+        this.POST(`${base}/manage/queryParkList`, data, callback, errback);
     },
     //批量删除园区
-    deletePark(data, callback) {
-        this.POST(`${base}/manage/deletePark`, data, callback);
+    deletePark(data, callback, errback) {
+        this.POST(`${base}/manage/deletePark`, data, callback, errback);
     },
     //获取园区类型
-    getParkTypeList(data, callback) {
-        this.POST(`${base}/manage/getParkTypeList`, data, callback);
+    getParkTypeList(data, callback, errback) {
+        this.POST(`${base}/manage/getParkTypeList`, data, callback, errback);
     },
     //获取含有园区的省市
-    getParkAreaList(data, callback) {
-        this.POST(`${base}/manage/getParkAreaList`, data, callback);
+    getParkAreaList(data, callback, errback) {
+        this.POST(`${base}/manage/getParkAreaList`, data, callback, errback);
     },
     //新增园区
-    addPark(data, callback) {
-        this.POST(`${base}/manage/addPark`, data, callback);
+    addPark(data, callback, errback) {
+        this.POST(`${base}/manage/addPark`, data, callback, errback);
     },
 
 }
