@@ -120,7 +120,6 @@
 							type: 'success',
 							message: '退出成功!'
 						});
-						this.$store.state.child = [];
                         sessionStorage.removeItem('user');
                         this.$router.push('/login');
 					})

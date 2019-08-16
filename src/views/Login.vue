@@ -45,6 +45,7 @@
             };
         },
         created() {
+            this.$store.state.child = [];
             window.globalVue = this;
         },
         methods: {

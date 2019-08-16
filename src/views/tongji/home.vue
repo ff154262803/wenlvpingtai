@@ -16,7 +16,7 @@
                 </el-row>
             </div>
         </div>
-        
+
         <!-- 用户数 -->
         <div class="box ma">
             <p>用户数</p>
@@ -44,14 +44,14 @@
                     <el-col :span="6"><div>今日充值额度</div></el-col>
                 </el-row>
                 <el-row class="body">
-                    <el-col :span="3"><div>Android</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android</br><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS</br><span>1</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
                 </el-row>
             </div>
         </div>
@@ -61,7 +61,7 @@
  export default {
     data() {
       return {
-        
+
       }
     },
     methods:{
@@ -116,7 +116,7 @@
                 border-right: 0px solid #d4d4d4;
             }
         }
-        
+
     }
   }
 </style>

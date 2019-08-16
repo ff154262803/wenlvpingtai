@@ -91,6 +91,17 @@
                 <el-form-item label="下载地址" label-width="120px" prop="address">
                     <el-input v-model="newApp.address"></el-input>
                     <!--<el-button style="margin-left: 50px">上传</el-button>-->
+                    <el-upload
+                        class="upload-demo"
+                        :action="$store.state.ip+'/resources/uploadResource'"
+                        accept=".zip,.apk"
+                        :on-success="handleSuccess"
+                        :on-error="handleError"
+                        :before-upload="beforeUpload"
+                        :show-file-list="false">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传apk文件</div>
+                    </el-upload>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -146,6 +157,22 @@
             this.getAppVersion();
         },
         methods: {
+            //上传成功
+            handleSuccess(file,fileList){
+                this.newApp.address = file.url;
+                this.$message.success('上传成功');
+            },
+            //上传失败
+            handleError (){
+                this.$message.error('上传失败');
+            },
+            //上传之前的格式检验
+            beforeUpload(file){
+                if(!~file.type.indexOf('apk')){
+                    this.$message.error('请上传正确格式的文件')
+                    return false;
+                }
+            },
             //获取服务器状态
             getServerStatus() {
                 this.$ajax.getServerStatus({}, res => {

@@ -70,7 +70,7 @@ router.beforeEach((to, from, next) => {
     if (to.path == '/login') {
         sessionStorage.removeItem('user');
     }
-    let user = sessionStorage.getItem('uid');
+    let user = sessionStorage.getItem('user');
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({path: '/login'})
