@@ -1,13 +1,6 @@
 <template>
     <div class="classificationPage">
-        <el-input placeholder="请输入内容" v-model="query.condition" clearable style="width: 300px"></el-input>
-        <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
         <el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>
-        <div class="filter">
-            <strong>分类：</strong>
-			<span @click="changetype('')" :class='query.groupId==""?"active":""'>不限</span>
-			<span v-for="(item, index) in list" :key="index" :class='query.groupId==item.toString()?"active":""' @click="changetype(item)">{{index}}</span>
-        </div>
         <!--表格内容-->
         <el-table
             ref="multipleTable"
@@ -26,7 +19,7 @@
             </el-table-column>
             <el-table-column
                 label="类型">
-                <template slot-scope="scope">{{ typenamaedata[scope.row.groupId] }}</template>
+                <template slot-scope="scope">{{ [scope.row.groupId] }}</template>
             </el-table-column>
             <el-table-column
                 label="状态">
@@ -82,12 +75,9 @@
                 list:[],
                 total: 0,
                 addBol: false,
-                typenamaedata:{},
                 query: {
                     page: 1,
-                    count: 20,
-                    condition:'',
-                    groupId:""
+                    count: 20
                 },
                 rules: {
                     typeName: [{required: true, message: '请输入分类名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
@@ -108,15 +98,12 @@
                 this.addData = data
             },
             gettype(){
-                this.$ajax.getGroupList({}, res => {
+                this.$ajax.getSiteTypeList({}, res => {
                     this.list = res.data
-                    for(var key in res.data){
-                        this.typenamaedata[res.data[key]] = key
-                    }
                 })
             },
             getAccessToken(){
-                this.$ajax.queryTypeList(this.query, res => {
+                this.$ajax.queryCommodityList(this.query, res => {
                     this.tableData = res.data
                     this.total = res.total
                     if(res.totalPage<this.query.page){//过滤时页数bug
@@ -133,7 +120,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(this.addData.id){
-                            this.$ajax.updateType({id:this.addData.id,parameters:{typeName:this.addData.typeName,groupId:this.addData.groupId,}}, res => {
+                            this.$ajax.updateCommodity({id:this.addData.id,parameters:{typeName:this.addData.typeName,groupId:this.addData.groupId,}}, res => {
                                 this.$message({
                                     type: 'success',
                                     message: '修改成功!'
@@ -142,7 +129,7 @@
                                 this.getAccessToken()
                             })
                         }else{
-                            this.$ajax.addType(this.addData, res => {
+                            this.$ajax.addCommodity(this.addData, res => {
                                 this.$message({
                                     type: 'success',
                                     message: '提交成功!'
@@ -178,7 +165,7 @@
                     for(let i = 0;i<this.multipleSelection.length;i++){
                         idlst.push(this.multipleSelection[i].id)
                     }
-                    this.$ajax.setTypeEnableState({idlst:idlst,isenable:val}, res => {
+                    this.$ajax.setCommodityEnableState({idlst:idlst,isenable:val}, res => {
                         this.$message({
                             type: 'success',
                             message: '设置成功!'
@@ -188,41 +175,19 @@
                 }
             },
             UpDown(id) {
-                this.$ajax.checkDeleteType({id:id}, res => {
-                    if(res.resb=200){
-                        this.$confirm('您确定要删除该类型吗?', '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                            this.$ajax.deleteType({id:id}, res => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '删除成功!'
-                                });
-                                this.getAccessToken()
-                            })
-                        }).catch(() => {});
-                    }
-                    
-                }, err => {
-                    if(err.resb=996){
-                        this.$confirm('该类型已被使用您确定要删除该类型吗?', '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                            this.$ajax.deleteType({id:id}, res => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '删除成功!'
-                                });
-                                this.getAccessToken()
-                            })
-                        }).catch(() => {});
-                    }
-                    
-                })
+                this.$confirm('您确定要删除该类型吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$ajax.deleteType({id:id}, res => {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        this.getAccessToken()
+                    })
+                }).catch(() => {})
             },
             handleCurrentChange(val) { // 切换元页
                 this.query.size = val.toString()

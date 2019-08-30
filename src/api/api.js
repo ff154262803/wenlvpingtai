@@ -32,6 +32,9 @@ export default {
                 Message.error(data.resbInfo);
                 router.push('login')
                 break;
+            case 996:
+                errback(data);
+                break;
             default :
                 Message.error(data.resbInfo);
                 errback && errback();
@@ -90,6 +93,10 @@ export default {
     deletePark(data, callback, errback) {
         this.POST(`${base}/manage/deletePark`, data, callback, errback);
     },
+    //批量设置启用状态
+    setParkEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setParkEnableState`, data, callback, errback);
+    },
     //获取园区类型
     getParkTypeList(data, callback, errback) {
         this.POST(`${base}/manage/getParkTypeList`, data, callback, errback);
@@ -102,5 +109,112 @@ export default {
     addPark(data, callback, errback) {
         this.POST(`${base}/manage/addPark`, data, callback, errback);
     },
-
+    //获取园区详情
+    getParkDetails(data, callback,errback) {
+        this.POST(`${base}/manage/getParkDetails`, data, callback,errback);
+    },
+    //编辑园区
+    updatePark(data, callback,errback) {
+        this.POST(`${base}/manage/updatePark`, data, callback,errback);
+    },
+    //查询景点列表
+    querySiteList(data, callback, errback) {
+        this.POST(`${base}/manage/querySiteList`, data, callback, errback);
+    },
+    //批量删除景点
+    deleteSite(data, callback, errback) {
+        this.POST(`${base}/manage/deleteSite`, data, callback, errback);
+    },
+    //批量设置启用状态
+    setSiteEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setSiteEnableState`, data, callback, errback);
+    },
+    //获取景点类型
+    getSiteTypeList(data, callback, errback) {
+        this.POST(`${base}/manage/getSiteTypeList`, data, callback, errback);
+    },
+    //新增景点
+    addSite(data, callback, errback) {
+        this.POST(`${base}/manage/addSite`, data, callback, errback);
+    },
+     //获取景点详情
+     getSiteDetails(data, callback,errback) {
+        this.POST(`${base}/manage/getSiteDetails`, data, callback,errback);
+    },
+    //修改景点详情
+    updateSite(data, callback,errback) {
+        this.POST(`${base}/manage/updateSite`, data, callback,errback);
+    },
+      //查询全部类型列表
+      queryTypeList(data, callback, errback) {
+        this.POST(`${base}/manage/queryTypeList`, data, callback, errback);
+    },
+     //查询全部类型列表
+     getGroupList(data, callback, errback) {
+        this.POST(`${base}/manage/getGroupList`, data, callback, errback);
+    },
+    //新增景点类型
+    addType(data, callback, errback) {
+        this.POST(`${base}/manage/addType`, data, callback, errback);
+    },
+    //修改类型名
+    updateType(data, callback, errback) {
+        this.POST(`${base}/manage/updateType`, data, callback, errback);
+    },
+    //校验改类型是否可直接删除
+    checkDeleteType(data, callback, errback) {
+        this.POST(`${base}/manage/checkDeleteType`, data, callback, errback);
+    },
+    //删除类型
+    deleteType(data, callback, errback) {
+        this.POST(`${base}/manage/deleteType`, data, callback, errback);
+    },
+     //设置类型可用状态
+     setTypeEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setTypeEnableState`, data, callback, errback);
+    },
+     //查询路线列表
+    queryRouteList(data, callback, errback) {
+        this.POST(`${base}/manage/queryRouteList`, data, callback, errback);
+    },
+    //批量删除路线
+    deleteRoute(data, callback, errback) {
+        this.POST(`${base}/manage/deleteRoute`, data, callback, errback);
+    },
+    //批量设置启用状态
+    setRouteEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setRouteEnableState`, data, callback, errback);
+    },
+    //新增路线
+    addRoute(data, callback, errback) {
+        this.POST(`${base}/manage/addRoute`, data, callback, errback);
+    },
+     //获取路线详情
+     getRouteDetails(data, callback,errback) {
+        this.POST(`${base}/manage/getRouteDetails`, data, callback,errback);
+    },
+    //修改路线详情
+    updateRoute(data, callback,errback) {
+        this.POST(`${base}/manage/updateRoute`, data, callback,errback);
+    },
+      //查询产品列表
+    queryCommodityList(data, callback, errback) {
+        this.POST(`${base}/manage/queryCommodityList`, data, callback, errback);
+    },
+    //批量删除产品
+    deleteCommodity(data, callback, errback) {
+        this.POST(`${base}/manage/deleteCommodity`, data, callback, errback);
+    },
+    //批量设置启用状态
+    setCommodityEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setCommodityEnableState`, data, callback, errback);
+    },
+    //新增产品
+    addCommodity(data, callback, errback) {
+        this.POST(`${base}/manage/addCommodity`, data, callback, errback);
+    },
+    //修改产品详情
+    updateCommodity(data, callback,errback) {
+        this.POST(`${base}/manage/updateCommodity`, data, callback,errback);
+    },
 }

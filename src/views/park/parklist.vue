@@ -3,7 +3,7 @@
 		<!-- 过滤区 -->
 		<el-input placeholder="请输入园区名称" v-model="query.condition" style="width:300px"></el-input>
         <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-        <el-button class="addBtn" type="primary" @click="Addshow=true">添加</el-button>
+        <el-button class="addBtn" type="primary" @click="beginshow">添加</el-button>
 		<div class="filter">
             <strong>分类：</strong>
 			<span @click="changetype('')" :class='query.typelist.length==0?"active":""'>不限</span>
@@ -51,8 +51,13 @@
 				<el-button @click="enableState(1)">启用</el-button>
 				<el-button @click="enableState(0)">禁用</el-button>
 			</div>
-			<el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange" :page-size="query.count" :total="total">
-			</el-pagination>
+			<el-pagination background
+				layout="total,sizes, prev, pager, next, jumper"
+				@current-change="handleCurrentChange"
+				@size-change="handleSizeChange"
+				:page-sizes="[10, 15, 20, 30, 50]"
+				:page-size="query.count" :total="total">
+            </el-pagination>
 			<el-button size="small">确定</el-button>
 		</el-col>
 		<!--园区新增-->
@@ -98,7 +103,7 @@ import {areaArr} from '../../api/city.js'
 export default {
 	data() {
 		var checkPrice = (rule, value, callback) => {
-			if (!/^(([1-9]+\d*)|([1-9]+\d*\.\d{1,2}))$/.test(value)||value>100) {
+			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>100) {
 				callback(new Error('请输入最大100且最多两位小数的数字'));
 			}else{
 				callback();
@@ -122,7 +127,7 @@ export default {
 		list:[],
 		query:{
 			page:1,
-			count:6,
+			count:10,
 			condition:'',
 			typelist:[],
 			province:'',
@@ -140,11 +145,10 @@ export default {
 		},
 		rules: {
 			caption: [{required: true, message: '请输入景区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-			city: [{required: true, message: '请选择市', trigger: 'change'}],
+			city: [{required: true, message: '请选择省市', trigger: 'change'}],
 			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			packnumber: [{ validator: checkPhone, trigger: 'blur' }],
-			price: [{ validator: checkPrice, trigger: 'blur' }],
-			province: [{required: true, message: '请选择省', trigger: 'change'}],
+			price: [{ required: true,validator: checkPrice, trigger: 'blur' }],
 			type: [{required: true, message: '请选择园区类型', trigger: 'change'}],
 		},
 		area:[],
@@ -154,20 +158,39 @@ export default {
 	}
 	},
 	mounted(){
-		this.area=areaArr
+		this.area = areaArr
 		this.get();
 		this.getlist();
 		this.getarea()
 	},
 	methods: {
+		beginshow(){
+			this.Addshow = true
+			this.newdata={
+				"caption": "",
+				"city": "",
+				"opentime": "",
+				"packnumber": "",
+				"price": "",
+				"province": "",
+				"type": ''
+			}
+		},
 		cancel(formName){
-			this.$refs[formName].resetFields();
+			this.Addshow = false
+			this.newdata={
+				"caption": "",
+				"city": "",
+				"opentime": "",
+				"packnumber": "",
+				"price": "",
+				"province": "",
+				"type": ''
+			}
 		},
 		add(formName){
 			this.$refs[formName].validate((valid) => {
-				console.log(valid)
 				if (valid) {
-					console.log(123)
 					this.$ajax.addPark(this.newdata, res => {
 						this.$message({
 							type: 'success',
@@ -176,7 +199,6 @@ export default {
 						this.get()
 					})
 				} else {
-					console.log(456)
 					return false;
 				}
 			});
@@ -199,9 +221,11 @@ export default {
 		changepro(val){
 			if(val=='all'){
 				this.query.province=''
+				this.query.city=''
 				this.city=[]
 			}else{
 				this.query.province=this.province[val].province
+				this.query.city=''
 				this.city=this.province[val].citylist
 			}
 			this.get()
@@ -221,9 +245,7 @@ export default {
 			})
 		},
 		search(){
-			if(this.query.condition){
-				this.get()
-			}
+			this.get()
 		},
 		handleCurrentChange(val){ // 切换元页
 			this.query.page = val.toString()
@@ -286,7 +308,8 @@ export default {
 			})
 		},
 		update(row) {
-			this.$router.push('/base')
+			sessionStorage.setItem('parkid',row.parkid)
+			this.$router.push({path:'/base',query:{id:row.parkid}})
 		},
 		del(id){
 			this.$confirm('您确定要删除选中园区吗?', '提示', {
@@ -302,6 +325,11 @@ export default {
 					this.get()
 				})
 			}).catch(() => {})
+		},
+		//切换页码
+		handleSizeChange(val) {
+			this.query.count = val;
+			this.get();
 		},
 		handleSelectionChange(val) {
 			this.multipleSelection = val;

@@ -13,12 +13,14 @@ import Home from './views/Home.vue'
 import tongjihome from './views/tongji/home'//统计首页
 import user from './views/user/user'//用户管理
 import parklist from './views/park/parklist'//园区列表
+import msgsend from './views/msg/msgsend'//商品列表
 
 // 园区管理
 import base from './views/park/base'//园区基础信息
 import routerlist from './views/park/routerlist'//路线列表
 import scenicdetail from './views/park/scenicdetail'//景点详情
-import sencelist from './views/park/senceList'//景点详情
+import sencelist from './views/park/senceList'//景点列表
+import product from './views/park/product'//商品列表
 
 //基本设置
 import basic from './views/basic/basic'//基本设置
@@ -32,7 +34,7 @@ const router = new VueRouter({
         {path: '/login', component: Login, name: '', hidden: true, ...metaTrue},
         {path: '/404', component: NotFound, name: '404', hidden: true, meta: {requireAuth: false}},
         {path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue},
-        {path: '/', component: Home, name: 'tongjihome', hidden: false, meta: {requireAuth: true, isparent: false, level: 1},
+        {path: '/', component: Home, name: 'tongjihome', hidden: false, meta: {requireAuth: true, level: 1},
             children: [
                 {path: '/', component: tongjihome, name: '概览', ...metaTrue},
             ]
@@ -40,12 +42,17 @@ const router = new VueRouter({
             children: [
                 {path: '/parklist', component: parklist, name: '园区列表', ...metaTrue},
             ],
-        }, {path: '/', component: Home, name: 'base/sencelist/routerlist', hidden: true, meta: {requireAuth: true, level: 2},
+        }, {path: '/', component: Home, name: 'base', hidden: true, meta: {requireAuth: true, level: 2},
             children: [
                 {path: '/base', component: base, name: '基础信息', meta: {requireAuth: true, parent: 'parklist'}},
                 {path: '/sencelist', component: sencelist, name: '景点列表', meta: {requireAuth: true, parent: 'parklist'}},
                 {path: '/routerlist', component: routerlist, name: '路线列表', meta: {requireAuth: true, parent: 'parklist'}},
+                {path: '/product', component: product, name: '商品管理', meta: {requireAuth: true, parent: 'parklist'}},
             ],
+        },{path: '/', component: Home, name: 'msgsend', hidden: false, meta: {requireAuth: true, level: 1},
+            children: [
+                {path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue},
+            ]
         }, {path: '/', component: Home, name: 'user', hidden: false, meta: {requireAuth: true, level: 1},
             children: [
                 {path: '/user', component: user, name: '用户管理', ...metaTrue},
@@ -58,7 +65,7 @@ const router = new VueRouter({
             ]
         }, {path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: {requireAuth: true, level: 3},
             children: [
-                {path: '/scenicdetail', component: scenicdetail, name: '第三级', meta: {requireAuth: true, parent: 'sencelist'}},
+                {path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: {requireAuth: true, parent: 'sencelist'}},
             ]
         }
     ]

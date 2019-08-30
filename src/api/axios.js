@@ -12,8 +12,8 @@ axios.interceptors.response.use(
     },
     error => {
         console.log(error)
-        Message.error(error.response)
-        Router.push('/404')
+        Message.error(error.resbInfo)
+        // Router.push('/404')
     }
 )
 
