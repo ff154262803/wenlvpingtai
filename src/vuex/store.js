@@ -9,8 +9,8 @@ Vue.use(Vuex)
 const state = {
     count: 10,
     child:[],//储存左侧导航栏内容
-    ip:'http://39.107.112.17:5000/api',//请求地址ip
-    resip:'http://39.107.112.17/res/'
+    ip:'http://192.168.2.182:5000/api',//请求地址ip
+    resip:'http://192.168.2.182/res/'
 }
 
 // 定义所需的 mutations

@@ -1,12 +1,15 @@
 <template>
     <div class="classificationPage">
-        <el-input placeholder="用户名、账号" v-model="condition" clearable style="width: 300px"></el-input>
+        <el-input placeholder="用户名、账号" v-model="query.condition" clearable style="width: 300px"></el-input>
         <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-        <!--<el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>-->
-        <div class="classify">
-            <strong>分类:</strong>
-            <el-button type="text">不限</el-button>
-            <el-button type="text">按钮</el-button>
+        <div class="filter">
+            <strong>最后登录时间：</strong>
+            <span @click="changetype('all')" :class='query.timeLimit==""?"active":""'>不限</span>
+			<span :class='query.timeLimit==1?"active":""' @click="changetype(1)">1日</span>
+            <span :class='query.timeLimit==2?"active":""' @click="changetype(2)">2日</span>
+            <span :class='query.timeLimit==3?"active":""' @click="changetype(3)">3日</span>
+            <span :class='query.timeLimit==4?"active":""' @click="changetype(4)">1周</span>
+            <span :class='query.timeLimit==5?"active":""' @click="changetype(5)">1月</span>
         </div>
         <!--表格内容-->
         <el-table
@@ -20,90 +23,53 @@
                 width="55">
             </el-table-column>
             <el-table-column
-                prop="managename"
+                prop="caption"
                 label="用户名"
                 width="120">
             </el-table-column>
             <el-table-column
-                prop="account"
+                prop="mobile"
                 label="账号"
                 show-overflow-tooltip>
             </el-table-column>
             <el-table-column
-                prop="address"
+                prop="system"
                 label="平台"
                 show-overflow-tooltip>
             </el-table-column>
-            <el-table-column
-                prop="isenable"
-                label="状态"
-                show-overflow-tooltip>
+            <el-table-column label="状态" width="80">
+            	<template slot-scope="scope">{{ scope.row.isenable==0?'冻结':'启用' }}</template>
             </el-table-column>
             <el-table-column
-                label="创建时间"
+                label="最后登录时间"
                 prop="lastlogintime"
                 show-overflow-tooltips
                 align="center"
             >
-                <!--<template slot-scope="scope">{{ scope.row.date }}</template>-->
             </el-table-column>
-
             <el-table-column label="操作" width="150" align="center">
                 <template slot-scope="scope">
-                    <el-button type="text" size="small" @click="UpDown(1,'1')">冻结</el-button>
-                    <el-button type="text" size="small" @click="UpDown(1,'0')">禁用</el-button>
+                    <el-button type="text" size="small" v-show="scope.row.isenable==1" @click="UpDown(scope.row.id,'0')">冻结</el-button>
+                    <el-button type="text" size="small" v-show="scope.row.isenable==0" @click="UpDown(scope.row.id,'1')">启用</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <!--分页-->
         <el-col :span="24" class="toolbar">
             <div class="allControl">
-                <!--<el-checkbox v-model="checked"></el-checkbox>-->
-                <el-button size="small">删除</el-button>
-                <el-button size="small">启用</el-button>
-                <el-button size="small">禁用</el-button>
+                <el-button size="small" @click="delAll">删除</el-button>
+                <el-button size="small" @click="enableState(1)">启用</el-button>
+                <el-button size="small" @click="enableState(0)">冻结</el-button>
             </div>
-            <el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange"
-                           :page-size="pageObj.size" :total="total">
+            <el-pagination background
+				layout="total,sizes, prev, pager, next, jumper"
+				@current-change="handleCurrentChange"
+				@size-change="handleSizeChange"
+				:page-sizes="[10, 15, 20, 30, 50]"
+				:page-size="query.count" :total="total">
             </el-pagination>
             <el-button size="small">确定</el-button>
         </el-col>
-
-        <!--添加用户-->
-        <!--<el-dialog title="添加用户" :visible="addUser.show" class="demo-box">-->
-            <!--<el-form :model="form">-->
-                <!--&lt;!&ndash;<el-form-item label="平台" label-width="120px">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<el-radio-group v-model="addUser.resource">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<el-radio label="Android"></el-radio>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<el-radio label="IOS"></el-radio>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-radio-group>&ndash;&gt;-->
-                <!--&lt;!&ndash;</el-form-item>&ndash;&gt;-->
-                <!--<el-form-item label="版本名" label-width="120px">-->
-                    <!--<el-input v-model="addUser.account"></el-input>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item label="版本号" label-width="120px">-->
-                    <!--<el-input v-model="addUser.name2"></el-input>-->
-                <!--</el-form-item>-->
-                <!--<el-radio-group v-model="addUser.isenable">-->
-                    <!--<el-radio label="正常"></el-radio>-->
-                    <!--<el-radio label="维护中"></el-radio>-->
-                <!--</el-radio-group>-->
-                <!--<el-form-item label="最低版本号" label-width="120px">-->
-                    <!--<el-input v-model="addUser.name3"></el-input>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item label="活动形式" label-width="120px">-->
-                    <!--<el-input autosize type="textarea" :autosize="{ minRows: 3}" v-model="form.desc"></el-input>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item label="下载地址" label-width="120px">-->
-                    <!--<el-input :disabled="true" v-model="form.url"></el-input>-->
-                    <!--<el-button style="margin-left: 50px">上传</el-button>-->
-                <!--</el-form-item>-->
-            <!--</el-form>-->
-            <!--<div slot="footer" class="dialog-footer">-->
-                <!--<el-button @click="dialogVisibleNew = false">取 消</el-button>-->
-                <!--<el-button type="primary" @click="dialogNewTrue">确 定</el-button>-->
-            <!--</div>-->
-        <!--</el-dialog>-->
     </div>
 </template>
 
@@ -112,60 +78,100 @@
         name: "classificationPage",
         data() {
             return {
-                condition: '',
-                checked: true,
                 total: 0,
                 dataList: [],
-                pageObj: {
+                query: {
+                    condition:'',
                     page: 1,
                     size: 20,
-                    uKey: sessionStorage.getItem('user')
+                    timeLimit:''
                 },
-                // addUser: {
-                //     show:false,
-                //     account:'',
-                //     isenable:'',
-                //     managename:'',
-                //     password:'',
-                // },
                 multipleSelection: []
             }
         },
         mounted() {
-            this.queryManageUserList();
+            this.queryAppUserList();
         },
         methods: {
-            queryManageUserList() {
-                this.$ajax.queryManageUserList({
-                    "condition": this.condition,
-                    "count": 20,
-                    "page": 0
-                }, res => {
+            enableState(val){
+                if(this.multipleSelection.length>0){
+                    let idlst=[]
+                    for(let i = 0;i<this.multipleSelection.length;i++){
+                        idlst.push(this.multipleSelection[i].id)
+                    }
+                    this.$ajax.setAppUserEnableState({idlst:idlst,isenable:val}, res => {
+                        this.$message({
+                            type: 'success',
+                            message: '设置成功!'
+                        });
+                        this.queryAppUserList()
+                    })
+                }
+            },
+            changetype(val){
+                this.query.timeLimit = val
+                this.query.page = 1
+                this.queryAppUserList()
+            },
+            queryAppUserList() {
+                this.$ajax.queryAppUserList(this.query, res => {
                     this.dataList = res.data;
+                    this.total = res.total
                 })
             },
-            search() {
-                console.log(this.$route);
+            delAll(){
+                if(this.multipleSelection.length>0){
+                    let idlst=[]
+                    for(let i = 0;i<this.multipleSelection.length;i++){
+                        idlst.push(this.multipleSelection[i].id)
+                    }
+                    this.$confirm('您确定要删除选中用户吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$ajax.deleteAppUser({idlst:idlst}, res => {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                            this.queryAppUserList()
+                        })
+                    }).catch(() => {});
+                }
             },
-            // addBtn() {
-            //     this.addUser.show = true;
-            // },
+            search() {
+                this.query.page = 1
+                this.queryAppUserList()
+            },
             handleSelectionChange(val) {
-                console.log(val)
                 this.multipleSelection = val;
             },
-            UpDown() {
+            UpDown(id,val) {
+                this.$ajax.setAppUserEnableState({idlst:[id],isenable:val}, res => {
+					this.$message({
+						type: 'success',
+						message: '设置成功!'
+					});
+					this.queryAppUserList()
+				})
+            },
+            handleSizeChange(val) {
+                this.query.count = val;
+                this.query.page = 1;
+                this.queryAppUserList();
             },
             handleCurrentChange(val) { // 切换元页
-                this.pageObj.page = val.toString()
+                this.query.page = val.toString()
                 this.resLoading = true
-                this.getAccessToken()
+                this.queryAppUserList()
             }
         }
     }
 </script>
 
 <style scoped lang="scss">
+
     .classificationPage {
         .btn {
             margin-left: 20px;
@@ -173,10 +179,24 @@
         .addBtn {
             margin-left: 80px;
         }
-        .classify {
-            margin: 20px 10px;
-            .el-button {
-                margin-left: 20px;
+        .filter{
+            line-height: 40px;
+            span {
+                display: inline-block;
+                line-height: 30px;
+                margin-left: 10px;
+                background-color: rgba(64,158,255,.1);
+                padding: 0 10px;
+                font-size: 12px;
+                color: #409EFF;
+                border-radius: 4px;
+                box-sizing: border-box;
+                border: 1px solid rgba(64,158,255,.2);
+                white-space: nowrap;
+            }
+            .active{
+                background-color: #409EFF;
+                color: #fff;
             }
         }
         .toolbar {

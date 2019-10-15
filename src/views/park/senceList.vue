@@ -57,67 +57,95 @@
 				<el-button @click="enableState(1)">启用</el-button>
 				<el-button @click="enableState(0)">禁用</el-button>
 			</div>
-			<el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange" :page-size="query.count" :total="total">
-			</el-pagination>
+			<el-pagination background
+				layout="total,sizes, prev, pager, next, jumper"
+				@current-change="handleCurrentChange"
+				@size-change="handleSizeChange"
+				:page-sizes="[10, 15, 20, 30, 50]"
+				:current-page.sync="query.page"
+				:page-size="query.count" :total="total">
+            </el-pagination>
 			<el-button size="small">确定</el-button>
 		</el-col>
-        <div id="diamain">
-            
-        </div>
 		<!--景点新增-->
-        <el-dialog title="添加景点" :visible.sync="Addshow" class="demo-box" width="600px"  ref='dialog'>
-            <el-form :model="newdata" :rules="rules" ref="newdata" label-width="120px">
-                <el-form-item label="景区名"  prop="caption">
-                    <el-input v-model="newdata.caption"></el-input>
-                </el-form-item>
-                <el-form-item label="分类" prop="type">
-					<el-select v-model="newdata.type"  >
-						<el-option v-for="item in list" :label="item.typeName" :value="item.id" :key="item.id" ></el-option>
-					</el-select>
-                </el-form-item>
-                <el-form-item label="显示层级" prop="lowlevel">
-					<el-select v-model="newdata.lowlevel" >
-						<el-option label="12" value="12"></el-option>
-                        <el-option label="13" value="13"></el-option>
-                        <el-option label="14" value="14"></el-option>
-                        <el-option label="15" value="15"></el-option>
-                        <el-option label="16" value="16"></el-option>
-                        <el-option label="17" value="17"></el-option>
-                        <el-option label="18" value="18"></el-option>
-                        <el-option label="19" value="19"></el-option>
-                        <el-option label="20" value="20"></el-option>
-                        <el-option label="21" value="21"></el-option>
-					</el-select>
-                </el-form-item>
-                <el-form-item label="显示层级" prop="highlevel">
-                    <el-select v-model="newdata.highlevel" >
-                        <el-option label="13" value="13"></el-option>
-                        <el-option label="14" value="14"></el-option>
-                        <el-option label="15" value="15"></el-option>
-                        <el-option label="16" value="16"></el-option>
-                        <el-option label="17" value="17"></el-option>
-                        <el-option label="18" value="18"></el-option>
-                        <el-option label="19" value="19"></el-option>
-                        <el-option label="20" value="20"></el-option>
-                        <el-option label="21" value="21"></el-option>
-                        <el-option label="22" value="21"></el-option>
-					</el-select>
-                </el-form-item>
-				<el-form-item label="开放时间" prop="opentime">
-                    <el-input v-model="newdata.opentime"></el-input>
-                </el-form-item>
-				<el-form-item label="咨询电话" prop="phonenumber">
-                    <el-input v-model="newdata.phonenumber"></el-input>
-                </el-form-item>
-                <el-form-item label="概述" prop="remark">
-                    <el-input v-model="newdata.remark"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="cancel('newdata')">取 消</el-button>
-                <el-button type="primary" @click="add('newdata')">确 定</el-button>
-            </div>
-        </el-dialog>
+		<div class="el-dialog__wrapper" v-show="Addshow">
+			<div class="el-dialog">
+				<div class="el-dialog__header">
+					<span class="el-dialog__title">添加景点</span>
+					<button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i class="el-dialog__close el-icon el-icon-close"></i></button>
+				</div>
+				<div class="el-dialog__body">
+					<el-form :model="newdata" :rules="rules" ref="newdata" label-width="120px">
+						<el-form-item label="景点名"  prop="caption">
+							<el-input v-model="newdata.caption"></el-input>
+						</el-form-item>
+						<el-form-item label="分类" prop="type">
+							<el-select v-model="newdata.type"  >
+								<el-option v-for="item in list" :label="item.typeName" :value="item.id" :key="item.id" ></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="最低显示层级" prop="lowlevel">
+							<el-select v-model="newdata.lowlevel" >
+								<el-option label="12" value="12"></el-option>
+								<el-option label="13" value="13"></el-option>
+								<el-option label="14" value="14"></el-option>
+								<el-option label="15" value="15"></el-option>
+								<el-option label="16" value="16"></el-option>
+								<el-option label="17" value="17"></el-option>
+								<el-option label="18" value="18"></el-option>
+								<el-option label="19" value="19"></el-option>
+								<el-option label="20" value="20"></el-option>
+								<el-option label="21" value="21"></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="最高显示层级" prop="highlevel">
+							<el-select v-model="newdata.highlevel" >
+								<el-option label="13" value="13"></el-option>
+								<el-option label="14" value="14"></el-option>
+								<el-option label="15" value="15"></el-option>
+								<el-option label="16" value="16"></el-option>
+								<el-option label="17" value="17"></el-option>
+								<el-option label="18" value="18"></el-option>
+								<el-option label="19" value="19"></el-option>
+								<el-option label="20" value="20"></el-option>
+								<el-option label="21" value="21"></el-option>
+								<el-option label="22" value="21"></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="开放时间" prop="opentime">
+							<el-input v-model="newdata.opentime"></el-input>
+						</el-form-item>
+						<el-form-item label="咨询电话" prop="phonenumber">
+							<el-input v-model="newdata.phonenumber"></el-input>
+						</el-form-item>
+						<!-- <el-form-item label="路线信息">
+							<div style="height:400px" id="mymap">
+							</div>
+							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
+						</el-form-item>
+						<el-form-item label="路线信息">
+							<div style="height:80px" id="mypic">
+								<img src="../../../static/img/close.png" alt="" class="close">
+								<img src="../../../static/img/close.png" alt="" class="close">
+								<img src="../../../static/img/close.png" alt="" class="close">
+								<img src="../../../static/img/close.png" alt="" class="close">
+								<img src="../../../static/img/close.png" alt="" class="close">
+							</div>
+							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
+						</el-form-item> -->
+						<el-form-item label="概述" prop="remark">
+							<el-input v-model="newdata.remark"></el-input>
+						</el-form-item>
+					</el-form>
+					<div class="el-dialog__footer">
+						<div class="dialog-footer">
+							<el-button @click="cancel('newdata')">取 消</el-button>
+							<el-button type="primary" @click="add('newdata')">确 定</el-button>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
     </div>
 </template>
 
@@ -144,7 +172,7 @@ export default {
 		query:{
             parkid:sessionStorage.getItem('parkid'),
 			page:1,
-			count:6,
+			count:10,
 			condition:'',
 			typelist:[],
 			isar:'',
@@ -152,21 +180,16 @@ export default {
 		},
 		Addshow:false,
 		newdata:{
-			"caption": "",
-            "electronicfencelist": [],
-            "highlevel": '',
+			"parkid": sessionStorage.getItem('parkid'),
+			"electronicfencelist": "",
             "lat": "",
-            "lon": "",
-            "lowlevel": '',
-            "opentime": "",
-            "parkid": sessionStorage.getItem('parkid'),
-            "phonenumber": "",
-            "picurl": "",
-            "remark": "",
-            "type": ''
+			"lon": "",
+			"phonenumber":"",
+			"remark":"",
+			"picurl":''
 		},
 		rules: {
-			caption: [{required: true, message: '请输入景区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+			caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
 			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			phonenumber: [{ validator: checkPhone, trigger: 'blur' }],
             lowlevel: [{required: true, message: '请选择最低显示层级', trigger: 'change'}],
@@ -187,35 +210,25 @@ export default {
 		beginshow(){
             this.Addshow = true
 			this.newdata={
-                "caption": "",
-                "electronicfencelist": "",
-                "highlevel": '',
-                "lat": "",
-                "lon": "",
-                "lowlevel": '',
-                "opentime": "",
-                "parkid": sessionStorage.getItem('parkid'),
-                "phonenumber": "",
-                "picurl": "",
-                "remark": "",
-                "type": ''
+				"parkid": sessionStorage.getItem('parkid'),
+				"electronicfencelist": "",
+				"lat": "",
+				"lon": "",
+				"phonenumber":"",
+				"remark":"",
+				"picurl":''
             }
 		},
 		cancel(formName){
 			this.Addshow = false
 			this.newdata={
-                "caption": "",
-                "electronicfencelist": [],
-                "highlevel": '',
-                "lat": "",
-                "lon": "",
-                "lowlevel": '',
-                "opentime": "",
                 "parkid": sessionStorage.getItem('parkid'),
-                "phonenumber": "",
-                "picurl": "",
-                "remark": "",
-                "type": ''
+				"electronicfencelist": "",
+				"lat": "",
+				"lon": "",
+				"phonenumber":"",
+				"remark":"",
+				"picurl":''
             }
 		},
 		add(formName){
@@ -240,6 +253,7 @@ export default {
 			}else{
 				this.query.typelist=[]
 			}
+			this.query.page = 1
 			this.get()
 		},
 		changelevel(val){
@@ -248,6 +262,7 @@ export default {
 			}else{
 				this.query.level=val
 			}
+			this.query.page = 1
 			this.get()
 		},
 		changeisar(val){
@@ -256,6 +271,7 @@ export default {
 			}else{
 				this.query.isar=val
 			}
+			this.query.page = 1
 			this.get()
 		},
 		getlist(){
@@ -264,19 +280,11 @@ export default {
 			})
 		},
 		search(){
-			this.get()
-		},
-		handleCurrentChange(val){ // 切换元页
-			this.query.page = val.toString()
+			this.query.page = 1
 			this.get()
 		},
 		enableState(val){
-			if(this.multipleSelection.length==0){
-				this.$message({
-					type: 'warning',
-					message: '尚未选择任何内容!'
-				});
-			}else{
+			if(this.multipleSelection.length!=0){
 				let idlst=[]
 				for(let i = 0;i<this.multipleSelection.length;i++){
 					idlst.push(this.multipleSelection[i].id)
@@ -291,12 +299,7 @@ export default {
 			}
 		},
 		delAll(){
-			if(this.multipleSelection.length==0){
-				this.$message({
-					type: 'warning',
-					message: '尚未选择任何内容!'
-				});
-			}else{
+			if(this.multipleSelection.length!=0){
 				let idlst=[]
 				for(let i = 0;i<this.multipleSelection.length;i++){
 					idlst.push(this.multipleSelection[i].id)
@@ -320,10 +323,6 @@ export default {
 			this.$ajax.querySiteList(this.query, res => {
 				this.tableData = res.data
 				this.total = res.total
-				if(res.totalPage<this.query.page){//过滤时页数bug
-					this.query.page=1
-					this.get()
-				}
 			})
 		},
 		update(row) {
@@ -345,15 +344,24 @@ export default {
 				})
 			}).catch(() => {})
 		},
+		handleCurrentChange(val){ // 切换元页
+			this.query.page = parseInt(val)
+			this.get()
+		},
 		handleSelectionChange(val) {
 			this.multipleSelection = val;
-		}
+		},
+		handleSizeChange(val) {
+			this.query.count = val;
+			this.get();
+		},
 	}
 }
 </script>
 <style lang="scss" scoped>
 	.addBtn{
-		margin-left: 100px;
+		float: right;
+		margin-right: 100px;
 	}
 	/deep/ .el-input{
 		width: 450px;
@@ -376,6 +384,14 @@ export default {
 		.active{
 			background-color: #409EFF;
 			color: #fff;
+		}
+	}
+	.el-dialog__wrapper{
+		z-index: 999;
+		background: rgba(0,0,0,.8);
+		.el-dialog{
+			width: 600px;
+			margin-top: 15vh;
 		}
 	}
 </style>

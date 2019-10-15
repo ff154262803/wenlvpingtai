@@ -13,13 +13,19 @@
                 width="55">
             </el-table-column>
             <el-table-column
-                prop="typeName"
-                label="分类名"
+                prop="caption"
+                label="商品名"
                 width="200">
             </el-table-column>
             <el-table-column
-                label="类型">
-                <template slot-scope="scope">{{ [scope.row.groupId] }}</template>
+                prop="typeName"
+                label="类型"
+                width="200">
+            </el-table-column>
+            <el-table-column
+                prop="siteName"
+                label="店家名"
+                width="200">
             </el-table-column>
             <el-table-column
                 label="状态">
@@ -51,17 +57,45 @@
         <!--弹窗内容-->
         <el-dialog title="添加分类" :visible.sync="addBol">
             <el-form :model="addData" :rules="rules" ref="addData" >
-                <el-form-item label="分类名" label-width="120px">
-                    <el-input v-model="addData.typeName" style="width: 200px" prop="typeName"></el-input>
+                <el-form-item label="商品名" label-width="120px" prop="caption">
+                    <el-input v-model="addData.caption" style="width: 200px"></el-input>
                 </el-form-item>
-                <el-form-item label="分类" label-width="120px">
-                    <el-select v-model="addData.groupId" placeholder="请选择分类" prop="groupId">
-                        <el-option :label='index' :value="item" v-for="(item, index) in list" :key="item"></el-option>
+                 <el-form-item label="商品描述" label-width="120px"  prop="remark">
+                    <el-input v-model="addData.remark" style="width: 200px"></el-input>
+                </el-form-item>
+                 <el-form-item label="商品价格" label-width="120px"  prop="price">
+                    <el-input v-model="addData.price" style="width: 200px"></el-input>
+                </el-form-item>
+                <el-form-item label="商品分类" label-width="120px"  prop="type" >
+                    <el-select v-model="addData.type" placeholder="请选择分类" @change = "typechange">
+                        <el-option v-for="item in list" :label="item.typeName" :value="item.id" :key="item.id" ></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="商家名称" label-width="120px"  prop="siteid">
+                    <el-select v-model="addData.siteid" placeholder="请选择商家名称">
+                        <el-option v-for="item in product" :label="item.caption" :value="item.id" :key="item.id" v-show="item.type == addData.type" ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="商品图片" label-width="120px" prop="picurl">
+                    <el-input v-model="addData.picurl" style="width: 200px;display:none"></el-input>
+                    <el-button size="small" type="primary" @click="uploading('uppic')">点击上传</el-button>
+                    <el-upload class="upload-demo" style="display:none"
+                        :data="uploaddata"
+				        :action="$store.state.ip+'/resources/uploadResource'"
+                        :on-progress="handleLoading"
+                        :on-success='onsuccsesspic'
+                        :before-upload="beforeUploadpic"  
+                        :on-error='onerror'
+				        list-type="picture">
+                        <el-button size="small" type="primary" id="uppic">点击上传</el-button>
+                    </el-upload>
+                    <div style="margin-top:20px">
+                        <img :src="$store.state.resip+addData.picurl" alt="" class="pic" v-if="addData.picurl" style="width:200px;height:200px">
+                    </div>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="addBol = false">取 消</el-button>
+                <el-button @click="reset('addData')">取 消</el-button>
                 <el-button type="primary" @click="submit('addData')">确 定</el-button>
             </div>
         </el-dialog>
@@ -71,17 +105,33 @@
     export default {
         name: "user",
         data() {
+            var checkPrice = (rule, value, callback) => {
+                if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
+                    callback(new Error('请输入最大1000且最多两位小数的数字'));
+                }else{
+                    callback();
+                }
+            };
             return {
+                uploaddata:{
+                    type:'',
+                    uKey:JSON.parse(sessionStorage.getItem('user')).uKey
+                },
                 list:[],
+                product:[],
                 total: 0,
                 addBol: false,
                 query: {
+                    parkid:sessionStorage.getItem('parkid'),
                     page: 1,
                     count: 20
                 },
                 rules: {
-                    typeName: [{required: true, message: '请输入分类名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-                    groupId: [{required: true, message: '请选择类型', trigger: 'change'}]
+                    caption: [{required: true, message: '请输入名称', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                    remark: [{required: true, message: '请输入备注', trigger: 'blur'}, { max: 20, message: '最多200个字符', trigger: 'blur' }],
+                    siteid: [{required: true, message: '请选择商家名称', trigger: 'change'}],
+                    price: [{ validator: checkPrice, trigger: 'blur' }],
+                    picurl: [{required: true, message: '请上传图片'}]
                 },
                 addData: {},
                 tableData: [],
@@ -91,11 +141,60 @@
         mounted(){
             this.getAccessToken()
             this.gettype()
+            this.typechange()
         },
         methods: {
+            reset(formName){
+                this.$refs[formName].resetFields();
+                this.addBol = false
+            },
+            typechange(){
+                addData.siteid=null
+            },
+             uploading(id){
+                document.getElementById(id).click()
+            },
+            handleLoading(){
+                this.fullscreenLoading = true;
+            },
+            beforeUploadpic(file){
+                const isLt50M = file.size / 1024 / 1024 < 50;
+                if (!isLt50M) {
+                    this.$message.error('上传文件大小不能超过 50MB!');
+                }
+                return isLt50M;
+            },
+            onsuccsesspic(response, file, fileList){
+                if(response.resb==200){
+                    this.addData.picurl = response.shortUrl
+                    this.fullscreenLoading = false;
+                }
+            },
+            onerror(){
+                this.fullscreenLoading = false;
+            },
+            typechange(){
+                var type= []
+                for(let i =0;i< this.list.length;i++){
+                    type.push( this.list[i].id)
+                }
+                this.$ajax.querySiteList({
+                    parkid:sessionStorage.getItem('parkid'),
+                    page:1,
+                    count:999,
+                    typelist:type,
+                }, res => {
+                    this.product = res.data
+                })
+            },
             edit(data){
                 this.addBol = true
                 this.addData = data
+                for(let i =0;i< this.product.length;i++){
+                    if(this.product[i].id==data.siteid){
+                        this.addData.type = this.product[i].type
+                    }
+                }
             },
             gettype(){
                 this.$ajax.getSiteTypeList({}, res => {
@@ -112,15 +211,11 @@
                     }
                 })
             },
-            changetype(val){
-                this.query.groupId = val.toString()
-                this.getAccessToken()
-            },
             submit(formName){
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(this.addData.id){
-                            this.$ajax.updateCommodity({id:this.addData.id,parameters:{typeName:this.addData.typeName,groupId:this.addData.groupId,}}, res => {
+                            this.$ajax.updateCommodity({id:this.addData.id,parameters:{caption:this.addData.caption,price:this.addData.price,remark:this.addData.remark,siteid:this.addData.siteid,picurl:this.addData.picurl}}, res => {
                                 this.$message({
                                     type: 'success',
                                     message: '修改成功!'
@@ -149,7 +244,8 @@
             },
             addBtn() {
                 this.addBol= true
-                this.addData={}
+                this.product = []
+                this.addData= {}
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
@@ -180,7 +276,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$ajax.deleteType({id:id}, res => {
+                    this.$ajax.deleteCommodity({idlst:[id]}, res => {
                         this.$message({
                             type: 'success',
                             message: '删除成功!'
@@ -190,7 +286,7 @@
                 }).catch(() => {})
             },
             handleCurrentChange(val) { // 切换元页
-                this.query.size = val.toString()
+                this.query.page = val.toString()
                 this.resLoading = true
                 this.getAccessToken()
             }
@@ -203,8 +299,9 @@
         .btn {
             margin-left: 20px;
         }
-        .addBtn {
-            margin-left: 80px;
+        .addBtn{
+            float: right;
+            margin-right: 100px;
         }
         .filter{
             line-height: 40px;

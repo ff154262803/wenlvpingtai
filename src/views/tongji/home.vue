@@ -1,8 +1,8 @@
 <template>
     <div>
-        <!-- 景区 -->
+        <!-- 景点 -->
         <div class="box">
-            <p>景区</p>
+            <p>景点</p>
             <div class="menu">
                 <el-row class="top">
                     <el-col :span="8"><div>总数量</div></el-col>
@@ -10,9 +10,9 @@
                     <el-col :span="8"><div>AR景点数</div></el-col>
                 </el-row>
                 <el-row class="body">
-                    <el-col :span="8"><div>1</div></el-col>
-                    <el-col :span="8"><div>2</div></el-col>
-                    <el-col :span="8"><div>3</div></el-col>
+                    <el-col :span="8"><div>{{list.siteNum}}</div></el-col>
+                    <el-col :span="8"><div>{{list.siteNum-list.arNum}}</div></el-col>
+                    <el-col :span="8"><div>{{list.arNum}}</div></el-col>
                 </el-row>
             </div>
         </div>
@@ -27,31 +27,43 @@
                     <el-col :span="8"><div>今日使用用户数</div></el-col>
                 </el-row>
                 <el-row class="body">
-                    <el-col :span="8"><div>1</div></el-col>
-                    <el-col :span="8"><div>2</div></el-col>
-                    <el-col :span="8"><div>3</div></el-col>
+                    <el-col :span="8"><div>{{list.userNum}}</div></el-col>
+                    <el-col :span="8"><div>{{list.newUserNum}}</div></el-col>
+                    <el-col :span="8"><div>{{list.livelyUserNum}}</div></el-col>
                 </el-row>
             </div>
         </div>
-        <!-- 景区 -->
+        <!-- 景点 -->
         <div class="bbox">
             <p>充值</p>
             <div class="menu">
                 <el-row class="top">
-                    <el-col :span="6"><div>充值用户总数</div></el-col>
-                    <el-col :span="6"><div>今日充值用户数</div></el-col>
-                    <el-col :span="6"><div>充值总金额</div></el-col>
-                    <el-col :span="6"><div>今日充值额度</div></el-col>
+                    <el-col :span="6"><div>新增订单数</div></el-col>
+                    <el-col :span="6"><div>新增订单总额</div></el-col>
+                    <el-col :span="6"><div>新增AR订单数</div></el-col>
+                    <el-col :span="6"><div>新增AR订单总额</div></el-col>
                 </el-row>
                 <el-row class="body">
-                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>Android<br/><span>1</span></div></el-col>
-                    <el-col :span="3"><div>IOS<br/><span>1</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>{{list.android_newOrderNum}}</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>{{list.ios_newOrderTotalPrices}}</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>{{list.android_newOrderTotalPrices}}</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>{{list.ios_newOrderTotalPrices}}</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>{{list.android_newAROrderNum}}</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>{{list.ios_newAROrderNum}}</span></div></el-col>
+                    <el-col :span="3"><div>Android<br/><span>{{list.android_newAROrderTotalPrices}}</span></div></el-col>
+                    <el-col :span="3"><div>IOS<br/><span>{{list.ios_newAROrderTotalPrices}}</span></div></el-col>
+                </el-row>
+            </div>
+        </div>
+        <div class="bbox feedback">
+            <p>意见反馈</p>
+            <div class="menu">
+                <el-row class="top">
+                    <el-col :span="24"><div>新增意见反馈数</div></el-col>
+                </el-row>
+                <el-row class="body">
+                    <el-col :span="12"><div>Android<br/><span>{{list.android_feedbackNum}}</span></div></el-col>
+                    <el-col :span="12"><div>IOS<br/><span>{{list.ios_feedbackNum}}</span></div></el-col>
                 </el-row>
             </div>
         </div>
@@ -61,8 +73,14 @@
  export default {
     data() {
       return {
-
+          list:[]
       }
+    },
+    mounted(){
+        this.$ajax.getDataCube({
+        }, res => {
+            this.list = res.data
+        })
     },
     methods:{
     }
@@ -92,7 +110,6 @@
 .bbox{
     width: 900px;
     margin-top: 20px;
-    float: left;
     .body{
         .el-col span{
             font-size: 20px;
@@ -100,6 +117,9 @@
             font-weight: 600;
         }
     }
+}
+.feedback{
+   width: 200px; 
 }
 .menu{
     line-height: 50px;

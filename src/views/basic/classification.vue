@@ -39,7 +39,7 @@
             <el-table-column label="操作" width="150" align="center">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="edit(scope.row)">修改</el-button>
-                    <el-button type="text" size="small" @click="UpDown(scope.row.id)">删除</el-button>
+                    <!-- <el-button type="text" size="small" @click="UpDown(scope.row.id)">删除</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -225,7 +225,7 @@
                 })
             },
             handleCurrentChange(val) { // 切换元页
-                this.query.size = val.toString()
+                this.query.page = val.toString()
                 this.resLoading = true
                 this.getAccessToken()
             }

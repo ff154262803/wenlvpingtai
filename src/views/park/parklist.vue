@@ -23,7 +23,7 @@
         <el-table
             ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"  align="center"></el-table-column>
-            <el-table-column prop="caption" label="景区名"></el-table-column>
+            <el-table-column prop="caption" label="景点名"></el-table-column>
             <el-table-column prop="typeName" label="分类"></el-table-column>
             <el-table-column label="省市" width="120">
             	<template slot-scope="scope">{{ scope.row.province }} - {{ scope.row.city }}</template>
@@ -56,6 +56,7 @@
 				@current-change="handleCurrentChange"
 				@size-change="handleSizeChange"
 				:page-sizes="[10, 15, 20, 30, 50]"
+				:current-page.sync="query.page"
 				:page-size="query.count" :total="total">
             </el-pagination>
 			<el-button size="small">确定</el-button>
@@ -63,7 +64,7 @@
 		<!--园区新增-->
         <el-dialog title="添加园区" :visible.sync="Addshow" class="demo-box" width="590px">
             <el-form :model="newdata" :rules="rules" ref="newdata" label-width="100px">
-                <el-form-item label="景区名"  prop="caption">
+                <el-form-item label="景点名"  prop="caption">
                     <el-input v-model="newdata.caption"></el-input>
                 </el-form-item>
                 <el-form-item label="分类" prop="type">
@@ -135,16 +136,11 @@ export default {
 		},
 		Addshow:false,
 		newdata:{
-			"caption": "",
 			"city": "",
-			"opentime": "",
-			"packnumber": "",
-			"price": "",
-			"province": "",
-			"type": '',
+			"province": ""
 		},
 		rules: {
-			caption: [{required: true, message: '请输入景区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+			caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
 			city: [{required: true, message: '请选择省市', trigger: 'change'}],
 			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			packnumber: [{ validator: checkPhone, trigger: 'blur' }],
@@ -167,26 +163,12 @@ export default {
 		beginshow(){
 			this.Addshow = true
 			this.newdata={
-				"caption": "",
 				"city": "",
-				"opentime": "",
-				"packnumber": "",
-				"price": "",
-				"province": "",
-				"type": ''
+				"province": ""
 			}
 		},
 		cancel(formName){
 			this.Addshow = false
-			this.newdata={
-				"caption": "",
-				"city": "",
-				"opentime": "",
-				"packnumber": "",
-				"price": "",
-				"province": "",
-				"type": ''
-			}
 		},
 		add(formName){
 			this.$refs[formName].validate((valid) => {
@@ -211,6 +193,7 @@ export default {
 			dt.length==0?this.areacity=[]:this.areacity=dt[0].child
 		},
 		changetype(val){
+			this.query.page=1
 			if(val){
 				this.query.typelist.indexOf(val)>-1?this.query.typelist.push(val):this.query.typelist.push(val)
 			}else{
@@ -219,6 +202,7 @@ export default {
 			this.get()
 		},
 		changepro(val){
+			this.query.page=1
 			if(val=='all'){
 				this.query.province=''
 				this.query.city=''
@@ -232,6 +216,7 @@ export default {
 		},
 		changecity(val){
 			this.query.city=val
+			this.query.page=1
 			this.get()
 		},
 		getarea(){
@@ -248,16 +233,11 @@ export default {
 			this.get()
 		},
 		handleCurrentChange(val){ // 切换元页
-			this.query.page = val.toString()
+			this.query.page = parseInt(val)
 			this.get()
 		},
 		enableState(val){
-			if(this.multipleSelection.length==0){
-				this.$message({
-					type: 'warning',
-					message: '尚未选择任何内容!'
-				});
-			}else{
+			if(this.multipleSelection.length>0){
 				let idlst=[]
 				for(let i = 0;i<this.multipleSelection.length;i++){
 					idlst.push(this.multipleSelection[i].parkid)
@@ -272,12 +252,7 @@ export default {
 			}
 		},
 		delAll(){
-			if(this.multipleSelection.length==0){
-				this.$message({
-					type: 'warning',
-					message: '尚未选择任何内容!'
-				});
-			}else{
+			if(this.multipleSelection.length>0){
 				let idlst=[]
 				for(let i = 0;i<this.multipleSelection.length;i++){
 					idlst.push(this.multipleSelection[i].parkid)
@@ -301,10 +276,6 @@ export default {
 			this.$ajax.queryParkList(this.query, res => {
 				this.tableData = res.data
 				this.total = res.total
-				if(res.totalPage<this.query.page){//过滤时页数bug
-					this.query.page=1
-					this.get()
-				}
 			})
 		},
 		update(row) {
@@ -339,7 +310,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 	.addBtn{
-		margin-left: 100px;
+		float: right;
+		margin-right: 100px;
 	}
 	/deep/ .el-input{
 		width: 450px;

@@ -10,7 +10,7 @@
                     <el-col :span="24"><div><span>ID：</span>{{detail.id}}</div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>景区名：</span>{{detail.caption}}</div></el-col>
+                    <el-col :span="22"><div><span>景点名：</span>{{detail.caption}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('caption')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
@@ -81,7 +81,10 @@
                     </div></el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="24"><div class="map" id="GDMAP"></div></el-col>
+                    <el-col :span="24">
+                        <div class="map" id="GDMAP"></div>
+                        <el-input type="text" id="tipinput" v-show="showedit" v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
+                    </el-col>
                 </el-row>
             </div>
         </div>
@@ -171,11 +174,11 @@
                 </el-row>
             </div>
         </div>
-        <!--修改景区名-->
-        <el-dialog title="修改景区名" :visible.sync="captionShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="caption" label-width="100px">
-                <el-form-item label="景区名"  prop="caption">
-                    <el-input v-model="detail.caption"></el-input>
+        <!--修改景点名-->
+        <el-dialog title="修改景点名" :visible.sync="captionShow" class="demo-box" width="590px">
+            <el-form :model="editdata" :rules="detailrules" ref="caption" label-width="100px">
+                <el-form-item label="景点名"  prop="caption">
+                    <el-input v-model="editdata.caption"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -185,9 +188,9 @@
         </el-dialog>
         <!--修改分类-->
         <el-dialog title="修改分类" :visible.sync="typeShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="type" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="type" label-width="100px">
                 <el-form-item label="分类" prop="type">
-					<el-select v-model="detail.type"  >
+					<el-select v-model="editdata.type"  >
 						<el-option v-for="item in list" :label="item.typeName" :value="item.id" :key="item.id" ></el-option>
 					</el-select>
                 </el-form-item>
@@ -199,9 +202,9 @@
         </el-dialog>
         <!--修改等级-->
         <el-dialog title="修改等级" :visible.sync="levelShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="level" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="level" label-width="100px">
                 <el-form-item label="最低等级" prop="lowlevel">
-					<el-select v-model="detail.lowlevel">
+					<el-select v-model="editdata.lowlevel">
 						<el-option label="12" value=12></el-option>
                         <el-option label="13" value=13></el-option>
                         <el-option label="14" value=14></el-option>
@@ -215,7 +218,7 @@
 					</el-select>
                 </el-form-item>
                 <el-form-item label="最高等级" prop="highlevel">
-					<el-select v-model="detail.highlevel ">
+					<el-select v-model="editdata.highlevel ">
 						<el-option label="12" value="12"></el-option>
                         <el-option label="13" value="13"></el-option>
                         <el-option label="14" value="14"></el-option>
@@ -236,9 +239,9 @@
         </el-dialog>
          <!--修改标签-->
         <el-dialog title="修改标签" :visible.sync="tagShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="tag" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="tag" label-width="100px">
                 <el-form-item label="标签名"  prop="tag">
-                    <el-input v-model="detail.tag"></el-input>
+                    <el-input v-model="editdata.tag"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -248,9 +251,9 @@
         </el-dialog>
          <!--修改开放时间-->
         <el-dialog title="修改开放时间" :visible.sync="opentimeShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="opentime" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="opentime" label-width="100px">
 				<el-form-item label="开放时间" prop="opentime">
-                    <el-input v-model="detail.opentime"></el-input>
+                    <el-input v-model="editdata.opentime"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -260,9 +263,9 @@
         </el-dialog>
         <!--修改咨询电话-->
         <el-dialog title="修改咨询电话" :visible.sync="phonenumberShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="phonenumber" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="phonenumber" label-width="100px">
 				<el-form-item label="咨询电话" prop="phonenumber">
-                    <el-input v-model="detail.phonenumber"></el-input>
+                    <el-input v-model="editdata.phonenumber"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -272,9 +275,9 @@
         </el-dialog>
          <!--修改标签-->
         <el-dialog title="修改概述" :visible.sync="remarkShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="remark" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="remark" label-width="100px">
                 <el-form-item label="标签名"  prop="remark">
-                    <el-input v-model="detail.remark"></el-input>
+                    <el-input v-model="editdata.remark"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -284,10 +287,10 @@
         </el-dialog>
         <!--修改是否AR-->
         <el-dialog title="修改是否AR" :visible.sync="isarShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="isar" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="isar" label-width="100px">
                 <el-form-item label="标签名"  prop="isar">
-                    <el-radio v-model="detail.isar" label="0">否</el-radio>
-                    <el-radio v-model="detail.isar" label="1">是</el-radio>
+                    <el-radio v-model="editdata.isar" label="0">否</el-radio>
+                    <el-radio v-model="editdata.isar" label="1">是</el-radio>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -297,9 +300,9 @@
         </el-dialog>
         <!--修改最佳时间-->
         <el-dialog title="修改最佳时间" :visible.sync="besttimeShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="besttime" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="besttime" label-width="100px">
                 <el-form-item label="最佳时间"  prop="besttime">
-                    <el-input v-model="detail.besttime"></el-input>
+                    <el-input v-model="editdata.besttime"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -309,9 +312,9 @@
         </el-dialog>
         <!--修改AR收费-->
         <el-dialog title="修改AR收费" :visible.sync="scoreShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="score" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="score" label-width="100px">
                 <el-form-item label="AR收费" prop="score">
-                    <el-input v-model="detail.score"></el-input>
+                    <el-input v-model="editdata.score"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -321,10 +324,10 @@
         </el-dialog>
         <!--修改是否解锁-->
         <el-dialog title="修改是否解锁" :visible.sync="islockShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="islock" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="islock" label-width="100px">
                 <el-form-item label="标签名"  prop="islock">
-                    <el-radio v-model="detail.islock" label="0">否</el-radio>
-                    <el-radio v-model="detail.islock" label="1">是</el-radio>
+                    <el-radio v-model="editdata.islock" label="0">否</el-radio>
+                    <el-radio v-model="editdata.islock" label="1">是</el-radio>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -333,10 +336,10 @@
             </div>
         </el-dialog>
         <!--修改解锁条件-->
-        <el-dialog title="修改景区名" :visible.sync="unlockconditionShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="unlockcondition" label-width="100px">
-                <el-form-item label="景区名"  prop="unlockcondition">
-                    <el-input v-model="detail.unlockcondition"></el-input>
+        <el-dialog title="修改景点名" :visible.sync="unlockconditionShow" class="demo-box" width="590px">
+            <el-form :model="editdata" :rules="detailrules" ref="unlockcondition" label-width="100px">
+                <el-form-item label="景点名"  prop="unlockcondition">
+                    <el-input v-model="editdata.unlockcondition"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -346,9 +349,9 @@
         </el-dialog>
         <!--修改详情链接-->
         <el-dialog title="修改详情链接" :visible.sync="linkh5urlShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="linkh5url" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="linkh5url" label-width="100px">
                 <el-form-item label="详情链接" prop="linkh5url">
-                    <el-input v-model="detail.linkh5url"></el-input>
+                    <el-input v-model="editdata.linkh5url"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -358,9 +361,9 @@
         </el-dialog>
         <!--修改详情类型-->
         <el-dialog title="修改详情类型" :visible.sync="detailstypeShow" class="demo-box" width="590px">
-            <el-form :model="detail" :rules="detailrules" ref="detailstype" label-width="100px">
+            <el-form :model="editdata" :rules="detailrules" ref="detailstype" label-width="100px">
                 <el-form-item label="详情类型" prop="detailstype">
-                    <el-radio  v-for='n in linktype' :key='n.id' v-model="detail.detailstype" :label="n.id">{{n.typeName}}</el-radio>
+                    <el-radio  v-for='n in linktype' :key='n.id' v-model="editdata.detailstype" :label="n.id">{{n.typeName}}</el-radio>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -396,6 +399,7 @@ export default {
                 type:'',
                 uKey:JSON.parse(sessionStorage.getItem('user')).uKey
             },
+            editdata:{},
             siteid:sessionStorage.getItem('siteid')?sessionStorage.getItem('siteid'):"",
             electronicfencelist:[],
             detail:{},
@@ -405,10 +409,12 @@ export default {
             GDPolygon:"",
             GDPolyEditor:"",
             GDMarker:"",
+            tipinput:'',
+            placeSearch:'',
             showedit:false,
             fileList:[],
             detailrules:{
-                caption: [{required: true, message: '请输入景区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 type: [{required: true, message: '请选择园区类型', trigger: 'change'}],
                 highlevel : [{required: true, message: '请选择最高等级', trigger: 'change'}],
                 lowlevel : [{required: true, message: '请选择最低等级', trigger: 'change'}],
@@ -460,13 +466,49 @@ export default {
             cursor: 'move',
             animation: 'AMAP_ANIMATION_DROP'
         });
+        var autoOptions = {
+            input: "tipinput"
+        };
+        var auto = new AMap.Autocomplete(autoOptions);
+        this.placeSearch = new AMap.PlaceSearch({
+            map: this.GDMap
+        });  //构造地点查询类
+        AMap.event.addListener(auto, "select", this.select);//注册监听，当选中某条记录时会触发
         this.getdetail();
         this.getlist();
 	},
 	methods: {
+        select(e) {
+            var x= e.poi.location.lng
+			var y = e.poi.location.lat
+			this.GDMap.setCenter([x,y]);
+            var curPath = [];
+            for (var i = 0; i < 3; i++) {
+                var cur = [];
+                switch (i) {
+                    case 0:
+                        cur.push(Number(x) - 0.01);
+                        cur.push(Number(y)  - 0.01);
+                        break;
+                    case 1:
+                        cur.push(Number(x) );
+                        cur.push(Number(y)  + 0.01);
+                        break;
+                    case 2:
+                        cur.push(Number(x)  + 0.01);
+                        cur.push(Number(y)  - 0.01);
+                        break;
+                }
+                curPath.push(cur);
+            }
+            this.GDPolygon.setPath(curPath);
+            this.GDMarker.setPosition([x,y])
+            this.GDPolyEditor = new AMap.PolyEditor(this.GDMap, this.GDPolygon);
+            this.GDMap.setFitView();
+        },
         close(i){
-            this.fileList = this.fileList.splice(i,0)
-            this.$ajax.updateSite({id:this.detail.id,parameters:{picurl :JSON.stringify(this.fileList)}}, res => {
+            this.fileList.splice(i,1)
+            this.$ajax.updateSite({id:this.detail.id,parameters:{picurl :this.fileList.join()}}, res => {
                 this.$message({
                     type: 'success',
                     message: '修改成功!'
@@ -503,8 +545,8 @@ export default {
         },
         onsuccsesspic(response, file, fileList){
             if(response.resb==200){
-                this.fileList.push(response.shortUrl)
-                this.$ajax.updateSite({id:this.detail.id,parameters:{picurl :JSON.stringify(this.fileList)}}, res => {
+                var list = this.fileList.push(response.shortUrl)
+                this.$ajax.updateSite({id:this.detail.id,parameters:{picurl :this.fileList.join()}}, res => {
                     this.$message({
                         type: 'success',
                         message: '修改成功!'
@@ -586,7 +628,7 @@ export default {
                 this.$ajax.getSiteDetails({id:this.siteid}, res => {
                     this.detail = res.data
                     this.electronicfencelist = res.data.electronicfencelist?JSON.parse(res.data.electronicfencelist):[]
-                    this.fileList = res.data.picurl?JSON.parse(res.data.picurl):[]
+                    this.fileList = res.data.picurl?res.data.picurl.split(','):[]
                     this.y = res.data.lat?res.data.lat:this.GDMap.getCenter().lat
                     this.x = res.data.lon?res.data.lon:this.GDMap.getCenter().lng
 
@@ -625,6 +667,7 @@ export default {
         },
         edit(formName){
             this[formName+'Show'] =true
+            this.editdata = {...this.detail}
         },
         add(formName){
 			this.$refs[formName].validate((valid) => {
@@ -632,10 +675,10 @@ export default {
                     this[formName+'Show'] = false
                     let prams={}
                     if(formName=='level'){
-                        prams.highlevel = this.detail.highlevel
-                        prams.lowlevel = this.detail.lowlevel
+                        prams.highlevel = this.editdata.highlevel
+                        prams.lowlevel = this.editdata.lowlevel
                     }else{
-                        prams[formName] = this.detail[formName]
+                        prams[formName] = this.editdata[formName]
                     }
 					this.$ajax.updateSite({id:this.detail.id,parameters:prams}, res => {
 						this.$message({
@@ -676,6 +719,7 @@ export default {
 		},
 		showchange(){
             this.showedit =true
+            this.tipinput = ''
             this.GDMarker.setDraggable(true)
             this.GDPolyEditor.open();
         },
@@ -810,6 +854,6 @@ export default {
     }
     .mapbox{
         top: 350px;
-        height: 450px;
+        height: 500px;
     }
 </style>

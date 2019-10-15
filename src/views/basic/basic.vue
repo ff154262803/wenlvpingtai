@@ -4,12 +4,21 @@
         <el-card class="box-card" style="width: 300px">
             <div slot="header" class="clearfix">
                 <span>服务器状态</span>
-                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
             </div>
             <div class="item">
                 {{status.status*1 ? '正常' : '维护中'}}
                 <el-button style="float: right; padding: 3px 0" type="text" @click="changeClick">更改</el-button>
-                <!--<el-button class="changeState">更改</el-button>-->
+            </div>
+        </el-card>
+        <!--服务器状态-->
+        <el-card class="box-card" style="width: 300px">
+            <div slot="header" class="clearfix">
+                <span>支付方式</span>
+            </div>
+            <div class="item">
+                <el-checkbox label="微信" v-model="paytype.wechat" @change="pattypechange"></el-checkbox>
+                <el-checkbox label="支付宝" v-model="paytype.alipay" @change="pattypechange"></el-checkbox>
+                <el-checkbox label="银联" v-model="paytype.visal" @change="pattypechange"></el-checkbox>
             </div>
         </el-card>
         <!--服务器状态修改-->
@@ -50,21 +59,18 @@
                 <el-col :span="12">最低版本号：{{IOS.minVersion}}</el-col>
             </el-row>
             <el-row>
-                <!--<el-col :span="12">更新说明：{{Android.content}}</el-col>-->
                 <el-col :span="12" label="文档">更新说明：
-                    <!--<textarea class="text" v-model="Android.content" disabled></textarea>-->
                     <el-input autosize disabled class="textarea1" type="textarea" :autosize="{ minRows: 3}"
                               v-model="Android.content"></el-input>
                 </el-col>
                 <el-col :span="12">更新说明：
-                    <!--<textarea class="text" v-model="IOS.content" disabled></textarea>-->
                     <el-input autosize disabled class="textarea1" type="textarea" :autosize="{ minRows: 3}"
                               v-model="IOS.content"></el-input>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="12">下载地址：<a :href="Android.address" target="_blank">{{Android.address}}</a></el-col>
-                <el-col :span="12">下载地址：<a :href="IOS.address" target="_blank">{{IOS.address}}</a></el-col>
+                <el-col :span="12">下载地址：<a :href="Android.address" target="_blank" class="href">{{Android.address}}</a></el-col>
+                <el-col :span="12">下载地址：<a :href="IOS.address" target="_blank" class="href">{{IOS.address}}</a></el-col>
             </el-row>
         </el-card>
         <!--上传新版本-->
@@ -90,11 +96,11 @@
                 </el-form-item>
                 <el-form-item label="下载地址" label-width="120px" prop="address">
                     <el-input v-model="newApp.address"></el-input>
-                    <!--<el-button style="margin-left: 50px">上传</el-button>-->
                     <el-upload
                         class="upload-demo"
                         :action="$store.state.ip+'/resources/uploadResource'"
-                        accept=".zip,.apk"
+                        :data="uploaddata"
+                        accept="application/vnd.android.package-archive"
                         :on-success="handleSuccess"
                         :on-error="handleError"
                         :before-upload="beforeUpload"
@@ -119,12 +125,13 @@
             let rules = {
                 num(rule, val, callback) {
                     val * 1 ? callback() : callback(new Error('请输入数字'));
-                },
-                string(rule, val, callback) {
-                    val * 1 ? callback(new Error('请输入字符串')) : callback();
                 }
             }
             return {
+                uploaddata:{
+                    type:'',
+                    uKey:JSON.parse(sessionStorage.getItem('user')).uKey
+                },
                 status: {//服务器状态
                     show: false,
                     status: '1',
@@ -141,12 +148,13 @@
                     content: '',
                     address: '',
                 },
+                paytype:{},
                 rules: {
-                    versionName: [{trigger: 'change', validator: rules.string}],
-                    version_code: [{trigger: 'change', validator: rules.num}],
-                    min_version: [{trigger: 'change', validator: rules.num}],
-                    content: [{trigger: 'change', validator: rules.string}],
-                    address: [{trigger: 'change', validator: rules.string}],
+                    versionName: [{required: true, message: '请输入版本名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                    version_code: [{trigger: 'blur', validator: rules.num}],
+                    min_version: [{trigger: 'blur', validator: rules.num}],
+                    content: [{required: true, message: '请输入更新说明', trigger: 'blur'},{ max: 100, message: '最多100个字符', trigger: 'blur' }],
+                    address: [{required: true, message: '请输入下载地址', trigger: 'blur'},{ max: 100, message: '最多100个字符', trigger: 'blur' }],
                 },
             }
         },
@@ -155,11 +163,29 @@
             this.getServerStatus();
             //版本管理
             this.getAppVersion();
+             //服务器状态
+            this.getPaytype();
         },
         methods: {
+            pattypechange(){
+                var str = ''
+                this.paytype.wechat?str+='1':str+='0'
+                this.paytype.alipay?str+='1':str+='0'
+                this.paytype.visal?str+='1':str+='0'
+                this.$ajax.setPayType({data:str}, res => {
+                    this.$message.success('修改成功');
+                })
+            },
+            getPaytype(){
+                this.$ajax.getPayType({}, res => {
+                    this.paytype.wechat = res.data[0]=='1'?true:false
+                    this.paytype.alipay = res.data[1]=='1'?true:false
+                    this.paytype.visal = res.data[2]=='1'?true:false
+                })
+            },
             //上传成功
             handleSuccess(file,fileList){
-                this.newApp.address = file.url;
+                this.newApp.address = file.shortUrl;
                 this.$message.success('上传成功');
             },
             //上传失败
@@ -168,10 +194,12 @@
             },
             //上传之前的格式检验
             beforeUpload(file){
-                if(!~file.type.indexOf('apk')){
-                    this.$message.error('请上传正确格式的文件')
-                    return false;
+                this.newApp.size = file.size
+                const isLt50M = file.size / 1024 / 1024 < 50;
+                if (!isLt50M) {
+                    this.$message.error('上传文件大小不能超过 50MB!');
                 }
+                return isLt50M;
             },
             //获取服务器状态
             getServerStatus() {
@@ -241,8 +269,8 @@
     .el-input {
         width: $w;
     }
-
     .el-row {
+        word-break:break-all;
         margin-bottom: 0px; /*去除el-row之间的间距*/
         border: 1px solid #e6e6e6;
         margin: -1px -1px -1px -1px; /*解决相邻边框重叠问题就靠这行代码*/
