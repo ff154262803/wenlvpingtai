@@ -22,6 +22,10 @@ export default {
     Editor
   },
   props: {
+    baseUrl: {
+      type: String,
+      default: 'https://qlv.test.zkshiwei.com/web/manager'
+    },
     value: {
       type: String,
       default: ''
@@ -33,17 +37,16 @@ export default {
     toolbar: {
         type: [String, Array],
         default: 'code | undo redo removeformat bold italic underline alignleft aligncenter alignright alignjustify styleselect fontsizeselect subscript superscript insert | image  imageoptions| link unlink|forecolor backcolor'
-
     }
   },
   data() {
     return {
       //初始化配置
       init: {
-        language_url: '../../../static/tiny/zh_CN.js',
+        language_url: `${this.baseUrl}/static/tiny/zh_CN.js`,
         language: 'zh_CN',
-        skin_url: '../../../static/tiny/skins/ui/oxide-dark',
-        content_css: `../../../static/tiny/skins/content/default/content.css`,
+        skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`,
+        content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`,
         height: 500,
         plugins: this.plugins,
         toolbar: this.toolbar,
@@ -57,7 +60,7 @@ export default {
             let config = {
                 headers:{'Content-Type':'multipart/form-data'}
             }; 
-            axios.post('http://39.107.112.17:5000/api/resources/uploadResource',param,config)
+            axios.post(this.$store.state.ip+'/resources/uploadResource',param,config)
             .then(response=>{
                 success(response.data.url)
             })

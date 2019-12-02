@@ -27,7 +27,7 @@
         <div class="el-dialog__wrapper" v-show="Addshow">
 			<div class="el-dialog">
 				<div class="el-dialog__header">
-					<span class="el-dialog__title">修改</span>
+					<span class="el-dialog__title">{{newdata.id?'修改链接':'添加链接'}}</span>
 					<button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i class="el-dialog__close el-icon el-icon-close"></i></button>
 				</div>
 				<div class="el-dialog__body">
@@ -68,7 +68,7 @@ export default {
 		Addshow:false,
 		newdata:{},
 		rules: {
-			link: [{required: true, message: '请输入地址名', trigger: 'blur'}, { max: 50, message: '最多50个字符', trigger: 'blur' }],
+			link: [{required: true, message: '请输入地址名', trigger: 'blur'}, { max: 100, message: '最多100个字符', trigger: 'blur' }],
 			type: [{required: true, message: '请选择类型', trigger: 'change'}],
         }
 	}
@@ -81,7 +81,7 @@ export default {
 		beginshow(data){
             this.Addshow = true
             if(data){
-                this.newdata = data
+				this.newdata = {...data}
             }else{
                 this.newdata = {}
             }

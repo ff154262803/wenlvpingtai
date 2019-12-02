@@ -13,13 +13,13 @@
             <el-table-column prop="caption" label="商品名"></el-table-column>
             <el-table-column label="类型" prop="typeName"></el-table-column>
             <el-table-column label="状态">
-            	<template slot-scope="scope">{{ scope.row.autosold==0?'下架':'上架' }}</template>
+            	<template slot-scope="scope">{{ scope.row.soldstatus==0?'下架':'上架' }}</template>
             </el-table-column>
             <el-table-column label="剩余/总数量">
             	<template slot-scope="scope">{{ scope.row.currentnum }}/{{ scope.row.num }}</template>
             </el-table-column>
-            <el-table-column prop="starttime" label="上架时间"></el-table-column>
-            <el-table-column prop="endtime" label="下架时间"></el-table-column>
+            <el-table-column prop="starttime" label="开始时间"></el-table-column>
+            <el-table-column prop="endtime" label="结束时间"></el-table-column>
             <el-table-column label="操作" width="155" >
 				<template slot-scope="scope">
                     <el-button type="text" size="small" @click="detail(scope.row)">编辑详情</el-button>
@@ -49,7 +49,7 @@
         <div class="el-dialog__wrapper" v-show="Addshow">
 			<div class="el-dialog el-dialogadd">
 				<div class="el-dialog__header">
-					<span class="el-dialog__title">修改商品名</span>
+					<span class="el-dialog__title">{{newdata.id?"修改商品":'添加商品'}}</span>
 					<button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i class="el-dialog__close el-icon el-icon-close"></i></button>
 				</div>
 				<div class="el-dialog__body">
@@ -57,7 +57,7 @@
 						<el-form-item label="商品名"  prop="caption">
 							<el-input v-model="newdata.caption"></el-input>
 						</el-form-item>
-						<el-form-item label="分类" prop="type">
+						<el-form-item label="类型" prop="type">
 							<el-select v-model="newdata.type">
 								<el-option  :label="n.typeName" :value="n.id" :key="n.id" v-for="n in typelist"></el-option>
 							</el-select>
@@ -74,12 +74,13 @@
 						<el-form-item label="商品数量"  prop="num">
 							<el-input v-model="newdata.num"></el-input>
 						</el-form-item>
-						<el-form-item label="图片"  prop="picurl">
+						<el-form-item label="图片">
 							<el-input v-model="newdata.picurl" style="width: 200px;display:none"></el-input>
 							<el-button size="small" type="primary" @click="uploading('uppic')">点击上传</el-button>
 							<el-upload class="upload-demo" style="display:none"
 								:data="uploaddata"
 								:action="$store.state.ip+'/resources/uploadResource'"
+								accept="image/jpeg,image/jpg,image/png"
 								:on-progress="handleLoading"
 								:on-success='onsuccsesspic'
 								:before-upload="beforeUploadpic"  
@@ -88,7 +89,7 @@
 								<el-button size="small" type="primary" id="uppic">点击上传</el-button>
 							</el-upload>
 							<div style="margin-top:20px">
-								<img :src="$store.state.resip+newdata.picurl" alt="" class="pic" style="width:200px;height:200px">
+								<img :src="$store.state.resip+newdata.picurl" alt="" class="pic" style="width:200px;height:200px" v-if="newdata.picurl">
 							</div>
 						</el-form-item>
 						<el-form-item label="上架" prop="autosold">
@@ -97,10 +98,10 @@
 								<el-radio label="1" checked>手动</el-radio>
 							</el-radio-group>
 						</el-form-item>
-						<el-form-item label="上架时间"  prop="starttime" v-show="newdata.autosold==0">
+						<el-form-item label="开始时间"  prop="starttime" v-show="newdata.autosold==0">
 							<el-date-picker v-model="newdata.starttime" type="datetime" placeholder="选择日期时间"></el-date-picker>
 						</el-form-item>
-						<el-form-item label="下架时间"  prop="endtime"  v-show="newdata.autosold==0">
+						<el-form-item label="结束时间"  prop="endtime"  v-show="newdata.autosold==0">
 							<el-date-picker v-model="newdata.endtime" type="datetime" placeholder="选择日期时间"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="上架状态" prop="soldstatus"  v-show="newdata.autosold==1">
@@ -147,6 +148,27 @@ export default {
        TinymceEditor
     },
 	data() {
+		var checkPrice = (rule, value, callback) => {
+			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
+				callback(new Error('请输入最大1000且最多两位小数的数字'));
+			}else{
+				callback();
+			}
+		};
+		var checkNum = (rule, value, callback) => {
+			if (!/^[+]{0,1}(\d+)$/.test(value)||value>1000) {
+				callback(new Error('请输入最大1000的数字'));
+			}else{
+				callback();
+			}
+		};
+		var checkScore =(rule, value, callback) => {
+			if (!/^[+]{0,1}(\d+)$/.test(value)||value>1000) {
+				callback(new Error('请输入最大1000的数字'));
+			}else{
+				callback();
+			}
+		};
         return {
 			h5:{
 				content:''
@@ -173,6 +195,12 @@ export default {
 				soldstatus:'0'
 			},
             rules: {
+				caption: [{ required: true, message: '标题不能为空'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+				specifyproduct: [{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+                type: [{ required: true,message: '类型不能为空' }],
+				num: [{ required: true,validator: checkNum, trigger: 'blur' }],
+                price: [{ required: true,validator: checkPrice, trigger: 'blur' }],
+                scores: [{ required: true,validator: checkScore, trigger: 'blur' }],
             },
             typelist:[]
         }
@@ -216,15 +244,19 @@ export default {
 			this.fullscreenLoading = true;
 		},
 		beforeUploadpic(file){
-			const isLt50M = file.size / 1024 / 1024 < 50;
-			if (!isLt50M) {
-				this.$message.error('上传文件大小不能超过 50MB!');
+			const isLt5M = file.size / 1024 / 1024 < 5;
+			const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
+			if (!accept){
+				this.$message.error('上传文件只能是图片格式!');
 			}
-			return isLt50M;
+			if (!isLt5M) {
+				this.$message.error('上传文件大小不能超过 5MB!');
+			}
+			return accept&&isLt5M;
 		},
 		onsuccsesspic(response, file, fileList){
 			if(response.resb==200){
-				this.newdata.picurl = response.shortUrl
+				this.$set(this.newdata, 'picurl',response.shortUrl);
 				this.fullscreenLoading = false;
 			}
 		},
@@ -264,7 +296,7 @@ export default {
 			this.Addshow = true
 			this.Detailshow = false
 			if(data){
-				this.newdata = data
+				this.newdata = {...data}
 			}else{
 				this.newdata={
 					linkh5url:'',
@@ -289,11 +321,30 @@ export default {
 		add(formName){
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					if(this.newdata.starttime){
-						this.newdata.starttime = this.timeform('yyyy-MM-dd hh:mm:ss',this.newdata.starttime)
+					if(!this.newdata.picurl){
+						this.$message.error('图片为传填项!');
+						return
 					}
-					if(this.newdata.endtime){
-						this.newdata.endtime = this.timeform('yyyy-MM-dd hh:mm:ss',this.newdata.endtime)
+					if(this.newdata.autosold==0){//自动
+						let time ={}
+						if(this.newdata.starttime){
+							time.starttime=this.newdata.starttime
+							this.newdata.starttime = this.timeform('yyyy-MM-dd hh:mm:ss',this.newdata.starttime)
+						}else{
+							this.$message.error('开始时间为必填项!');
+							return
+						}
+						if(this.newdata.endtime){
+							time.endtime=this.newdata.endtime
+							this.newdata.endtime = this.timeform('yyyy-MM-dd hh:mm:ss',this.newdata.endtime)
+						}else{
+							this.$message.error('结束时间为必填项!');
+							return
+						}
+						if(new Date(time.starttime).getTime()>new Date(time.endtime).getTime()){
+							this.$message.error('开始时间必须早于结束时间!');
+							return
+						}
 					}
 					if(this.newdata.id){
 						this.$ajax.updateMallGoods({id: this.newdata.id,parameters: {

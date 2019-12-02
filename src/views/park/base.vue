@@ -4,8 +4,7 @@
             <div class="menu">
                 <el-row class="p">
                     <el-col :span="16"><div>基本信息</div></el-col>
-                    <el-col :span="8"><div class="btnright">
-                        <el-button type="info" plain @click="del">删除</el-button>
+                    <el-col :span="8"><div class="btnright"> 
                         <el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button>
                         <el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button></div></el-col>
                 </el-row>
@@ -13,7 +12,7 @@
                     <el-col :span="24"><div><span>ID：</span>{{detail.parkid}}</div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>景点名：</span>{{detail.caption}}</div></el-col>
+                    <el-col :span="22"><div><span>园区名：</span>{{detail.caption}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('caption')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
@@ -25,7 +24,7 @@
                     <el-col :span="2"><div class="icon" @click="edit('city')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>景点门票价：</span>{{detail.price}}</div></el-col>
+                    <el-col :span="22"><div><span>园区门票价：</span>{{detail.price}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('price')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row><el-row class="list">
                     <el-col :span="22"><div><span>开放时间：</span>{{detail.opentime}}</div></el-col>
@@ -94,10 +93,10 @@
                 </el-row>
             </div>
         </div>
-        <!--修改景点名-->
-        <el-dialog title="修改景点名" :visible.sync="captionShow" class="demo-box" width="590px">
+        <!--修改园区名-->
+        <el-dialog title="修改园区名" :visible.sync="captionShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="caption" label-width="100px">
-                <el-form-item label="景点名"  prop="caption">
+                <el-form-item label="园区名"  prop="caption">
                     <el-input v-model="editdata.caption"></el-input>
                 </el-form-item>
             </el-form>
@@ -107,10 +106,10 @@
             </div>
         </el-dialog>
         <!--修改分类-->
-        <el-dialog title="修改分类" :visible.sync="typeShow" class="demo-box" width="590px">
+        <el-dialog title="修改分类" :visible.sync="typeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="type" label-width="100px">
                 <el-form-item label="分类" prop="type">
-					<el-select v-model="editdata.type"  >
+					<el-select v-model="editdata.type" >
 						<el-option v-for="item in list" :label="item.typeName" :value="item.id" :key="item.id" ></el-option>
 					</el-select>
                 </el-form-item>
@@ -121,7 +120,7 @@
             </div>
         </el-dialog>
         <!--修改省市-->
-        <el-dialog title="修改省市" :visible.sync="cityShow" class="demo-box" width="590px">
+        <el-dialog title="修改省市" :visible.sync="cityShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="city" label-width="100px">
                 <el-form-item label="省市" prop="city">
 					<el-select v-model="editdata.province" @change="selectcity">
@@ -138,8 +137,8 @@
                 <el-button type="primary" @click="add('city')">确 定</el-button>
             </div>
         </el-dialog>
-        <!--修改景点门票价-->
-        <el-dialog title="修改景点门票价" :visible.sync="priceShow" class="demo-box" width="590px">
+        <!--修改园区门票价-->
+        <el-dialog title="修改园区门票价" :visible.sync="priceShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="price" label-width="100px">
                 <el-form-item label="门票价格" prop="price">
                     <el-input v-model="editdata.price"></el-input>
@@ -151,7 +150,7 @@
             </div>
         </el-dialog>
         <!--修改开放时间-->
-        <el-dialog title="修改开放时间" :visible.sync="opentimeShow" class="demo-box" width="590px">
+        <el-dialog title="修改开放时间" :visible.sync="opentimeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="opentime" label-width="100px">
 				<el-form-item label="开放时间" prop="opentime">
                     <el-input v-model="editdata.opentime"></el-input>
@@ -163,7 +162,7 @@
             </div>
         </el-dialog>
         <!--修改咨询电话-->
-        <el-dialog title="修改咨询电话" :visible.sync="packnumberShow" class="demo-box" width="590px">
+        <el-dialog title="修改咨询电话" :visible.sync="packnumberShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="packnumber" label-width="100px">
 				<el-form-item label="咨询电话" prop="packnumber">
                     <el-input v-model="editdata.packnumber"></el-input>
@@ -175,7 +174,7 @@
             </div>
         </el-dialog>
         <!--园区新增-->
-        <el-dialog title="修改AR收费" :visible.sync="arpriceShow" class="demo-box" width="590px">
+        <el-dialog title="修改AR收费" :visible.sync="arpriceShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="arprice" label-width="100px">
                 <el-form-item label="AR收费" prop="arprice">
                     <el-input v-model="editdata.arprice"></el-input>
@@ -187,7 +186,7 @@
             </div>
         </el-dialog>
         <!--园区新增-->
-        <el-dialog title="修改AR折扣" :visible.sync="ardiscountShow" class="demo-box" width="590px">
+        <el-dialog title="修改AR折扣" :visible.sync="ardiscountShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="ardiscount" label-width="100px">
                 <el-form-item label="AR折扣" prop="ardiscount">
                     <el-input v-model="editdata.ardiscount"></el-input>
@@ -199,7 +198,7 @@
             </div>
         </el-dialog>
         <!--园区新增-->
-        <el-dialog title="修改折扣期限" :visible.sync="discountperiodShow" class="demo-box" width="590px">
+        <el-dialog title="修改折扣期限" :visible.sync="discountperiodShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" ref="discountperiod" label-width="100px">
                 <el-form-item label="AR折扣" prop="discountperiod">
                      <el-date-picker
@@ -225,15 +224,15 @@ import {areaArr} from '../../api/city.js'
 export default {
 	data() {
 		var checkPrice = (rule, value, callback) => {
-			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>100) {
-				callback(new Error('请输入最大100且最多两位小数的数字'));
+			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
+				callback(new Error('请输入最大1000且最多两位小数的数字'));
 			}else{
 				callback();
 			}
           };
           var checkARPrice = (rule, value, callback) => {
-			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>100) {
-				callback(new Error('请输入最大100且最多两位小数的数字'));
+			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
+				callback(new Error('请输入最大1000且最多两位小数的数字'));
 			}else{
 				callback();
 			}
@@ -271,7 +270,7 @@ export default {
             area:[],
             areacity:[],
             detailrules:{
-                caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                caption: [{required: true, message: '请输入园区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 type: [{required: true, message: '请选择园区类型', trigger: 'change'}],
                 city: [{required: true, message: '请选择省市', trigger: 'change'}],
                 price: [{ validator: checkPrice, trigger: 'blur' }],
@@ -402,7 +401,7 @@ export default {
             }  
         },
         deling(){
-             this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:''}}, res => {
+             this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:'',arsize:0}}, res => {
                 this.$message({
                     type: 'success',
                     message: '删除成功!'
@@ -414,18 +413,22 @@ export default {
             document.getElementById('upzip').click()
         },
         beforeUpload(file){
-            const isLt50M = file.size / 1024 / 1024 < 50;
-            if (!isLt50M) {
-                this.$message.error('上传文件大小不能超过 50MB!');
-            }
-            return isLt50M;
+            const isLt50M = file.size / 1024 / 1024 < 500;
+            const accept =  file.type.indexOf('zip')>-1
+			if (!accept) {
+				this.$message.error('上传文件只能是zip格式!');
+			}
+			if (!isLt50M) {
+				this.$message.error('上传文件大小不能超过 500MB!');
+			}
+			return accept && isLt50M;
         },
         handleLoading(){
            this.fullscreenLoading = true;
         },
         onsuccsess(response, file, fileList){
             if(response.resb==200){
-                this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:response.url}}, res => {
+                this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:response.url,arsize:file.size}}, res => {
                     this.$message({
                         type: 'success',
                         message: '修改成功!'
@@ -434,6 +437,7 @@ export default {
                     this.fullscreenLoading = false;
                 })
             }else{
+                this.fullscreenLoading = false;
                 this.$message({
                     type: 'error',
                     message: '上传失败!'
@@ -559,11 +563,11 @@ export default {
 			this[formName+'Show'] = false
         },
         selectcity(){
-			this.detail.city=null
+			this.editdata.city=null
 			var dt = this.area.filter(n => {
-				if (n.name == this.detail.province) return true;
+				if (n.name == this.editdata.province) return true;
 			})
-			dt.length==0?this.areacity=[]:this.areacity=dt[0].child
+            dt.length==0?this.areacity=[]:this.areacity=dt[0].child
         },
         enableState(val){
             this.$ajax.setParkEnableState({idlst:[this.parkid],isenable:val}, res => {

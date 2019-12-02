@@ -33,7 +33,6 @@
         <!--分页-->
         <el-col :span="24" class="toolbar">
             <div class="allControl">
-                <!--<el-checkbox v-model="checked"></el-checkbox>-->
                 <el-button size="small" @click="dealState(multipleSelection,'1')">启用</el-button>
                 <el-button size="small" @click="dealState(multipleSelection,'0')">禁用</el-button>
             </div>
@@ -48,16 +47,16 @@
         </el-col>
 
         <!--添加用户-->
-        <el-dialog :title="addUser.state == 'add'? '添加用户':'修改用户'" :visible.sync="addUser.show" class="demo-box">
+        <el-dialog :title="addUser.state == 'add'? '添加用户':'修改用户'" :visible.sync="addUser.show" class="demo-box" :close-on-click-modal = false>
             <el-form :model="addUser" :rules="rules" ref="addUser">
                 <el-form-item label="姓名：" label-width="120px" prop="managename">
-                    <el-input v-model="addUser.managename"></el-input>
+                    <el-input v-model="addUser.managename" placeholder="请输入姓名"></el-input>
                 </el-form-item>
                 <el-form-item label="账号：" label-width="120px" prop="account">
-                    <el-input v-model="addUser.account"></el-input>
+                    <el-input v-model="addUser.account" placeholder="请输入账号"></el-input>
                 </el-form-item>
                 <el-form-item label="密码：" label-width="120px" prop="password">
-                    <el-input v-model="addUser.password"></el-input>
+                    <el-input v-model="addUser.password" placeholder="请输入密码"></el-input>
                 </el-form-item>
                 <el-form-item label="状态：" label-width="120px" prop="isenable">
                     <el-radio-group v-model="addUser.isenable">
@@ -80,23 +79,20 @@
         name: "manage",
         data() {
             var pass = (rule, val, callback) => {
-                if (val == '') {
-                    callback(new Error('请输入密码'));
-                } else if (val.length < 6) {
-                    callback(new Error('密码长度应大于6位'));
+                if (!(/^(?![a-zA-z]+$)(?!\d+$)(?![!\x21-\x2f\x3a-\x40\x5b-\x60\x7B-\x7F]+$)[a-zA-Z\d!(\x21-\x2f\x3a-\x40\x5b-\x60\x7B-\x7F)]{6,20}$/).test(val)) {
+                    callback(new Error('6到20位必选含有数字、英文、符号中的两种'));
                 } else {
                     callback();
                 }
             }
             return {
                 condition: '',
-                // checked: true,
                 total: 0,
                 dataList: [],
                 dataLoading: false,
                 pageObj: {
                     page: 1,
-                    size: 15,
+                    size: 10,
                 },
                 addUser: {//添加账号的表单
                     state: 'add',
@@ -104,13 +100,13 @@
                     managename: '',
                     account: '',
                     password: '',
-                    isenable: '',
+                    isenable: '1',
                 },
                 multipleSelection: [],//选中内容
                 rules: {//验证规则
-                    managename: [{required: true, message: '请输入姓名', trigger: 'change'}],
-                    account: [{required: true, message: '请输入账号', trigger: 'change'}],
-                    password: [{validator: pass, trigger: 'change'}],
+                    managename: [{required: true, message: '请输入姓名', trigger: 'change'},{ max: 10, message: '最多10个字符', trigger: 'blur' }],
+                    account: [{required: true, message: '请输入账号', trigger: 'change'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                    password: [{required: true, validator: pass, trigger: 'change'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                     isenable: [{required: true, message: '请选择状态', trigger: 'change'}],
                 }
             }
@@ -144,7 +140,7 @@
                 this.addUser.managename = '';
                 this.addUser.account = '';
                 this.addUser.password = '';
-                this.addUser.isenable = '';
+                this.addUser.isenable = '1';
             },
             //弹窗确定按钮
             addUserBtn(formName) {
@@ -156,7 +152,6 @@
                                 this.addUser.show = false;
                                 this.queryManageUserList();
                             })
-
                         } else if (this.addUser.state == 'change') {//修改用户
                             this.$ajax.updateManageUser(this.addUser, res => {
                                 this.$message.success('修改成功');

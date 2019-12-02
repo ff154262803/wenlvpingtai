@@ -15,8 +15,8 @@
             <el-table-column label="状态">
             	<template slot-scope="scope">{{ scope.row.isenable==1?'已启用':'已禁用' }}</template>
             </el-table-column>
-            <el-table-column prop="starttime" label="上架时间"></el-table-column>
-            <el-table-column prop="endtime" label="下架时间"></el-table-column>
+            <el-table-column prop="starttime" label="开始时间"></el-table-column>
+            <el-table-column prop="endtime" label="结束时间"></el-table-column>
             <el-table-column label="操作" width="155" >
 				<template slot-scope="scope">
                     <el-button type="text" size="small" @click="beginshow(scope.row)">修改</el-button>
@@ -44,7 +44,7 @@
         <div class="el-dialog__wrapper" v-show="Addshow">
 			<div class="el-dialog el-dialogadd">
 				<div class="el-dialog__header">
-					<span class="el-dialog__title">修改活动标题</span>
+					<span class="el-dialog__title">{{newdata.id?'修改活动':'添加活动'}}</span>
 					<button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i class="el-dialog__close el-icon el-icon-close"></i></button>
 				</div>
 				<div class="el-dialog__body">
@@ -61,6 +61,7 @@
 							<el-input v-model="newdata.picurl" style="width: 200px;display:none"></el-input>
 							<el-button size="small" type="primary" @click="uploading('uppic')">点击上传</el-button>
 							<el-upload class="upload-demo" style="display:none"
+								accept="image/jpeg,image/jpg,image/png"
 								:data="uploaddata"
 								:action="$store.state.ip+'/resources/uploadResource'"
 								:on-progress="handleLoading"
@@ -71,16 +72,16 @@
 								<el-button size="small" type="primary" id="uppic">点击上传</el-button>
 							</el-upload>
 							<div style="margin-top:20px">
-								<img :src="$store.state.resip+newdata.picurl" alt="" class="pic" style="width:200px;height:200px">
+								<img :src="$store.state.resip+newdata.picurl" alt="" class="pic" style="width:200px;height:200px" v-if="newdata.picurl">
 							</div>
 						</el-form-item>
 						<el-form-item label="活动地址"  prop="linkh5url">
 							<el-input v-model="newdata.linkh5url"></el-input>
 						</el-form-item>
-						<el-form-item label="上架时间"  prop="starttime">
+						<el-form-item label="开始时间"  prop="starttime">
 							<el-date-picker v-model="newdata.starttime" type="date" placeholder="选择日期时间"></el-date-picker>
 						</el-form-item>
-						<el-form-item label="下架时间"  prop="endtime">
+						<el-form-item label="结束时间"  prop="endtime">
 							<el-date-picker v-model="newdata.endtime" type="date" placeholder="选择日期时间"></el-date-picker>
 						</el-form-item>
 					</el-form>
@@ -116,6 +117,12 @@ export default {
             Detailshow:false,
             newdata:{},
             rules: {
+				caption: [{ required: true, message: '标题不能为空'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+				linkh5url: [{ required: true, message: '活动地址不能为空'},{ max: 20, message: '最多100个字符', trigger: 'blur' }],
+                type: [{ required: true,message: '类型不能为空' }],
+                picurl:[{ required: true,message: '必填项' }],
+                starttime: [{ required: true, message: '开始时间不能为空'}],
+                endtime: [{ required: true, message: '结束时间不能为空'}],
             },
             typelist:[]
         }
@@ -159,15 +166,19 @@ export default {
 			this.fullscreenLoading = true;
 		},
 		beforeUploadpic(file){
-			const isLt50M = file.size / 1024 / 1024 < 50;
-			if (!isLt50M) {
-				this.$message.error('上传文件大小不能超过 50MB!');
+			const isLt5M = file.size / 1024 / 1024 < 5;
+			const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
+			if (!accept){
+				this.$message.error('上传文件只能是图片格式!');
 			}
-			return isLt50M;
+			if (!isLt5M) {
+				this.$message.error('上传文件大小不能超过 5MB!');
+			}
+			return accept && isLt5M;
 		},
 		onsuccsesspic(response, file, fileList){
 			if(response.resb==200){
-				this.newdata.picurl = response.shortUrl
+				this.$set(this.newdata, 'picurl',response.shortUrl);
 				this.fullscreenLoading = false;
 			}
 		},
@@ -181,7 +192,7 @@ export default {
 			this.Addshow = true
 			this.Detailshow = false
 			if(data){
-				this.newdata = data
+				this.newdata = {...data}
 			}else{
 				this.newdata={}
 			}
@@ -254,7 +265,7 @@ export default {
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					this.$ajax.deleteMallGoods({idlst:idlst}, res => {
+					this.$ajax.deleteMallActivity({idlst:idlst}, res => {
 						this.$message({
 							type: 'success',
 							message: '删除成功!'

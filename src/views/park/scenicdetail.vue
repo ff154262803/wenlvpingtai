@@ -4,7 +4,7 @@
             <div class="menu">
                 <el-row class="p">
                     <el-col :span="16"><div>基本信息</div></el-col>
-                    <el-col :span="8"><div class="btnright"><el-button type="info" plain @click="del">删除</el-button><el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button><el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button></div></el-col>
+                    <el-col :span="8"><div class="btnright"><el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button><el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button></div></el-col>
                 </el-row>
                 <el-row class="list">
                     <el-col :span="24"><div><span>ID：</span>{{detail.id}}</div></el-col>
@@ -12,6 +12,10 @@
                 <el-row class="list">
                     <el-col :span="22"><div><span>景点名：</span>{{detail.caption}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('caption')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
+                </el-row>
+                <el-row class="list">
+                    <el-col :span="22"><div><span>是否有全景：</span>{{detail.ispanorama =='1'?'是':'否'}}</div></el-col>
+                    <el-col :span="2"><div class="icon" @click="edit('ispanorama')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
                     <el-col :span="22"><div><span>分类：</span>{{detail.typeName}}</div></el-col>
@@ -104,6 +108,7 @@
                         :data="uploaddata"
 				        :action="$store.state.ip+'/resources/uploadResource'"
                         :on-progress="handleLoading"
+                        accept="image/jpeg,image/jpg,image/png"
                         :on-success='onsuccsesspic'
                         :before-upload="beforeUploadpic"  
                         :on-error='onerror'
@@ -165,17 +170,17 @@
                     </div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>详情类型：</span>{{detail.detailstypeName}}</div></el-col>
+                    <el-col :span="22"><div><span>详情类型：</span>{{detail.detailstypeName?detail.detailstypeName:'无'}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('detailstype')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
-                <el-row class="list">
+                <el-row class="list" v-show="detail.detailstype">
                     <el-col :span="22"><div><span>详情链接：</span>{{detail.linkh5url}}</div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('linkh5url')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
             </div>
         </div>
         <!--修改景点名-->
-        <el-dialog title="修改景点名" :visible.sync="captionShow" class="demo-box" width="590px">
+        <el-dialog title="修改景点名" :visible.sync="captionShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="caption" label-width="100px">
                 <el-form-item label="景点名"  prop="caption">
                     <el-input v-model="editdata.caption"></el-input>
@@ -187,7 +192,7 @@
             </div>
         </el-dialog>
         <!--修改分类-->
-        <el-dialog title="修改分类" :visible.sync="typeShow" class="demo-box" width="590px">
+        <el-dialog title="修改分类" :visible.sync="typeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="type" label-width="100px">
                 <el-form-item label="分类" prop="type">
 					<el-select v-model="editdata.type"  >
@@ -201,7 +206,7 @@
             </div>
         </el-dialog>
         <!--修改等级-->
-        <el-dialog title="修改等级" :visible.sync="levelShow" class="demo-box" width="590px">
+        <el-dialog title="修改等级" :visible.sync="levelShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="level" label-width="100px">
                 <el-form-item label="最低等级" prop="lowlevel">
 					<el-select v-model="editdata.lowlevel">
@@ -238,7 +243,7 @@
             </div>
         </el-dialog>
          <!--修改标签-->
-        <el-dialog title="修改标签" :visible.sync="tagShow" class="demo-box" width="590px">
+        <el-dialog title="修改标签" :visible.sync="tagShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="tag" label-width="100px">
                 <el-form-item label="标签名"  prop="tag">
                     <el-input v-model="editdata.tag"></el-input>
@@ -250,7 +255,7 @@
             </div>
         </el-dialog>
          <!--修改开放时间-->
-        <el-dialog title="修改开放时间" :visible.sync="opentimeShow" class="demo-box" width="590px">
+        <el-dialog title="修改开放时间" :visible.sync="opentimeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="opentime" label-width="100px">
 				<el-form-item label="开放时间" prop="opentime">
                     <el-input v-model="editdata.opentime"></el-input>
@@ -262,7 +267,7 @@
             </div>
         </el-dialog>
         <!--修改咨询电话-->
-        <el-dialog title="修改咨询电话" :visible.sync="phonenumberShow" class="demo-box" width="590px">
+        <el-dialog title="修改咨询电话" :visible.sync="phonenumberShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="phonenumber" label-width="100px">
 				<el-form-item label="咨询电话" prop="phonenumber">
                     <el-input v-model="editdata.phonenumber"></el-input>
@@ -274,9 +279,9 @@
             </div>
         </el-dialog>
          <!--修改标签-->
-        <el-dialog title="修改概述" :visible.sync="remarkShow" class="demo-box" width="590px">
+        <el-dialog title="修改概述" :visible.sync="remarkShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="remark" label-width="100px">
-                <el-form-item label="标签名"  prop="remark">
+                <el-form-item label="概述"  prop="remark">
                     <el-input v-model="editdata.remark"></el-input>
                 </el-form-item>
             </el-form>
@@ -286,9 +291,9 @@
             </div>
         </el-dialog>
         <!--修改是否AR-->
-        <el-dialog title="修改是否AR" :visible.sync="isarShow" class="demo-box" width="590px">
+        <el-dialog title="修改是否AR" :visible.sync="isarShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="isar" label-width="100px">
-                <el-form-item label="标签名"  prop="isar">
+                <el-form-item label="是否AR"  prop="isar">
                     <el-radio v-model="editdata.isar" label="0">否</el-radio>
                     <el-radio v-model="editdata.isar" label="1">是</el-radio>
                 </el-form-item>
@@ -298,8 +303,21 @@
                 <el-button type="primary" @click="add('isar')">确 定</el-button>
             </div>
         </el-dialog>
+         <!--修改是否全景-->
+        <el-dialog title="修改是否全景" :visible.sync="ispanoramaShow" class="demo-box" width="590px" :close-on-click-modal = false>
+            <el-form :model="editdata" :rules="detailrules" ref="ispanorama" label-width="100px">
+                <el-form-item label="是否全景"  prop="ispanorama">
+                    <el-radio v-model="editdata.ispanorama" label="0">否</el-radio>
+                    <el-radio v-model="editdata.ispanorama" label="1">是</el-radio>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="cancel('ispanorama')">取 消</el-button>
+                <el-button type="primary" @click="add('ispanorama')">确 定</el-button>
+            </div>
+        </el-dialog>
         <!--修改最佳时间-->
-        <el-dialog title="修改最佳时间" :visible.sync="besttimeShow" class="demo-box" width="590px">
+        <el-dialog title="修改最佳时间" :visible.sync="besttimeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="besttime" label-width="100px">
                 <el-form-item label="最佳时间"  prop="besttime">
                     <el-input v-model="editdata.besttime"></el-input>
@@ -311,9 +329,9 @@
             </div>
         </el-dialog>
         <!--修改AR收费-->
-        <el-dialog title="修改AR收费" :visible.sync="scoreShow" class="demo-box" width="590px">
+        <el-dialog title="修改积分" :visible.sync="scoreShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="score" label-width="100px">
-                <el-form-item label="AR收费" prop="score">
+                <el-form-item label="积分" prop="score">
                     <el-input v-model="editdata.score"></el-input>
                 </el-form-item>
             </el-form>
@@ -323,9 +341,9 @@
             </div>
         </el-dialog>
         <!--修改是否解锁-->
-        <el-dialog title="修改是否解锁" :visible.sync="islockShow" class="demo-box" width="590px">
+        <el-dialog title="修改是否解锁" :visible.sync="islockShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="islock" label-width="100px">
-                <el-form-item label="标签名"  prop="islock">
+                <el-form-item label="是否解锁"  prop="islock">
                     <el-radio v-model="editdata.islock" label="0">否</el-radio>
                     <el-radio v-model="editdata.islock" label="1">是</el-radio>
                 </el-form-item>
@@ -336,9 +354,9 @@
             </div>
         </el-dialog>
         <!--修改解锁条件-->
-        <el-dialog title="修改景点名" :visible.sync="unlockconditionShow" class="demo-box" width="590px">
+        <el-dialog title="修改解锁条件" :visible.sync="unlockconditionShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="unlockcondition" label-width="100px">
-                <el-form-item label="景点名"  prop="unlockcondition">
+                <el-form-item label="解锁条件"  prop="unlockcondition">
                     <el-input v-model="editdata.unlockcondition"></el-input>
                 </el-form-item>
             </el-form>
@@ -348,7 +366,7 @@
             </div>
         </el-dialog>
         <!--修改详情链接-->
-        <el-dialog title="修改详情链接" :visible.sync="linkh5urlShow" class="demo-box" width="590px">
+        <el-dialog title="修改详情链接" :visible.sync="linkh5urlShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="linkh5url" label-width="100px">
                 <el-form-item label="详情链接" prop="linkh5url">
                     <el-input v-model="editdata.linkh5url"></el-input>
@@ -360,10 +378,11 @@
             </div>
         </el-dialog>
         <!--修改详情类型-->
-        <el-dialog title="修改详情类型" :visible.sync="detailstypeShow" class="demo-box" width="590px">
+        <el-dialog title="修改详情类型" :visible.sync="detailstypeShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="detailstype" label-width="100px">
                 <el-form-item label="详情类型" prop="detailstype">
                     <el-radio  v-for='n in linktype' :key='n.id' v-model="editdata.detailstype" :label="n.id">{{n.typeName}}</el-radio>
+                    <el-radio key='0' v-model="editdata.detailstype" label="0">无</el-radio>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -421,10 +440,12 @@ export default {
                 tag: [{required: true, message: '请输入标签名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                 phonenumber: [{ validator: checkPhone, trigger: 'blur' }],
-                remark: [{required: true, message: '请输入概述', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+                remark: [{required: true, message: '请输入概述', trigger: 'blur'}, { max: 100, message: '最多100个字符', trigger: 'blur' }],
                 isar: [{required: true, message: '请选择是否AR', trigger: 'change'}],
                 besttime: [{required: true, message: '请输入最佳时间', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 score:[{ validator: checkScore, trigger: 'blur' }],
+                unlockcondition:[{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+                linkh5url: [{required: true, message: '请输入链接地址', trigger: 'blur'}, { max: 100, message: '最多100个字符', trigger: 'blur' }],
             },
             captionShow:false,
             typeShow:false,
@@ -439,7 +460,8 @@ export default {
             islockShow:false,
             unlockconditionShow:false,
             linkh5urlShow:false,
-            detailstypeShow:false
+            detailstypeShow:false,
+            ispanoramaShow:false
         }
     },
 	mounted(){
@@ -537,11 +559,15 @@ export default {
            this.fullscreenLoading = true;
         },
         beforeUploadpic(file){
-            const isLt50M = file.size / 1024 / 1024 < 50;
-            if (!isLt50M) {
-                this.$message.error('上传文件大小不能超过 50MB!');
-            }
-            return isLt50M;
+            const isLt5M = file.size / 1024 / 1024 < 5;
+            const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
+			if (!accept){
+				this.$message.error('上传文件只能是图片格式!');
+			}
+			if (!isLt5M) {
+				this.$message.error('上传文件大小不能超过 5MB!');
+			}
+			return accept && isLt5M;
         },
         onsuccsesspic(response, file, fileList){
             if(response.resb==200){
@@ -558,10 +584,14 @@ export default {
         },
         beforeUploadmp3(file){
             const isLt50M = file.size / 1024 / 1024 < 50;
+			const accept = file.type.indexOf('mp3')>-1;
+			if (!accept) {
+				this.$message.error('上传文件只能是mp3格式!');
+			}
             if (!isLt50M) {
                 this.$message.error('上传文件大小不能超过 50MB!');
             }
-            return isLt50M;
+            return accept && isLt50M;
         },
         onsuccsessmp3(response, file, fileList){
             this.$ajax.updateSite({id:this.detail.id,parameters:{voiceurl:response.url}}, res => {
@@ -575,10 +605,14 @@ export default {
         },
         beforeUploadmp4(file){
             const isLt50M = file.size / 1024 / 1024 < 50;
+			const accept = file.type.indexOf('mp4')>-1
+			if (!accept) {
+				this.$message.error('上传文件只能是mp4格式!');
+			}
             if (!isLt50M) {
                 this.$message.error('上传文件大小不能超过 50MB!');
             }
-            return isLt50M;
+            return accept && isLt50M;
         },
         onsuccsessmp4(response, file, fileList){
             this.$ajax.updateSite({id:this.detail.id,parameters:{videourl:response.url}}, res => {
@@ -592,10 +626,14 @@ export default {
         },
         beforeUploadobj(file){
             const isLt50M = file.size / 1024 / 1024 < 50;
+            const accept =  file.type.indexOf('zip')>-1
+			if (!accept) {
+				this.$message.error('上传文件只能是zip格式!');
+			}
             if (!isLt50M) {
                 this.$message.error('上传文件大小不能超过 50MB!');
             }
-            return isLt50M;
+            return accept && isLt50M;
         },
         onsuccsessobj(response, file, fileList){
             this.$ajax.updateSite({id:this.detail.id,parameters:{modelurl:response.url}}, res => {
@@ -814,6 +852,12 @@ export default {
         }
         .el-col{
             text-indent: 2px;
+        }
+        .el-col{
+            overflow:hidden;
+            text-overflow:ellipsis;
+            word-break: break-all;
+            white-space:nowrap;
         }
         .list{
             border-bottom: 1px solid #d4d4d4;

@@ -23,7 +23,7 @@
         <el-table
             ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"  align="center"></el-table-column>
-            <el-table-column prop="caption" label="景点名"></el-table-column>
+            <el-table-column prop="caption" label="园区名"></el-table-column>
             <el-table-column prop="typeName" label="分类"></el-table-column>
             <el-table-column label="省市" width="120">
             	<template slot-scope="scope">{{ scope.row.province }} - {{ scope.row.city }}</template>
@@ -34,12 +34,12 @@
             <el-table-column prop="arcount" label="AR景点总数" width="80" show-overflow-tooltip></el-table-column>
             <el-table-column prop="arprice" label="AR收费" width="80" show-overflow-tooltip></el-table-column>
             <el-table-column prop="ardiscount" label="折扣" width="80" show-overflow-tooltip> </el-table-column>
-            <el-table-column prop="address" label="其他景点总数" width="80" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="spotcount" label="其他景点总数" width="80" show-overflow-tooltip></el-table-column>
             <el-table-column prop="price" label="门票" width="80" show-overflow-tooltip></el-table-column>
             <el-table-column prop="createtime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作">
 				<template slot-scope="scope">
-                    <el-button type="text" size="small" @click="update(scope.row)">修改</el-button>
+                    <el-button type="text" size="small" @click="update(scope.row)">编辑</el-button>
                     <el-button type="text" size="small" @click="del(scope.row.parkid)">删除</el-button>
                 </template>
             </el-table-column>
@@ -62,9 +62,9 @@
 			<el-button size="small">确定</el-button>
 		</el-col>
 		<!--园区新增-->
-        <el-dialog title="添加园区" :visible.sync="Addshow" class="demo-box" width="590px">
+        <el-dialog title="添加园区" :visible.sync="Addshow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="newdata" :rules="rules" ref="newdata" label-width="100px">
-                <el-form-item label="景点名"  prop="caption">
+                <el-form-item label="园区名"  prop="caption">
                     <el-input v-model="newdata.caption"></el-input>
                 </el-form-item>
                 <el-form-item label="分类" prop="type">
@@ -140,7 +140,7 @@ export default {
 			"province": ""
 		},
 		rules: {
-			caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
+			caption: [{required: true, message: '请输入园区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
 			city: [{required: true, message: '请选择省市', trigger: 'change'}],
 			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			packnumber: [{ validator: checkPhone, trigger: 'blur' }],
@@ -179,6 +179,7 @@ export default {
 							message: '提交成功!'
 						});
 						this.get()
+						this.Addshow = false
 					})
 				} else {
 					return false;

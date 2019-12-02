@@ -49,20 +49,25 @@
                 <el-button size="small" @click="enableState(1)">启用</el-button>
                 <el-button size="small" @click="enableState(0)">禁用</el-button>
             </div>
-            <el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange"
-                           :page-size="query.count" :total="total">
+            <el-pagination background
+				layout="total,sizes, prev, pager, next, jumper"
+				@current-change="handleCurrentChange"
+				@size-change="handleSizeChange"
+				:page-sizes="[10, 15, 20, 30, 50]"
+				:current-page.sync="query.page"
+				:page-size="query.count" :total="total">
             </el-pagination>
             <el-button size="small">确定</el-button>
         </el-col>
 
         <!--弹窗内容-->
-        <el-dialog title="添加分类" :visible.sync="addBol">
+        <el-dialog title="添加分类" :visible.sync="addBol" :close-on-click-modal = false>
             <el-form :model="addData" :rules="rules" ref="addData" >
-                <el-form-item label="分类名" label-width="120px">
-                    <el-input v-model="addData.typeName" style="width: 200px" prop="typeName"></el-input>
+                <el-form-item label="分类名" label-width="120px"  prop="typeName">
+                    <el-input v-model="addData.typeName" style="width: 200px"></el-input>
                 </el-form-item>
-                <el-form-item label="分类" label-width="120px">
-                    <el-select v-model="addData.groupId" placeholder="请选择分类" prop="groupId">
+                <el-form-item label="分类" label-width="120px"  prop="groupId">
+                    <el-select v-model="addData.groupId" placeholder="请选择分类">
                         <el-option :label='index' :value="item" v-for="(item, index) in list" :key="item"></el-option>
                     </el-select>
                 </el-form-item>
@@ -103,6 +108,10 @@
             this.gettype()
         },
         methods: {
+            handleSizeChange(val) {
+                this.query.count = val;
+                this.getAccessToken();
+            },
             edit(data){
                 this.addBol = true
                 this.addData = data

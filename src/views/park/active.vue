@@ -12,10 +12,10 @@
             <el-table-column type="selection" width="55"  align="center"></el-table-column>
             <el-table-column prop="caption" label="活动标题"></el-table-column>
             <el-table-column label="地点" prop="siteName"></el-table-column>
-            <el-table-column label="启用">
+            <el-table-column label="状态">
             	<template slot-scope="scope">{{ scope.row.isenable==1?'启用':'禁用' }}</template>
             </el-table-column>
-            <el-table-column label="需预约">
+            <el-table-column label="是否需要预约">
             	<template slot-scope="scope">{{ scope.row.issubscribe==1?'需要预约':'不需要预约' }}</template>
             </el-table-column>
             <el-table-column prop="starttime" label="开始时间"></el-table-column>
@@ -76,38 +76,47 @@
                                 <el-radio label="0">不可预约</el-radio>
                             </el-radio-group>
 						</el-form-item>
-						<el-form-item label="轮播图"  prop="picurllist">
-							<el-input v-model="newdata.picurllist" style="width: 200px;display:none"></el-input>
-							<el-upload class="upload-demo"
+						<el-form-item label="轮播图"  prop="picurl">
+							<el-input v-model="newdata.picurl" style="width: 200px;display:none"></el-input>
+							<el-button size="small" type="primary" @click="uploading('uppic')">点击上传</el-button>
+							<el-upload class="upload-demo" style="display:none"
+								:on-remove = "onremove"
                                 :data="uploaddata"
 				                :action="$store.state.ip+'/resources/uploadResource'"
                                 :on-progress="handleLoading"
-                                :on-success='onsuccsesspic'
+								:on-success='onsuccsesspic'
+								accept="image/jpeg,image/jpg,image/png"
                                 :before-upload="beforeUploadpic"  
                                 :on-error='onerror'
                                 multiple
-                                :limit="5"
-                                :file-list="fileList"
-                                :on-exceed="handleExceed"
                                 list-type="picture-card">
                                 <el-button size="small" type="primary" id="uppic">点击上传</el-button>
                             </el-upload>
+							<div style="margin-top:20px">
+								<div class="pic"  v-for="(n,i) in fileList" :key="n">
+									<img :src="$store.state.resip+n" alt="" class="pic">
+									<img src="../../../static/img/close.png" alt="" class="close" @click="close(i)">
+								</div>
+							</div>
 						</el-form-item>
                         <el-form-item label="缩略图"  prop="thumbnail">
 							<el-input v-model="newdata.thumbnail" style="width: 200px;display:none"></el-input>
-							<el-upload class="upload-demo"
+							 <el-button size="small" type="primary" @click="uploading('uppict')">点击上传</el-button>
+							<el-upload class="upload-demo" style="display:none"
 								:data="uploaddata"
 								:action="$store.state.ip+'/resources/uploadResource'"
 								:on-progress="handleLoading"
+								accept="image/jpeg,image/jpg,image/png"
 								:on-success='onsuccsess'
 								:before-upload="beforeUploadpic"  
 								:on-error='onerror'
-                                :file-list="fileList1"
-								list-type="picture-card">
-								<el-button size="small" type="primary" id="uppic">点击上传</el-button>
+								list-type="picture">
+								<el-button size="small" type="primary" id="uppict">点击上传</el-button>
 							</el-upload>
+							<div style="margin-top:20px">
+								<img :src="$store.state.resip+newdata.thumbnail" alt="" class="pic" v-if="newdata.thumbnail" style="width:80px" ref="pic">
+							</div>
 						</el-form-item>
-						
 					</el-form>
 				</div>
 				<div class="el-dialog__footer">
@@ -148,7 +157,6 @@ export default {
 	data() {
         return {
             fileList:[],
-            fileList1:[],
 			uploaddata:{
 				type:'',
 				uKey:JSON.parse(sessionStorage.getItem('user')).uKey
@@ -166,14 +174,14 @@ export default {
             Detailshow:false,
             newdata:{
                 issubscribe:'1',
-                picurl:[],
+                picurl:'',
             },
             rules: {
                 caption: [{ required: true, message: '名称不能为空'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                 address: [{ required: true, message: '地址不能为空'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                 type: [{ required: true,message: '类型不能为空' }],
                 issubscribe: [{ required: true,message: '必选' }],
-                picurllist:[{ required: true,message: '必填项' }],
+                picurl:[{ required: true,message: '必填项' }],
                 thumbnail:[{ required: true,message: '必填项' }],
                 time: [{ required: true, message: '起始日期不能为空'}]
             },
@@ -188,6 +196,10 @@ export default {
         this.getsitelist()
 	},
 	methods: {
+		close(i){
+			this.fileList.splice(i,1)
+			this.newdata.picurl = this.fileList.join()
+        },
         submith5(){
 			if(this.h5.id){
 				this.$ajax.updateH5({id: this.h5.id,parameters: {content:this.h5.content}}, res => {
@@ -226,9 +238,6 @@ export default {
                 this.newdata = res
 			}
 		},
-        handleExceed(files, fileList) {
-            this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-        },
         gotodetail(row){
             this.$router.push({path:'/partdetail',query:{id:row.id}})
         },
@@ -262,26 +271,33 @@ export default {
 			this.fullscreenLoading = true;
 		},
 		beforeUploadpic(file){
-			const isLt50M = file.size / 1024 / 1024 < 50;
-			if (!isLt50M) {
-				this.$message.error('上传文件大小不能超过 50MB!');
-            }
-            if(this.fileList)
-			return isLt50M;
+			const isLt5M = file.size / 1024 / 1024 < 5;
+			const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
+			if (!accept){
+				this.$message.error('上传文件只能是图片格式!');
+			}
+			if (!isLt5M) {
+				this.$message.error('上传文件大小不能超过 5MB!');
+			}
+			return accept && isLt5M;
 		},
 		onsuccsesspic(response, file, fileList){
 			if(response.resb==200){
-                this.fileList.push({url:response.url,shortUrl:response.shortUrl})
-                this.newdata.picurl.push(response.shortUrl)
-                this.newdata.picurllist=JSON.stringify(this.newdata.picurl)
+                this.fileList.push(response.shortUrl)
+                this.newdata.picurl=this.fileList.join()
                 this.fullscreenLoading = false;
 			}
+		},
+		onremove(file, fileList){
+			console.log(file)
+		},
+		uploading(id){
+            document.getElementById(id).click()
         },
         onsuccsess(response, file, fileList){
+			this.fullscreenLoading = false;
 			if(response.resb==200){
-                this.fileList1=[{url:response.url,shortUrl:response.shortUrl}]
-                this.newdata.thumbnail = response.shortUrl
-                this.fullscreenLoading = false;
+				this.$set(this.newdata, 'thumbnail',response.shortUrl);
 			}
 		},
 		onerror(){
@@ -293,22 +309,15 @@ export default {
 		beginshow(data){
 			this.Addshow = true
             this.Detailshow = false
-            this.fileList = []
-            this.fileList1=[]
 			if(data){
-                this.newdata = data
-                this.fileList1=[{url:this.$store.state.resip+data.thumbnail,shortUrl:data.thumbnail}]
-                let list = data.picurl.split(',')
-                this.newdata.picurl = list
-                this.newdata.picurllist=JSON.stringify(this.newdata.picurl)
+                this.newdata = {...data}
+                this.fileList = data.picurl.split(',')
                 this.newdata.time=[new Date(data.starttime.split('-')[0],data.starttime.split('-')[1],data.starttime.split('-')[2]), new Date(data.endtime.split('-')[0],data.endtime.split('-')[1],data.endtime.split('-')[2])]
-                for(let i=0;i<list.length;i++){
-                    this.fileList.push({url:this.$store.state.resip+list[i],shortUrl:list[i]})
-                }
 			}else{
+				this.fileList =[] 
 				this.newdata={
                     issubscribe:'1',
-                    picurl:[]
+                    picurl:''
                 }
 			}
 		},
@@ -325,7 +334,6 @@ export default {
 					if(this.newdata.time[1]){
 						this.newdata.endtime = this.timeform('yyyy-MM-dd',this.newdata.time[1])
                     }
-                    this.newdata.picurl = this.newdata.picurl.join()
 					if(this.newdata.id){
 						this.$ajax.updateEvents({id: this.newdata.id,parameters: {
 							caption:this.newdata.caption,
@@ -423,7 +431,7 @@ export default {
 			})
 		},
 		getsitelist(){
-			this.$ajax.querySiteList({count:999,page:1,parkid:sessionStorage.getItem('parkid'),sitelist: [6]}, res => {
+			this.$ajax.querySiteList({count:999,page:1,parkid:sessionStorage.getItem('parkid'),typelist: [6]}, res => {
 				this.sitelist = res.data
 			})
 		},
@@ -466,6 +474,19 @@ export default {
 		.el-dialogedit{
 			width: 1000px;
 			margin-top: 15vh;
+		}
+	}
+	.pic{
+		position: relative;
+		display: inline-block;
+		height: 60px;
+		width: 80px;
+		margin-right: 10px;
+		.close{
+			position: absolute;
+			right: -10px;
+			top: -10px;
+			width: 20px;
 		}
 	}
 </style>

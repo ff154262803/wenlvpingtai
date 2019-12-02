@@ -22,8 +22,6 @@
             var pass = (rule, val, callback) => {
                 if (val == '') {
                     callback(new Error('请输入密码'));
-                } else if (val.length < 6) {
-                    callback(new Error('密码长度应大于6位'));
                 } else {
                     callback();
                 }

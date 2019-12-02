@@ -99,8 +99,7 @@
                 if(this.$store.state.child.length){
                     this.$store.state.child = [];
                 }
-                this.$router.replace({path:this.$route.meta.parent || '/'})
-
+                this.$route.meta.parent?this.$router.replace({path:this.$route.meta.parent}):history.back()
             },
             handleopen() {
             },
@@ -131,7 +130,7 @@
             }
         },
         mounted() {
-            var user = sessionStorage.getItem('user');
+            var user = JSON.parse(sessionStorage.getItem('user'));
             if (user) {
                 this.sysUserName = user.name || 'admin';
             }

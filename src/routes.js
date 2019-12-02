@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './vuex/store'
+const routerPush = VueRouter.prototype.push
 
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 Vue.use(VueRouter)
 
 import Login from './views/Login.vue'
@@ -16,7 +20,7 @@ import parklist from './views/park/parklist'//园区管理
 import msgsend from './views/msg/msgsend'//商品列表
 import feedback from './views/feedback/feedback'//商品列表
 import shoplist from './views/shop/list'//商品列表
-import orderlist from './views/order/list'//订单列表
+// import orderlist from './views/order/list'//订单列表
 // import shoplist from './components/editor'//订单列表
 // 园区管理
 import base from './views/park/base'//园区基础信息
@@ -25,6 +29,9 @@ import scenicdetail from './views/park/scenicdetail'//景点详情
 import sencelist from './views/park/senceList'//景点列表
 import product from './views/park/product'//商品列表
 import schedule from './views/park/active'//活动管理
+import schedunum from './views/park/schedunum'//预约统计
+import topline from './views/park/topline'//头条管理
+import procam from './views/park/procam'//全景资源管理
 import partdetail from './views/park/partdetail'//活动管理
 
 // 商品管理
@@ -56,14 +63,17 @@ const router = new VueRouter({
                 {path: '/base', component: base, name: '基础信息', meta: {requireAuth: true, parent: 'parklist'}},
                 {path: '/sencelist', component: sencelist, name: '景点列表', meta: {requireAuth: true, parent: 'parklist'}},
                 {path: '/routerlist', component: routerlist, name: '路线列表', meta: {requireAuth: true, parent: 'parklist'}},
+                {path: '/procam', component: procam, name: '全景资源管理', meta: {requireAuth: true, parent: 'parklist'}},
                 {path: '/product', component: product, name: '商品列表', meta: {requireAuth: true, parent: 'parklist'}},
-                {path: '/schedule', component: schedule, name: '活动管理', meta: {requireAuth: true, parent: 'schedule'}},
+                {path: '/schedule', component: schedule, name: '活动管理', meta: {requireAuth: true, parent: 'parklist'}},
+                {path: '/topline', component: topline, name: '头条管理', meta: {requireAuth: true, parent: 'parklist'}},
+                {path: '/schedunum', component: schedunum, name: '预约统计', meta: {requireAuth: true, parent: 'parklist'}},
             ],
         },
         {path: '/', component: Home, name: 'shoplist', hidden: false, unfold: true, meta: {requireAuth: true, level: 2},
             children: [
-                {path: '/shoplist', component: shoplist, name: '商品管理', ...metaTrue},
-                {path: '/active', component: active, name: '商城活动', ...metaTrue}
+                {path: '/shoplist', component: shoplist, name: '商品管理', meta: {requireAuth: true, parent: '/'}},
+                {path: '/active', component: active, name: '商城活动', meta: {requireAuth: true, parent: '/'}}
             ]
         },{path: '/', component: Home, name: 'msgsend', hidden: false, meta: {requireAuth: true, level: 1},
             children: [
@@ -73,17 +83,17 @@ const router = new VueRouter({
             children: [
                 {path: '/user', component: user, name: '用户管理', ...metaTrue},
             ],
-        },
-        {path: '/', component: Home, name: 'orderlist', hidden: false, meta: {requireAuth: true, level: 1},
-            children: [
-                {path: '/orderlist', component: orderlist, name: '订单管理', ...metaTrue},
-            ]
+        // },
+        // {path: '/', component: Home, name: 'orderlist', hidden: false, meta: {requireAuth: true, level: 1},
+        //     children: [
+        //         {path: '/orderlist', component: orderlist, name: '订单管理', ...metaTrue},
+        //     ]
         }, {path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: {requireAuth: true, level: 2},
             children: [
-                {path: '/basic', component: basic, name: '基本设置', ...metaTrue},
-                {path: '/classification', component: classification, name: '分类管理', ...metaTrue},
-                {path: '/manage', component: manage, name: '管理员', ...metaTrue},
-                {path: '/page', component: page, name: '页面链接管理', ...metaTrue}
+                {path: '/basic', component: basic, name: '基本设置', meta: {requireAuth: true, parent: '/'}},
+                {path: '/classification', component: classification, name: '分类管理', meta: {requireAuth: true, parent: '/'}},
+                {path: '/manage', component: manage, name: '管理员', meta: {requireAuth: true, parent: '/'}},
+                {path: '/page', component: page, name: '页面链接管理', meta: {requireAuth: true, parent: '/'}}
             ]
         }, {path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: {requireAuth: true, level: 3},
             children: [

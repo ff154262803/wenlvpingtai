@@ -282,8 +282,8 @@ export default {
         this.POST(`${base}/manage/addMallActivity`, data, callback,errback);
     },
     //删除商城活动
-    deleteMalllActivity(data, callback,errback) {
-        this.POST(`${base}/manage/deleteMalllActivity`, data, callback,errback);
+    deleteMallActivity(data, callback,errback) {
+        this.POST(`${base}/manage/deleteMallActivity`, data, callback,errback);
     },
     //活动详情信息
     getMalllActivityDetails(data, callback,errback) {
@@ -352,5 +352,49 @@ export default {
     //修改时间段信息
     updateTimePart(data, callback,errback) {
         this.POST(`${base}/manage/updateTimePart`, data, callback,errback);
+    },
+    //添加全景图信息
+    addPanorama(data, callback,errback) {
+        this.POST(`${base}/manage/addPanorama`, data, callback,errback);
+    },
+    //删除全景图信息
+    deletePanorama(data, callback,errback) {
+        this.POST(`${base}/manage/deletePanorama`, data, callback,errback);
+    },
+    //获取全景图列表信息
+    queryPanoramaList(data, callback,errback) {
+        this.POST(`${base}/manage/queryPanoramaList`, data, callback,errback);
+    },
+    //编辑全景图信息
+    updatePanorama(data, callback,errback) {
+        this.POST(`${base}/manage/updatePanorama`, data, callback,errback);
+    },
+    //设置全景图是否可以用
+    setPanoramaEnableState(data, callback,errback) {
+        this.POST(`${base}/manage/setPanoramaEnableState`, data, callback,errback);
+    },
+    //推送
+    simplePush(data, callback,errback) {
+        this.POST(`${base}/manage/simplePush`, data, callback,errback);
+    },
+    //获取预约人数信息
+    getEventsNumList(data, callback,errback) {
+        this.POST(`${base}/manage/getEventsNumList`, data, callback,errback);
+    },
+    //获取预约列表信息
+    getEventsUserList(data, callback,errback) {
+        this.POST(`${base}/manage/getEventsUserList`, data, callback,errback);
+    },
+    //添加园区公告
+    addParkNotice(data, callback,errback) {
+        this.POST(`${base}/manage/addParkNotice`, data, callback,errback);
+    },
+    //删除公告信息
+    deleteParkNotice(data, callback,errback) {
+        this.POST(`${base}/manage/deleteParkNotice`, data, callback,errback);
+    },
+    //查询公告列表信息
+    queryParkNoticeList(data, callback,errback) {
+        this.POST(`${base}/manage/queryParkNoticeList`, data, callback,errback);
     },
 }

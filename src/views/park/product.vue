@@ -18,9 +18,9 @@
                 width="200">
             </el-table-column>
             <el-table-column
-                prop="typeName"
                 label="类型"
                 width="200">
+                <template slot-scope="scope">{{ type[scope.row.type] }}</template>
             </el-table-column>
             <el-table-column
                 prop="siteName"
@@ -48,14 +48,19 @@
                 <el-button size="small" @click="enableState(1)">启用</el-button>
                 <el-button size="small" @click="enableState(0)">禁用</el-button>
             </div>
-            <el-pagination background layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange"
-                           :page-size="query.count" :total="total">
+            <el-pagination background
+				layout="total,sizes, prev, pager, next, jumper"
+				@current-change="handleCurrentChange"
+				@size-change="handleSizeChange"
+				:page-sizes="[10, 15, 20, 30, 50]"
+				:current-page.sync="query.page"
+				:page-size="query.count" :total="total">
             </el-pagination>
             <el-button size="small">确定</el-button>
         </el-col>
 
         <!--弹窗内容-->
-        <el-dialog title="添加分类" :visible.sync="addBol">
+        <el-dialog :title="addData.id?'修改商品':'添加商品'" :visible.sync="addBol" :close-on-click-modal = false>
             <el-form :model="addData" :rules="rules" ref="addData" >
                 <el-form-item label="商品名" label-width="120px" prop="caption">
                     <el-input v-model="addData.caption" style="width: 200px"></el-input>
@@ -81,6 +86,7 @@
                     <el-button size="small" type="primary" @click="uploading('uppic')">点击上传</el-button>
                     <el-upload class="upload-demo" style="display:none"
                         :data="uploaddata"
+                        accept="image/jpeg,image/jpg,image/png"
 				        :action="$store.state.ip+'/resources/uploadResource'"
                         :on-progress="handleLoading"
                         :on-success='onsuccsesspic'
@@ -90,7 +96,7 @@
                         <el-button size="small" type="primary" id="uppic">点击上传</el-button>
                     </el-upload>
                     <div style="margin-top:20px">
-                        <img :src="$store.state.resip+addData.picurl" alt="" class="pic" v-if="addData.picurl" style="width:200px;height:200px">
+                        <img :src="$store.state.resip+addData.picurl" alt="" class="pic" v-if="addData.picurl" style="width:80px" ref="pic">
                     </div>
                 </el-form-item>
             </el-form>
@@ -118,13 +124,14 @@
                     uKey:JSON.parse(sessionStorage.getItem('user')).uKey
                 },
                 list:[],
+                type:{},
                 product:[],
                 total: 0,
                 addBol: false,
                 query: {
                     parkid:sessionStorage.getItem('parkid'),
                     page: 1,
-                    count: 20
+                    count: 10
                 },
                 rules: {
                     caption: [{required: true, message: '请输入名称', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
@@ -141,15 +148,19 @@
         mounted(){
             this.getAccessToken()
             this.gettype()
-            this.typechange()
+            this.getsitelist()
         },
         methods: {
+            handleSizeChange(val) {
+                this.query.count = val;
+                this.getAccessToken();
+            },
+            typechange(){
+                this.addData.siteid = ''
+            },
             reset(formName){
                 this.$refs[formName].resetFields();
                 this.addBol = false
-            },
-            typechange(){
-                addData.siteid=null
             },
              uploading(id){
                 document.getElementById(id).click()
@@ -158,31 +169,31 @@
                 this.fullscreenLoading = true;
             },
             beforeUploadpic(file){
-                const isLt50M = file.size / 1024 / 1024 < 50;
-                if (!isLt50M) {
-                    this.$message.error('上传文件大小不能超过 50MB!');
+                const isLt5M = file.size / 1024 / 1024 < 5;
+                const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
+                if (!accept){
+                    this.$message.error('上传文件只能是图片格式!');
                 }
-                return isLt50M;
+                if (!isLt5M) {
+                    this.$message.error('上传文件大小不能超过 5MB!');
+                }
+                return accept && isLt5M;
             },
             onsuccsesspic(response, file, fileList){
                 if(response.resb==200){
-                    this.addData.picurl = response.shortUrl
+                    this.$set(this.addData, 'picurl',response.shortUrl);
                     this.fullscreenLoading = false;
                 }
             },
             onerror(){
                 this.fullscreenLoading = false;
             },
-            typechange(){
-                var type= []
-                for(let i =0;i< this.list.length;i++){
-                    type.push( this.list[i].id)
-                }
+            getsitelist(){
                 this.$ajax.querySiteList({
                     parkid:sessionStorage.getItem('parkid'),
                     page:1,
                     count:999,
-                    typelist:type,
+                    typelist:[],
                 }, res => {
                     this.product = res.data
                 })
@@ -190,25 +201,19 @@
             edit(data){
                 this.addBol = true
                 this.addData = data
-                for(let i =0;i< this.product.length;i++){
-                    if(this.product[i].id==data.siteid){
-                        this.addData.type = this.product[i].type
-                    }
-                }
             },
             gettype(){
                 this.$ajax.getSiteTypeList({}, res => {
                     this.list = res.data
+                    for(let i=0;i<res.data.length;i++){
+                        this.type[res.data[i].id]=res.data[i].typeName
+                    }
                 })
             },
             getAccessToken(){
                 this.$ajax.queryCommodityList(this.query, res => {
                     this.tableData = res.data
                     this.total = res.total
-                    if(res.totalPage<this.query.page){//过滤时页数bug
-                        this.query.page=1
-                        this.getAccessToken()
-                    }
                 })
             },
             submit(formName){
@@ -244,8 +249,9 @@
             },
             addBtn() {
                 this.addBol= true
-                this.product = []
-                this.addData= {}
+                this.addData= {
+                    siteid:''
+                }
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

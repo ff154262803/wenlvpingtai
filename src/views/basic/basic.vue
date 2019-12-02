@@ -24,6 +24,7 @@
         <!--服务器状态修改-->
         <el-dialog
             title="服务器状态"
+            :close-on-click-modal = false
             :visible.sync="status.show"
             width="30%">
             <el-radio-group v-model="status.changeStatus">
@@ -74,28 +75,28 @@
             </el-row>
         </el-card>
         <!--上传新版本-->
-        <el-dialog title="发布新版本" :visible.sync="newApp.show" class="demo-box">
+        <el-dialog title="发布新版本" :visible.sync="newApp.show" class="demo-box" :close-on-click-modal = false>
             <el-form :model="newApp" :rules="rules" ref="newApp">
                 <el-form-item label="平台" label-width="120px">
                     <el-radio-group v-model="newApp.system">
                         <el-radio label="Android">Android</el-radio>
-                        <el-radio label="IOS">IOS</el-radio>
+                        <el-radio label="iOS">iOS</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="版本名" label-width="120px" prop="versionName">
-                    <el-input v-model="newApp.versionName"></el-input>
+                    <el-input v-model="newApp.versionName" placeholder="请输入版本名"></el-input>
                 </el-form-item>
                 <el-form-item label="版本号" label-width="120px" prop="version_code">
-                    <el-input v-model="newApp.version_code"></el-input>
+                    <el-input v-model="newApp.version_code" placeholder="请输入版本号"></el-input>
                 </el-form-item>
                 <el-form-item label="最低版本号" label-width="120px" prop="min_version">
-                    <el-input v-model="newApp.min_version"></el-input>
+                    <el-input v-model="newApp.min_version" placeholder="请输入最低版本号"></el-input>
                 </el-form-item>
                 <el-form-item label="更新说明" label-width="120px" prop="content">
-                    <el-input autosize type="textarea" :autosize="{ minRows: 3}" v-model="newApp.content"></el-input>
+                    <el-input autosize type="textarea" :autosize="{ minRows: 3}" placeholder="请输入更新说明" v-model="newApp.content"></el-input>
                 </el-form-item>
                 <el-form-item label="下载地址" label-width="120px" prop="address">
-                    <el-input v-model="newApp.address"></el-input>
+                    <el-input v-model="newApp.address" placeholder="请输入下载地址" style="display:none"></el-input>
                     <el-upload
                         class="upload-demo"
                         :action="$store.state.ip+'/resources/uploadResource'"
@@ -196,10 +197,14 @@
             beforeUpload(file){
                 this.newApp.size = file.size
                 const isLt50M = file.size / 1024 / 1024 < 50;
+                const accept = file.type=='application/vnd.android.package-archive'
+                if (!accept) {
+                    this.$message.error('上传文件只能是apk格式!');
+                }
                 if (!isLt50M) {
                     this.$message.error('上传文件大小不能超过 50MB!');
                 }
-                return isLt50M;
+                return accept && isLt50M;
             },
             //获取服务器状态
             getServerStatus() {
