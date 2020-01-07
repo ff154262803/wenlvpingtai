@@ -76,16 +76,16 @@
 					<el-select v-model="newdata.province" @change="selectcity">
 						<el-option v-for="item in area" :label="item.name" :value="item.name" :key="item.name" ></el-option>
 					</el-select>
-					 - 
+					 -
 					<el-select v-model="newdata.city" >
 						<el-option v-for="item in areacity" :label="item.name" :value="item.name" :key="item.name" ></el-option>
 					</el-select>
                 </el-form-item>
                 <el-form-item label="门票价格" prop="price">
-                    <el-input v-model="newdata.price"></el-input>
+                    <el-input v-model="newdata.price" placeholder="0为免费"></el-input>
                 </el-form-item>
 				<el-form-item label="开放时间" prop="opentime">
-                    <el-input v-model="newdata.opentime"></el-input>
+                    <el-input v-model="newdata.opentime" placeholder="例：”每年11月至次年3月”"></el-input>
                 </el-form-item>
 				<el-form-item label="咨询电话" prop="packnumber">
                     <el-input v-model="newdata.packnumber"></el-input>
@@ -111,7 +111,7 @@ export default {
 			}
       	};
       var checkPhone = (rule, value, callback) => {
-        if (value === '') {
+        if (!value) {
 			callback();
         } else {
 			if (!/0?(13|14|15|17|18|19)[0-9]{9}/.test(value)) {
@@ -141,7 +141,7 @@ export default {
 		},
 		rules: {
 			caption: [{required: true, message: '请输入园区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-			city: [{required: true, message: '请选择省市', trigger: 'change'}],
+			city: [{required: true, message: '请选择完整省市', trigger: 'change'}],
 			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			packnumber: [{ validator: checkPhone, trigger: 'blur' }],
 			price: [{ required: true,validator: checkPrice, trigger: 'blur' }],
@@ -196,7 +196,8 @@ export default {
 		changetype(val){
 			this.query.page=1
 			if(val){
-				this.query.typelist.indexOf(val)>-1?this.query.typelist.push(val):this.query.typelist.push(val)
+			    let num = this.query.typelist.indexOf(val);
+				~num?this.query.typelist.splice(num,1):this.query.typelist.push(val)
 			}else{
 				this.query.typelist=[]
 			}

@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const state = {
     count: 10,
     child:[],//储存左侧导航栏内容
-    ip:'https://gysl-home.zkshiwei.com:5000/api',//请求地址ip
+    // ip:'https://gysl-home.zkshiwei.com:5000/api',//请求地址ip
+    ip:'https://qlv.test.zkshiwei.com/api',//请求地址ip
     resip:'https://qlv.test.zkshiwei.com/res/'
 }
 

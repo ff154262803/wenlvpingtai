@@ -4,7 +4,7 @@
             <div class="menu">
                 <el-row class="p">
                     <el-col :span="16"><div>基本信息</div></el-col>
-                    <el-col :span="8"><div class="btnright"> 
+                    <el-col :span="8"><div class="btnright">
                         <el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button>
                         <el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button></div></el-col>
                 </el-row>
@@ -60,9 +60,9 @@
                     <el-col :span="22"><div><span>AR资源包：</span>{{detail.ardownloadurl}}</div></el-col>
                     <el-upload class="upload" accept="application/zip" :action="$store.state.ip+'/resources/uploadResource'" style="display:none"
                         :on-progress="handleLoading"
-                        :on-success="onsuccsess"                                
-                        :before-upload="beforeUpload"  
-                        :data="uploaddata" 
+                        :on-success="onsuccsess"
+                        :before-upload="beforeUpload"
+                        :data="uploaddata"
                         :on-error='onerror'>
                         <el-button size="small" type="primary" id="upzip">点击上传</el-button>
                         <div class="el-upload__tip" slot="tip">只能上传zip文件，且不超过50M</div>
@@ -126,7 +126,7 @@
 					<el-select v-model="editdata.province" @change="selectcity">
 						<el-option v-for="item in area" :label="item.name" :value="item.name" :key="item.name" ></el-option>
 					</el-select>
-					 - 
+					 -
 					<el-select v-model="editdata.city" >
 						<el-option v-for="item in areacity" :label="item.name" :value="item.name" :key="item.name" ></el-option>
 					</el-select>
@@ -210,7 +210,7 @@
                         end-placeholder="结束日期">
                     </el-date-picker>
                 </el-form-item>
-                
+
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="cancel('discountperiod')">取 消</el-button>
@@ -223,14 +223,14 @@
 import {areaArr} from '../../api/city.js'
 export default {
 	data() {
-		var checkPrice = (rule, value, callback) => {
-			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
-				callback(new Error('请输入最大1000且最多两位小数的数字'));
-			}else{
-				callback();
-			}
-          };
-          var checkARPrice = (rule, value, callback) => {
+        let checkPrice = (rule, value, callback) => {
+            if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value) || value > 1000) {
+                callback(new Error('请输入最大1000且最多两位小数的数字'));
+            } else {
+                callback();
+            }
+        };
+        var checkARPrice = (rule, value, callback) => {
 			if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value)||value>1000) {
 				callback(new Error('请输入最大1000且最多两位小数的数字'));
 			}else{
@@ -245,7 +245,7 @@ export default {
 			}
           };
           var checkPhone = (rule, value, callback) => {
-            if (value === '') {
+            if (!value) {
                 callback();
             } else {
                 if (!/0?(13|14|15|17|18|19)[0-9]{9}/.test(value)) {
@@ -272,7 +272,7 @@ export default {
             detailrules:{
                 caption: [{required: true, message: '请输入园区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 type: [{required: true, message: '请选择园区类型', trigger: 'change'}],
-                city: [{required: true, message: '请选择省市', trigger: 'change'}],
+                city: [{required: true, message: '请选择完整省市', trigger: 'change'}],
                 price: [{ validator: checkPrice, trigger: 'blur' }],
                 opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                 packnumber: [{ validator: checkPhone, trigger: 'blur' }],
@@ -288,7 +288,7 @@ export default {
             arpriceShow:false,
             discountperiodShow:false,
             ardiscountShow:false,
-            // 
+            //
             GDMap:"",
             GDPolygon:"",
             GDPolyEditor:"",
@@ -302,6 +302,7 @@ export default {
         }
     },
 	mounted(){
+	    window.v = this;
         // 高德地图对象
         this.GDMap = new AMap.Map('GDMAP', {
             resizeEnable: true,
@@ -398,22 +399,29 @@ export default {
                 this.GDMarker.setPosition([x,y])
                 this.GDPolyEditor2 = new AMap.PolyEditor(this.GDMap, this.GDPolygon2);
                 this.GDMap.setFitView();
-            }  
+            }
         },
         deling(){
-             this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:'',arsize:0}}, res => {
-                this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                });
-                this.getdetail()
-            })
+            this.$confirm('您确定要删除AR资源包吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$ajax.updatePark({id:this.parkid,parameters:{ardownloadurl:'',arsize:0}}, res => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                    this.getdetail()
+                })
+            }).catch(() => {});
         },
         uploading(){
             document.getElementById('upzip').click()
         },
         beforeUpload(file){
             const isLt50M = file.size / 1024 / 1024 < 500;
+            console.log(file,file.type.includes('zip'))
             const accept =  file.type.indexOf('zip')>-1
 			if (!accept) {
 				this.$message.error('上传文件只能是zip格式!');
@@ -523,7 +531,7 @@ export default {
                         }
                         this.GDPolygon2.setPath(curPath);
                         this.GDMap.setFitView();
-                    } 
+                    }
                 })
             }
         },
@@ -566,10 +574,12 @@ export default {
 			this.editdata.city=null
 			var dt = this.area.filter(n => {
 				if (n.name == this.editdata.province) return true;
-			})
+			});
             dt.length==0?this.areacity=[]:this.areacity=dt[0].child
         },
         enableState(val){
+            console.log(this.detail);
+            // return false
             this.$ajax.setParkEnableState({idlst:[this.parkid],isenable:val}, res => {
                 this.detail.isenable = val
                 this.$message({
@@ -622,10 +632,11 @@ export default {
                     this.showedit=false
                     this.GDPolygon.show()
                     this.GDMarker.show()
-                    this.GDPolyEditor2.close()
+                    this.GDPolyEditor.close();
+                    this.GDPolyEditor2.close();
                     this.getdetail()
                 })
-                
+
             }
             if(this.redit){
                 var path = this.GDPolygon.getPath()
@@ -649,8 +660,9 @@ export default {
                     });
                     this.redit=false
                     this.GDPolygon2.show()
-                    this.GDMarker.setDraggable(false)
-                    this.GDPolyEditor.close()
+                    this.GDMarker.setDraggable(false);
+                    this.GDPolyEditor.close();
+                    this.GDPolyEditor2.close();
                     this.getdetail()
                 })
             }
@@ -731,9 +743,9 @@ export default {
             this.GDMarker.show()
             this.GDPolyEditor2.close()
             this.GDPolyEditor.close()
-            this.GDMarker.setDraggable(false)   
+            this.GDMarker.setDraggable(false)
         }
-		
+
 	}
 }
 </script>

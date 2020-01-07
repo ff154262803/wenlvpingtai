@@ -99,7 +99,7 @@
                 </el-row>
                 <el-row class="list"  style="height:80px;">
                     <el-col :span="22"><div><span>介绍图：</span>
-                        <div class="pic"  v-for="(n,i) in fileList" :key="n">
+                        <div class="pic"  v-for="(n,i) in fileList" :key="n" style="margin-top: 10px;">
                             <img :src="$store.state.resip+n" alt="" class="pic">
                             <img src="../../../static/img/close.png" alt="" class="close" @click="close(i)">
                         </div>
@@ -110,7 +110,7 @@
                         :on-progress="handleLoading"
                         accept="image/jpeg,image/jpg,image/png"
                         :on-success='onsuccsesspic'
-                        :before-upload="beforeUploadpic"  
+                        :before-upload="beforeUploadpic"
                         :on-error='onerror'
 				        multiple
 				        :limit="5"
@@ -127,8 +127,8 @@
                     <el-upload class="upload" accept="audio/mpeg" :action="$store.state.ip+'/resources/uploadResource'" style="display:none"
                         :data="uploaddata"
                         :on-progress="handleLoading"
-                        :on-success="onsuccsessmp3"                                
-                        :before-upload="beforeUploadmp3"   
+                        :on-success="onsuccsessmp3"
+                        :before-upload="beforeUploadmp3"
                         :on-error='onerror'>
                         <el-button size="small" type="primary" id="upmp3">点击上传</el-button>
                     </el-upload>
@@ -142,8 +142,8 @@
                     <el-upload class="upload" accept="video/mp4" :action="$store.state.ip+'/resources/uploadResource'" style="display:none"
                         :data="uploaddata"
                         :on-progress="handleLoading"
-                        :on-success="onsuccsessmp4"                                
-                        :before-upload="beforeUploadmp4"   
+                        :on-success="onsuccsessmp4"
+                        :before-upload="beforeUploadmp4"
                         :on-error='onerror'>
                         <el-button size="small" type="primary" id="upmp4">点击上传</el-button>
                         <div class="el-upload__tip" slot="tip">只能上传zip文件，且不超过50M</div>
@@ -157,8 +157,8 @@
                     <el-col :span="22"><div><span>模型：</span>{{detail.modelurl }}</div></el-col>
                     <el-upload class="upload" accept="application/zip" :action="$store.state.ip+'/resources/uploadResource'" style="display:none"
                         :on-progress="handleLoading"
-                        :on-success="onsuccsessobj"                                
-                        :before-upload="beforeUploadobj"   
+                        :on-success="onsuccsessobj"
+                        :before-upload="beforeUploadobj"
                         :data="uploaddata"
                         :on-error='onerror'>
                         <el-button size="small" type="primary" id="upobj">点击上传</el-button>
@@ -445,7 +445,7 @@ export default {
                 besttime: [{required: true, message: '请输入最佳时间', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 score:[{ validator: checkScore, trigger: 'blur' }],
                 unlockcondition:[{ max: 20, message: '最多20个字符', trigger: 'blur' }],
-                linkh5url: [{required: true, message: '请输入链接地址', trigger: 'blur'}, { max: 100, message: '最多100个字符', trigger: 'blur' }],
+                linkh5url: [{required: true, message: '请输入链接地址', trigger: 'blur'}, { max: 500, message: '最多500个字符', trigger: 'blur' }],
             },
             captionShow:false,
             typeShow:false,
@@ -699,7 +699,7 @@ export default {
                         }
                         this.GDPolygon.setPath(curPath);
                         this.GDMap.setFitView();
-                    }  
+                    }
                 })
             }
         },
@@ -825,7 +825,7 @@ export default {
             this.GDPolygon.show()
             this.GDPolyEditor.close()
             this.GDMarker.show()
-            this.GDMarker.setDraggable(false)   
+            this.GDMarker.setDraggable(false)
         }
 	}
 }
@@ -884,7 +884,7 @@ export default {
                     width: 20px;
                 }
             }
-            
+
         }
     }
     .boxr{

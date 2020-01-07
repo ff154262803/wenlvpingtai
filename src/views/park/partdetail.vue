@@ -60,10 +60,10 @@
                         <el-form-item label="开始时间"  prop="time">
 							<el-time-picker is-range v-model="newdata.time" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围"></el-time-picker>
 						</el-form-item>
-						<el-form-item label="预约开启时间" prop="subscribetime">
+						<el-form-item label="预约提前时间" prop="subscribetime">
 							<el-input v-model="newdata.subscribetime" placeholder="小时"></el-input>
 						</el-form-item>
-						<el-form-item label="检票开始时间" prop="checkedtime">
+						<el-form-item label="检票提前时间" prop="checkedtime">
 							<el-input v-model="newdata.checkedtime" placeholder="分钟"></el-input>
 						</el-form-item>
                         <el-form-item label="可预约人数"  prop="count">
@@ -218,7 +218,7 @@ export default {
 						this.newdata.endtimepart = this.timeform('hh:mm',this.newdata.time[1])
 					}
 					if(this.newdata.id){
-                        let data ={ 
+                        let data ={
                             "checkedtime": this.newdata.checkedtime,
                             "count": this.newdata.count,
                             "enddate": this.newdata.enddate,
@@ -238,7 +238,7 @@ export default {
 							this.getlist()
 						})
 					}else{
-                        let data ={ 
+                        let data ={
                             "checkedtime": this.newdata.checkedtime,
                             "count": this.newdata.count,
                             "enddate": this.newdata.enddate,

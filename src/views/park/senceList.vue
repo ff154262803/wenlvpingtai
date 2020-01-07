@@ -249,7 +249,8 @@ export default {
 		},
 		changetype(val){
 			if(val){
-				this.query.typelist.indexOf(val)>-1?this.query.typelist.push(val):this.query.typelist.push(val)
+				let num = this.query.typelist.indexOf(val);
+				~num?this.query.typelist.splice(num,1):this.query.typelist.push(val)
 			}else{
 				this.query.typelist=[]
 			}

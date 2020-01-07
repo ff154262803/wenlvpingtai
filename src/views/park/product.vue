@@ -90,7 +90,7 @@
 				        :action="$store.state.ip+'/resources/uploadResource'"
                         :on-progress="handleLoading"
                         :on-success='onsuccsesspic'
-                        :before-upload="beforeUploadpic"  
+                        :before-upload="beforeUploadpic"
                         :on-error='onerror'
 				        list-type="picture">
                         <el-button size="small" type="primary" id="uppic">点击上传</el-button>
@@ -135,7 +135,7 @@
                 },
                 rules: {
                     caption: [{required: true, message: '请输入名称', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-                    remark: [{required: true, message: '请输入备注', trigger: 'blur'}, { max: 20, message: '最多200个字符', trigger: 'blur' }],
+                    remark: [{required: true, message: '请输入备注', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                     siteid: [{required: true, message: '请选择商家名称', trigger: 'change'}],
                     price: [{ validator: checkPrice, trigger: 'blur' }],
                     picurl: [{required: true, message: '请上传图片'}]
@@ -238,7 +238,7 @@
                                 this.getAccessToken()
                             })
                         }
-                        
+
                     } else {
                         return false;
                     }

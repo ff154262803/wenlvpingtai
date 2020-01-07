@@ -83,7 +83,7 @@
 								accept="image/jpeg,image/jpg,image/png"
 								:on-progress="handleLoading"
 								:on-success='onsuccsesspic'
-								:before-upload="beforeUploadpic"  
+								:before-upload="beforeUploadpic"
 								:on-error='onerror'
 								list-type="picture">
 								<el-button size="small" type="primary" id="uppic">点击上传</el-button>
@@ -290,7 +290,7 @@ export default {
 					}
 				})
 			}
-			
+
 		},
 		beginshow(data){
 			this.Addshow = true
@@ -347,17 +347,18 @@ export default {
 						}
 					}
 					if(this.newdata.id){
+						let timeBol = this.newdata.autosold*1;
 						this.$ajax.updateMallGoods({id: this.newdata.id,parameters: {
 							caption:this.newdata.caption,
 							autosold:this.newdata.autosold,
-							endtime:this.newdata.endtime,
+							endtime:timeBol?'':this.newdata.endtime,
 							num:this.newdata.num,
 							picurl:this.newdata.picurl,
 							price:this.newdata.price,
 							scores:this.newdata.scores ,
 							soldstatus :this.newdata.soldstatus ,
 							specifyproduct:this.newdata.specifyproduct,
-							starttime :this.newdata.starttime,
+							starttime :timeBol?'':this.newdata.starttime,
 							type:this.newdata.type}}, res => {
 							this.$message({
 								type: 'success',

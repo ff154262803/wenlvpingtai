@@ -2,8 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="./static/img/zksw.ico" sizes="32x32">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=9212f117234915ed1bf3b1d4c1c05b32&plugin=AMap.PolyEditor,AMap.Autocomplete,AMap.PlaceSearch"></script>
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=9212f117234915ed1bf3b1d4c1c05b32&plugin=Amap.Geocoder,AMap.PolyEditor,AMap.Autocomplete,AMap.PlaceSearch"></script>
+  <style>
+    .amap-sug-result{
+      z-index: 99999;
+    }
+  </style>
   <title>文旅平台管理系统</title>
 </head>
 <body>
@@ -11,4 +17,3 @@
   <!-- built files will be auto injected -->
 </body>
 
-</html>

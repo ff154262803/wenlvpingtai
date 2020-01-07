@@ -2,6 +2,7 @@ import axios from './axios';
 import {Message} from 'element-ui'
 import router from '../routes'
 import ip from '../vuex/store'
+import da from "element-ui/src/locale/lang/da";
 
 let base = ip.state.ip; // 'http://39.107.112.17:5000/api'
 export default {
@@ -145,8 +146,8 @@ export default {
     updateSite(data, callback,errback) {
         this.POST(`${base}/manage/updateSite`, data, callback,errback);
     },
-      //查询全部类型列表
-      queryTypeList(data, callback, errback) {
+    //查询全部类型列表
+    queryTypeList(data, callback, errback) {
         this.POST(`${base}/manage/queryTypeList`, data, callback, errback);
     },
      //查询全部类型列表
@@ -239,11 +240,27 @@ export default {
     },
     //获取支付方式
     getPayType(data, callback,errback) {
-        this.POST(`${base}/manage/getPayType`, data, callback,errback);
+        this.POST(`${base}/manage/payconfig/getPayType`, data, callback,errback);
     },
     //设置支付方式
     setPayType(data, callback,errback) {
-        this.POST(`${base}/manage/setPayType`, data, callback,errback);
+        this.POST(`${base}/manage/payconfig/setPayType`, data, callback,errback);
+    },
+    //添加支付选项
+    addPayOption(data, callback,errback) {
+        this.POST(`${base}/manage/payconfig/addPayOption`, data, callback,errback);
+    },
+    //修改支付选项
+    updatePayOption(data, callback,errback) {
+        this.POST(`${base}/manage/payconfig/updatePayOption`, data, callback,errback);
+    },
+    //删除支付选项
+    deletePayOption(data, callback,errback) {
+        this.POST(`${base}/manage/payconfig/deletePayOption`, data, callback,errback);
+    },
+    //查询支付选项列表
+    queryPayOptionList(data, callback,errback) {
+        this.POST(`${base}/manage/payconfig/queryPayOptionList`, data, callback,errback);
     },
     //新增页面链接
     addPageLink(data, callback,errback) {
@@ -397,4 +414,93 @@ export default {
     queryParkNoticeList(data, callback,errback) {
         this.POST(`${base}/manage/queryParkNoticeList`, data, callback,errback);
     },
+    //查询失物列表信息
+    queryLostPropertyList(data, callback,errback) {
+        this.POST(`${base}/manage/lost/queryLostPropertyList`, data, callback,errback);
+    },
+    //添加失物
+    addLostProperty(data, callback,errback) {
+        this.POST(`${base}/manage/lost/addLostProperty`, data, callback,errback);
+    },
+    //失物认领
+    reclaim(data, callback,errback) {
+        this.POST(`${base}/manage/lost/reclaim`, data, callback,errback);
+    },
+    //修改失物信息
+    updateLostProperty(data, callback,errback) {
+        this.POST(`${base}/manage/lost/updateLostProperty`, data, callback,errback);
+    },
+    //根据园区id获取园区领取须知
+    getParkInstructions(data, callback,errback) {
+        this.POST(`${base}/manage/lost/getParkInstructions`, data, callback,errback);
+    },
+    //添加领取须知
+    addInstructions(data, callback,errback) {
+        this.POST(`${base}/manage/lost/addInstructions`, data, callback,errback);
+    },
+    //游客租借
+    visitorLease(data, callback,errback) {
+        this.POST(`${base}/manage/lease/visitorLease`, data, callback,errback);
+    },
+    //租赁记录
+    queryLeaseRecords(data, callback,errback) {
+        this.POST(`${base}/manage/lease/queryLeaseRecords`, data, callback,errback);
+    },
+    //租赁物品-列表
+    queryLeaseResList(data, callback,errback) {
+        this.POST(`${base}/manage/lease/queryLeaseResList`, data, callback,errback);
+    },
+    //租赁物品-添加
+    addLeaseRes(data, callback,errback) {
+        this.POST(`${base}/manage/lease/addLeaseRes`, data, callback,errback);
+    },
+    //租赁物品-归还
+    leaseGiveBack(data, callback,errback) {
+        this.POST(`${base}/manage/lease/leaseGiveBack`, data, callback,errback);
+    },
+    //租赁物品-修改
+    updateLeaseRes(data, callback,errback) {
+        this.POST(`${base}/manage/lease/updateLeaseRes`, data, callback,errback);
+    },
+    //修改租赁信息
+    updateVisitorLease(data, callback,errback) {
+        this.POST(`${base}/manage/lease/updateVisitorLease`, data, callback,errback);
+    },
+    //租赁物品-删除
+    deleteLeaseRes(data, callback,errback) {
+        this.POST(`${base}/manage/lease/deleteLeaseRes`, data, callback,errback);
+    },
+    //租赁物品分布-查询
+    queryLeaseResManagement(data, callback,errback) {
+        this.POST(`${base}/manage/lease/queryLeaseResManagement`, data, callback,errback);
+    },
+    //租赁物品分布-增加
+    allocationLeaseRes(data, callback,errback) {
+        this.POST(`${base}/manage/lease/allocationLeaseRes`, data, callback,errback);
+    },
+    //租赁物品分布-修改
+    updateLeaseResManagement(data, callback,errback) {
+        this.POST(`${base}/manage/lease/updateLeaseResManagement`, data, callback,errback);
+    },
+    //租赁物品-设置启用禁用状态
+    setLeaseResEnableState(data, callback,errback) {
+        this.POST(`${base}/manage/lease/setLeaseResEnableState`, data, callback,errback);
+    },
+    //根据parkid获取全部服务中心信息
+    getServiceCenterList(data, callback,errback) {
+        this.POST(`${base}/manage/lease/getServiceCenterList`, data, callback,errback);
+    },
+    //根据parkid获取全部租赁物品名
+    getLeaseResNames(data, callback,errback) {
+        this.POST(`${base}/manage/lease/getLeaseResNames`, data, callback,errback);
+    },
+    //查询兑换记录
+    queryExchangeList(data, callback,errback) {
+        this.POST(`${base}/manage/scores/queryExchangeList`, data, callback,errback);
+    },
+    //查询积分列表
+    queryScoreList(data, callback,errback) {
+        this.POST(`${base}/manage/scores/queryScoreList`, data, callback,errback);
+    },
+
 }

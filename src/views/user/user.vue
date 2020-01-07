@@ -34,7 +34,7 @@
             </el-table-column>
             <el-table-column
                 prop="system"
-                label="平台"
+                label="注册平台"
                 show-overflow-tooltip>
             </el-table-column>
             <el-table-column label="状态" width="80">

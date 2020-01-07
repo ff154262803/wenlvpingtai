@@ -86,8 +86,8 @@
                                 :on-progress="handleLoading"
 								:on-success='onsuccsesspic'
 								accept="image/jpeg,image/jpg,image/png"
-                                :before-upload="beforeUploadpic"  
-                                :on-error='onerror'
+                                :before-upload="beforeUploadpic"
+                                :on-error="onerror"
                                 multiple
                                 list-type="picture-card">
                                 <el-button size="small" type="primary" id="uppic">点击上传</el-button>
@@ -108,7 +108,7 @@
 								:on-progress="handleLoading"
 								accept="image/jpeg,image/jpg,image/png"
 								:on-success='onsuccsess'
-								:before-upload="beforeUploadpic"  
+								:before-upload="beforeUploadpic"
 								:on-error='onerror'
 								list-type="picture">
 								<el-button size="small" type="primary" id="uppict">点击上传</el-button>
@@ -192,6 +192,7 @@ export default {
         }
     },
 	mounted(){
+    	window.v = this;
         this.getlist();
         this.getsitelist()
 	},
@@ -224,7 +225,7 @@ export default {
 					}
 				})
 			}
-			
+
 		},
         detail(res){
 			this.Detailshow = true
@@ -272,20 +273,20 @@ export default {
 		},
 		beforeUploadpic(file){
 			const isLt5M = file.size / 1024 / 1024 < 5;
-			const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1)
-			if (!accept){
-				this.$message.error('上传文件只能是图片格式!');
-			}
-			if (!isLt5M) {
-				this.$message.error('上传文件大小不能超过 5MB!');
-			}
-			return accept && isLt5M;
+			const accept =  (file.type.indexOf('jpeg')>-1||file.type.indexOf('png')>-1||file.type.indexOf('jpg')>-1);
+			const limit = this.fileList.length < 5;
+			if (!accept) this.$message.error('上传文件只能是图片格式!');
+			if (!isLt5M) this.$message.error('上传文件大小不能超过 5MB!');
+			if (!limit) this.$message.error('最多上传5张图片！');
+			return accept && isLt5M && limit;
 		},
 		onsuccsesspic(response, file, fileList){
-			if(response.resb==200){
-                this.fileList.push(response.shortUrl)
-                this.newdata.picurl=this.fileList.join()
-                this.fullscreenLoading = false;
+			if(this.fileList.length<5 && response.resb==200){
+				this.fileList.push(response.shortUrl)
+				this.newdata.picurl=this.fileList.join()
+				this.fullscreenLoading = false;
+			}else{
+				this.$message.error('最多上传5个')
 			}
 		},
 		onremove(file, fileList){
@@ -314,7 +315,7 @@ export default {
                 this.fileList = data.picurl.split(',')
                 this.newdata.time=[new Date(data.starttime.split('-')[0],data.starttime.split('-')[1],data.starttime.split('-')[2]), new Date(data.endtime.split('-')[0],data.endtime.split('-')[1],data.endtime.split('-')[2])]
 			}else{
-				this.fileList =[] 
+				this.fileList =[]
 				this.newdata={
                     issubscribe:'1',
                     picurl:''
