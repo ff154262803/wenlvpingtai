@@ -77,7 +77,7 @@
 				<div class="el-dialog__body">
 					<el-form :model="newdata" :rules="rules" ref="newdata" label-width="120px">
 						<el-form-item label="景点名"  prop="caption">
-							<el-input v-model="newdata.caption"></el-input>
+							<el-input v-model="newdata.caption" placeholder="请填写景点名字"></el-input>
 						</el-form-item>
 						<el-form-item label="分类" prop="type">
 							<el-select v-model="newdata.type"  >
@@ -86,37 +86,21 @@
 						</el-form-item>
 						<el-form-item label="最低显示层级" prop="lowlevel">
 							<el-select v-model="newdata.lowlevel" >
-								<el-option label="12" value="12"></el-option>
-								<el-option label="13" value="13"></el-option>
-								<el-option label="14" value="14"></el-option>
-								<el-option label="15" value="15"></el-option>
-								<el-option label="16" value="16"></el-option>
-								<el-option label="17" value="17"></el-option>
-								<el-option label="18" value="18"></el-option>
-								<el-option label="19" value="19"></el-option>
-								<el-option label="20" value="20"></el-option>
-								<el-option label="21" value="21"></el-option>
+								<!--12~21-->
+								<el-option :label="item+11" :value="item+11" v-for="item in 10" :key="item"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="最高显示层级" prop="highlevel">
 							<el-select v-model="newdata.highlevel" >
-								<el-option label="13" value="13"></el-option>
-								<el-option label="14" value="14"></el-option>
-								<el-option label="15" value="15"></el-option>
-								<el-option label="16" value="16"></el-option>
-								<el-option label="17" value="17"></el-option>
-								<el-option label="18" value="18"></el-option>
-								<el-option label="19" value="19"></el-option>
-								<el-option label="20" value="20"></el-option>
-								<el-option label="21" value="21"></el-option>
-								<el-option label="22" value="21"></el-option>
+								<!--13~22-->
+								<el-option :label="item+12" :value="item+12" v-for="item in 10" :key="item"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="开放时间" prop="opentime">
-							<el-input v-model="newdata.opentime"></el-input>
+							<el-input v-model="newdata.opentime" placeholder="例：每年11月至次年3月"></el-input>
 						</el-form-item>
 						<el-form-item label="咨询电话" prop="phonenumber">
-							<el-input v-model="newdata.phonenumber"></el-input>
+							<el-input v-model="newdata.phonenumber" placeholder="请填写电话号码"></el-input>
 						</el-form-item>
 						<!-- <el-form-item label="路线信息">
 							<div style="height:400px" id="mymap">
@@ -134,7 +118,7 @@
 							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
 						</el-form-item> -->
 						<el-form-item label="概述" prop="remark">
-							<el-input v-model="newdata.remark"></el-input>
+							<el-input type="textarea" :rows="4" v-model="newdata.remark" placeholder="可以描述下景点特点"></el-input>
 						</el-form-item>
 					</el-form>
 					<div class="el-dialog__footer">
@@ -184,13 +168,16 @@ export default {
 			"electronicfencelist": "",
             "lat": "",
 			"lon": "",
+			"lowlevel":"14",
+			"highlevel":"21",
 			"phonenumber":"",
 			"remark":"",
 			"picurl":''
 		},
 		rules: {
 			caption: [{required: true, message: '请输入景点名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+			opentime: [{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+			remark: [{ max: 200, message: '最多200个字符', trigger: 'blur' }],
 			phonenumber: [{ validator: checkPhone, trigger: 'blur' }],
             lowlevel: [{required: true, message: '请选择最低显示层级', trigger: 'change'}],
             highlevel: [{required: true, message: '请选择最高显示层级', trigger: 'change'}],
@@ -214,6 +201,8 @@ export default {
 				"electronicfencelist": "",
 				"lat": "",
 				"lon": "",
+				"lowlevel":"14",
+				"highlevel":"21",
 				"phonenumber":"",
 				"remark":"",
 				"picurl":''
@@ -226,12 +215,15 @@ export default {
 				"electronicfencelist": "",
 				"lat": "",
 				"lon": "",
+				"lowlevel":"14",
+				"highlevel":"21",
 				"phonenumber":"",
 				"remark":"",
 				"picurl":''
             }
 		},
 		add(formName){
+			console.log(this.newdata)
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
 					this.$ajax.addSite(this.newdata, res => {

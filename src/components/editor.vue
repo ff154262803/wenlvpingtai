@@ -52,6 +52,8 @@ export default {
         toolbar: this.toolbar,
         branding: false,
         menubar: false,
+        convert_urls: false,
+        // images_upload_base_path: '/some/basepath',
         images_upload_handler: (blobInfo, success, failure) => {
             let param = new FormData(); //创建form对象
             param.append('file',blobInfo.blob());//通过append向form对象添加数据
@@ -59,7 +61,7 @@ export default {
             param.append('type','');//通过append向form对象添加数据
             let config = {
                 headers:{'Content-Type':'multipart/form-data'}
-            }; 
+            };
             axios.post(this.$store.state.ip+'/resources/uploadResource',param,config)
             .then(response=>{
                 success(response.data.url)
@@ -72,7 +74,7 @@ export default {
   mounted() {
   },
   methods: {
-    
+
   },
   watch: {
     value(newValue) {

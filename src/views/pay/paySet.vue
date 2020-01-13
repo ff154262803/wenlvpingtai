@@ -42,18 +42,18 @@
             <div class="allControl">
                 <el-button size="small" @click="del">删除</el-button>
             </div>
-<!--            <el-pagination background-->
-<!--                           layout="total,sizes, prev, pager, next, jumper"-->
-<!--                           @current-change="handleCurrentChange"-->
-<!--                           @size-change="handleSizeChange"-->
-<!--                           :page-sizes="[10, 15, 20, 30, 50]"-->
-<!--                           :current-page.sync="query.page"-->
-<!--                           :page-size="query.count" :total="total">-->
-<!--            </el-pagination>-->
-<!--            <el-button size="small">确定</el-button>-->
+            <!--            <el-pagination background-->
+            <!--                           layout="total,sizes, prev, pager, next, jumper"-->
+            <!--                           @current-change="handleCurrentChange"-->
+            <!--                           @size-change="handleSizeChange"-->
+            <!--                           :page-sizes="[10, 15, 20, 30, 50]"-->
+            <!--                           :current-page.sync="query.page"-->
+            <!--                           :page-size="query.count" :total="total">-->
+            <!--            </el-pagination>-->
+            <!--            <el-button size="small">确定</el-button>-->
         </el-col>
         <!--弹窗内容-->
-        <el-dialog title="添加阶梯" :visible.sync="addBol" :close-on-click-modal=false>
+        <el-dialog :title="addData.id?'修改阶梯':'添加阶梯'" :visible.sync="addBol" :close-on-click-modal=false>
             <el-form :model="addData" :rules="rules" ref="addData">
                 <el-form-item label="名称：" label-width="120px" prop="caption">
                     <el-input v-model="addData.caption" style="width: 200px"></el-input>
@@ -87,6 +87,36 @@
     export default {
         name: "paySet",
         data() {
+            const param = {
+                point(rule, val, callback) {
+                    let bol = !!val && 1 * val && (val <= 10000) && !~val.toString().indexOf('.');
+                    if (bol) {
+                        callback();
+                    } else {
+                        callback(new Error('请输入最大10000的整数'));
+                    }
+                },
+                price(rule, val, callback) {
+                    let p = val.toString().split('.')[1];
+                    let bol = !!val && 1 * val && (val <= 1000) && !(p && p.length > 2);
+
+                    if (bol) {
+                        callback();
+                    } else {
+                        callback(new Error('请输入最大1000且最多两位小数的数字'));
+                    }
+                },
+                discount(rule, val, callback) {
+                    let p = val.toString().split('.')[1];
+                    let bol = !!val && 1 * val && (val <= 10) && !(p && p.length > 2);
+
+                    if (bol) {
+                        callback();
+                    } else {
+                        callback(new Error('请输入最大10且最多两位小数的数字'));
+                    }
+                },
+            };
             return {
                 total: 0,
                 payType: {
@@ -106,10 +136,10 @@
                 },
                 rules: {
                     time: [{required: true, message: '折扣日期不能为空'}],
-                    caption: [{required: true, message: '请输入名称', trigger: 'blur'}],
-                    point: [{type: 'number', required: true, message: '请输入获得积分', trigger: 'blur'}],
-                    price: [{type: 'number', required: true, message: '请输入支付金额', trigger: 'blur'}],
-                    discount: [{type: 'number', required: true, message: '请输入支付折扣', trigger: 'blur'}],
+                    caption: [{required: true, message: '请输入名称', trigger: 'blur'}, {max: 20, message: '最多20个字符', trigger: 'blur'}],
+                    point: [{validator: param.point, required: true, trigger: 'blur'}],
+                    price: [{validator: param.price, required: true, trigger: 'blur'}],
+                    discount: [{validator: param.discount, required: true, trigger: 'blur'}],
                 },
                 tableData: [],
                 addData: {},
@@ -121,9 +151,11 @@
             this.queryPayOptionList();
         },
         methods: {
-            queryPayOptionList(){
-                this.$ajax.queryPayOptionList({},res=>{
-                    res.data.forEach(n=>{n.price=n.price/100});
+            queryPayOptionList() {
+                this.$ajax.queryPayOptionList({}, res => {
+                    res.data.forEach(n => {
+                        n.price = n.price / 100
+                    });
                     this.tableData = res.data;
                 })
             },
@@ -155,7 +187,7 @@
                         this.addData.endtime = this.addData.time[1];
                         this.addData.price = this.addData.price * 100;
                         if (this.addData.id) {
-                            this.$ajax.updatePayOption(this.addData,res=>{
+                            this.$ajax.updatePayOption(this.addData, res => {
                                 this.$message({
                                     type: 'success',
                                     message: '修改成功!'
@@ -180,17 +212,25 @@
                 this.addData = data;
                 this.$set(this.addData, 'time', [data.starttime, data.endtime]);
             },
-            del(){
-                this.$ajax.deletePayOption({idlst:this.multipleSelection},res=>{
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                    this.queryPayOptionList();
-                })
+            del() {
+                this.$confirm('您确定要删除该充值阶梯吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$ajax.deletePayOption({idlst: this.multipleSelection}, res => {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        this.queryPayOptionList();
+                    })
+                }).catch(() => {
+                });
+
             },
             handleSelectionChange(val) {
-                this.multipleSelection = val.map(n=>n.id);
+                this.multipleSelection = val.map(n => n.id);
             },
             // handleSizeChange(val) {
             //     this.query.count = val;
@@ -216,6 +256,7 @@
         justify-content: flex-end;
         position: relative;
         height: 52px;
+
         .allControl {
             position: absolute;
             left: 15px;

@@ -65,7 +65,7 @@
         <el-dialog title="添加园区" :visible.sync="Addshow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="newdata" :rules="rules" ref="newdata" label-width="100px">
                 <el-form-item label="园区名"  prop="caption">
-                    <el-input v-model="newdata.caption"></el-input>
+                    <el-input v-model="newdata.caption" placeholder="请输入园区名"></el-input>
                 </el-form-item>
                 <el-form-item label="分类" prop="type">
 					<el-select v-model="newdata.type"  >
@@ -88,7 +88,7 @@
                     <el-input v-model="newdata.opentime" placeholder="例：”每年11月至次年3月”"></el-input>
                 </el-form-item>
 				<el-form-item label="咨询电话" prop="packnumber">
-                    <el-input v-model="newdata.packnumber"></el-input>
+                    <el-input v-model="newdata.packnumber" placeholder="请输入电话号码"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -142,7 +142,7 @@ export default {
 		rules: {
 			caption: [{required: true, message: '请输入园区名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
 			city: [{required: true, message: '请选择完整省市', trigger: 'change'}],
-			opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
+			// opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
 			packnumber: [{ validator: checkPhone, trigger: 'blur' }],
 			price: [{ required: true,validator: checkPrice, trigger: 'blur' }],
 			type: [{required: true, message: '请选择园区类型', trigger: 'change'}],

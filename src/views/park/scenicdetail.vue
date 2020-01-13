@@ -4,7 +4,12 @@
             <div class="menu">
                 <el-row class="p">
                     <el-col :span="16"><div>基本信息</div></el-col>
-                    <el-col :span="8"><div class="btnright"><el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button><el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button></div></el-col>
+                    <el-col :span="8">
+                        <div class="btnright">
+                            <el-button type="info" plain @click="enableState(0)" v-show="detail.isenable==1">禁用</el-button>
+                            <el-button type="info" plain @click="enableState(1)" v-show="detail.isenable==0">启用</el-button>
+                        </div>
+                    </el-col>
                 </el-row>
                 <el-row class="list">
                     <el-col :span="24"><div><span>ID：</span>{{detail.id}}</div></el-col>
@@ -26,18 +31,18 @@
                     <el-col :span="2"><div class="icon" @click="edit('level')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>特点标签：</span>{{detail.tag}}</div></el-col>
+                    <el-col :span="22"><div><span>特点标签：</span>{{detail.tag}}<span v-if="!detail.tag">可以描述下景点特点</span></div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('tag')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row><el-row class="list">
-                    <el-col :span="22"><div><span>开放时间：</span>{{detail.opentime}}</div></el-col>
+                    <el-col :span="22"><div><span>开放时间：</span>{{detail.opentime}}<span v-if="!detail.opentime">例：每天8:00-19:00</span></div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('opentime')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
-                    <el-col :span="22"><div><span>咨询电话：</span>{{detail.phonenumber}}</div></el-col>
+                    <el-col :span="22"><div><span>咨询电话：</span>{{detail.phonenumber}}<span v-if="!detail.phonenumber">例：010-12345678</span></div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('phonenumber')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                  <el-row class="list">
-                    <el-col :span="22"><div><span>概述：</span>{{detail.remark}}</div></el-col>
+                    <el-col :span="22"><div><span>概述：</span>{{detail.remark}}<span v-if="!detail.remark">可以对景点写一段大概描述</span></div></el-col>
                     <el-col :span="2"><div class="icon" @click="edit('remark')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                 </el-row>
                 <el-row class="list">
@@ -56,7 +61,7 @@
                 </el-row>
                 <div v-show="detail.isar==1">
                     <el-row class="list">
-                        <el-col :span="22"><div><span>最佳时间：</span>{{detail.besttime}}</div></el-col>
+                        <el-col :span="22"><div><span>最佳时间：</span>{{detail.besttime}}<span v-if="!detail.besttime">简要说明AR观看的最佳时间</span></div></el-col>
                         <el-col :span="2"><div class="icon" @click="edit('besttime')"><img src="../../../static/img/edit.png" alt=""></div></el-col>
                     </el-row>
                     <el-row class="list">
@@ -282,7 +287,7 @@
         <el-dialog title="修改概述" :visible.sync="remarkShow" class="demo-box" width="590px" :close-on-click-modal = false>
             <el-form :model="editdata" :rules="detailrules" ref="remark" label-width="100px">
                 <el-form-item label="概述"  prop="remark">
-                    <el-input v-model="editdata.remark"></el-input>
+                    <el-input type="textarea" v-model="editdata.remark" :rows="6"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -440,7 +445,7 @@ export default {
                 tag: [{required: true, message: '请输入标签名', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
                 phonenumber: [{ validator: checkPhone, trigger: 'blur' }],
-                remark: [{required: true, message: '请输入概述', trigger: 'blur'}, { max: 100, message: '最多100个字符', trigger: 'blur' }],
+                remark: [{required: true, message: '请输入概述', trigger: 'blur'}, { max: 200, message: '最多200个字符', trigger: 'blur' }],
                 isar: [{required: true, message: '请选择是否AR', trigger: 'change'}],
                 besttime: [{required: true, message: '请输入最佳时间', trigger: 'blur'}, { max: 20, message: '最多20个字符', trigger: 'blur' }],
                 score:[{ validator: checkScore, trigger: 'blur' }],
@@ -501,6 +506,7 @@ export default {
 	},
 	methods: {
         select(e) {
+            this.GDPolyEditor.close();
             var x= e.poi.location.lng
 			var y = e.poi.location.lat
 			this.GDMap.setCenter([x,y]);
@@ -526,6 +532,7 @@ export default {
             this.GDPolygon.setPath(curPath);
             this.GDMarker.setPosition([x,y])
             this.GDPolyEditor = new AMap.PolyEditor(this.GDMap, this.GDPolygon);
+            this.GDPolyEditor.open();
             this.GDMap.setFitView();
         },
         close(i){
@@ -734,6 +741,14 @@ export default {
 			this[formName+'Show'] = false
         },
         enableState(val){
+            if(!this.fileList.length){
+                this.$message.error('介绍图至少一张');
+                return false;
+            }
+            if(!this.detail.lon){
+                this.$message.error('请设置位置和AR围栏');
+                return false;
+            }
             this.$ajax.setSiteEnableState({idlst:[this.siteid],isenable:val}, res => {
                 this.$message({
                     type: 'success',

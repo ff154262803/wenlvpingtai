@@ -84,7 +84,7 @@
         </el-col>
 
         <!--添加失物弹窗内容-->
-        <el-dialog :title="['添加分类','修改失物','失物详情'][changeBol]" v-if="addBol" :visible.sync="addBol"
+        <el-dialog :title="['添加失物','修改失物','失物详情'][changeBol]" v-if="addBol" :visible.sync="addBol"
                    :close-on-click-modal=false
                    @close="cancel()">
             <el-form :model="addData" :rules="rules" ref="addData">
@@ -467,6 +467,10 @@
                     if (this.marker) {
                         this.marker.setMap(null);
                         this.marker = '';
+                    }
+                    if(!e.poi.location){
+                        this.$message.error('请选择具体地点，而非线路');
+                        return false;
                     }
                     this.marker = new AMap.Marker({
                         map: this.map,
