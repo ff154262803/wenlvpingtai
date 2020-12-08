@@ -84,6 +84,7 @@
                     condition:'',
                     page: 1,
                     size: 20,
+                    count: 10,
                     timeLimit:''
                 },
                 multipleSelection: []

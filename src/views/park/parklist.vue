@@ -240,17 +240,45 @@ export default {
 		},
 		enableState(val){
 			if(this.multipleSelection.length>0){
-				let idlst=[]
-				for(let i = 0;i<this.multipleSelection.length;i++){
-					idlst.push(this.multipleSelection[i].parkid)
-				}
-				this.$ajax.setParkEnableState({idlst:idlst,isenable:val}, res => {
-					this.$message({
-						type: 'success',
-						message: '设置成功!'
-					});
-					this.get()
-				})
+			    let promise = new Promise((resolve, reject)=> {
+                    if(val == 1){
+                        let bol = {areafencelist:false,electronicfencelist:false};
+                        let num=0;
+                        this.multipleSelection.forEach(n=>{
+                            this.$ajax.getParkDetails({id: n.parkid}, res => {
+                                bol.areafencelist = bol.areafencelist || !res.data.areafencelist;
+                                bol.electronicfencelist = bol.electronicfencelist || !res.data.electronicfencelist;
+                                num++;
+                                if(num == this.multipleSelection.length){
+                                    if (bol.areafencelist) {
+                                        this.$message.error('所选中园区没有设置园区显示范围');
+                                        reject();
+                                    }else if (bol.electronicfencelist) {
+                                        this.$message.error('所选中园区没有设置园区范围');
+                                        reject();
+                                    }else{
+                                        resolve();
+                                    }
+                                }
+                            })
+                        })
+                    }else{
+                        resolve();
+                    }
+                })
+                promise.then(()=>{
+                    let idlst=[]
+                    for(let i = 0;i<this.multipleSelection.length;i++){
+                        idlst.push(this.multipleSelection[i].parkid)
+                    }
+                    this.$ajax.setParkEnableState({idlst:idlst,isenable:val}, res => {
+                        this.$message({
+                            type: 'success',
+                            message: '设置成功!'
+                        });
+                        this.get()
+                    })
+                }).catch(()=>{})
 			}
 		},
 		delAll(){

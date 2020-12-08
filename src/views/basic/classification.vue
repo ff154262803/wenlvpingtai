@@ -1,8 +1,10 @@
 <template>
     <div class="classificationPage">
-        <el-input placeholder="请输入内容" v-model="query.condition" clearable style="width: 300px"></el-input>
-        <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-        <el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>
+        <div class="classTop">
+            <el-input placeholder="请输入内容" v-model="query.condition" clearable style="width: 300px"></el-input>
+            <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
+            <el-button class="addBtn" type="primary" @click="addBtn">添加</el-button>
+        </div>
         <div class="filter">
             <strong>分类：</strong>
 			<span @click="changetype('')" :class='query.groupId==""?"active":""'>不限</span>
@@ -90,7 +92,7 @@
                 typenamaedata:{},
                 query: {
                     page: 1,
-                    count: 20,
+                    count: 10,
                     condition:'',
                     groupId:""
                 },
@@ -160,7 +162,7 @@
                                 this.getAccessToken()
                             })
                         }
-                        
+
                     } else {
                         return false;
                     }
@@ -213,7 +215,7 @@
                             })
                         }).catch(() => {});
                     }
-                    
+
                 }, err => {
                     if(err.resb=996){
                         this.$confirm('该类型已被使用您确定要删除该类型吗?', '提示', {
@@ -230,7 +232,7 @@
                             })
                         }).catch(() => {});
                     }
-                    
+
                 })
             },
             handleCurrentChange(val) { // 切换元页
@@ -244,14 +246,19 @@
 
 <style scoped lang="scss">
     .classificationPage {
-        .btn {
-            margin-left: 20px;
+        .classTop{
+            margin-bottom: 10px;
+            .btn {
+                margin-left: 20px;
+            }
         }
+
         .addBtn {
             margin-left: 80px;
         }
         .filter{
             line-height: 40px;
+            margin-bottom: 10px;
             span {
                 display: inline-block;
                 line-height: 30px;

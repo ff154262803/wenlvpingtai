@@ -1,5 +1,5 @@
 import axios from './axios';
-import {Message} from 'element-ui'
+import { Message } from 'element-ui'
 import router from '../routes'
 import ip from '../vuex/store'
 import da from "element-ui/src/locale/lang/da";
@@ -13,18 +13,32 @@ export default {
             if (!data.uid) data.uid = storage.uid;
             data.uKey = storage.uKey;
         }
-        axios.post(url, data)
-          .then(res => {
-              this.ajaxNext(res.data, callback, errback);
-          });
+        console.log(storage);
+        axios({
+            url: url, method: 'post', data: data,
+            headers: {
+                'Authorization': storage && storage.uKey
+            }
+        })
+            .then(res => {
+                //   console.log(res);
+                this.ajaxNext(res.data, callback, errback);
+            });
     },
     GET(url, data, callback, errback) {
-        axios.get(url, data)
-          .then(res => {
-              this.ajaxNext(res.data, callback, errback);
-          })
+        var storage = JSON.parse(sessionStorage.getItem('user'));
+        axios({
+            url: url, method: 'get', data: data,
+            headers: {
+                'Authorization': storage && storage.uKey
+            }
+        })
+            .then(res => {
+                this.ajaxNext(res.data, callback, errback);
+            })
     },
     ajaxNext(data, callback, errback) {
+        // console.log(data);
         switch (data.resb) {
             case 200:
                 callback(data);
@@ -36,7 +50,7 @@ export default {
             case 996:
                 errback(data);
                 break;
-            default :
+            default:
                 Message.error(data.resbInfo);
                 errback && errback();
                 break;
@@ -44,6 +58,7 @@ export default {
     },
     //登录
     login(data, callback, errback) {
+        console.log(data)
         this.POST(`${base}/manage/login`, data, callback, errback);
     },
     //登出
@@ -111,12 +126,12 @@ export default {
         this.POST(`${base}/manage/addPark`, data, callback, errback);
     },
     //获取园区详情
-    getParkDetails(data, callback,errback) {
-        this.POST(`${base}/manage/getParkDetails`, data, callback,errback);
+    getParkDetails(data, callback, errback) {
+        this.POST(`${base}/manage/getParkDetails`, data, callback, errback);
     },
     //编辑园区
-    updatePark(data, callback,errback) {
-        this.POST(`${base}/manage/updatePark`, data, callback,errback);
+    updatePark(data, callback, errback) {
+        this.POST(`${base}/manage/updatePark`, data, callback, errback);
     },
     //查询景点列表
     querySiteList(data, callback, errback) {
@@ -138,20 +153,20 @@ export default {
     addSite(data, callback, errback) {
         this.POST(`${base}/manage/addSite`, data, callback, errback);
     },
-     //获取景点详情
-     getSiteDetails(data, callback,errback) {
-        this.POST(`${base}/manage/getSiteDetails`, data, callback,errback);
+    //获取景点详情
+    getSiteDetails(data, callback, errback) {
+        this.POST(`${base}/manage/getSiteDetails`, data, callback, errback);
     },
     //修改景点详情
-    updateSite(data, callback,errback) {
-        this.POST(`${base}/manage/updateSite`, data, callback,errback);
+    updateSite(data, callback, errback) {
+        this.POST(`${base}/manage/updateSite`, data, callback, errback);
     },
     //查询全部类型列表
     queryTypeList(data, callback, errback) {
         this.POST(`${base}/manage/queryTypeList`, data, callback, errback);
     },
-     //查询全部类型列表
-     getGroupList(data, callback, errback) {
+    //查询全部类型列表
+    getGroupList(data, callback, errback) {
         this.POST(`${base}/manage/getGroupList`, data, callback, errback);
     },
     //新增景点类型
@@ -170,11 +185,11 @@ export default {
     deleteType(data, callback, errback) {
         this.POST(`${base}/manage/deleteType`, data, callback, errback);
     },
-     //设置类型可用状态
-     setTypeEnableState(data, callback, errback) {
+    //设置类型可用状态
+    setTypeEnableState(data, callback, errback) {
         this.POST(`${base}/manage/setTypeEnableState`, data, callback, errback);
     },
-     //查询路线列表
+    //查询路线列表
     queryRouteList(data, callback, errback) {
         this.POST(`${base}/manage/queryRouteList`, data, callback, errback);
     },
@@ -190,15 +205,15 @@ export default {
     addRoute(data, callback, errback) {
         this.POST(`${base}/manage/addRoute`, data, callback, errback);
     },
-     //获取路线详情
-     getRouteDetails(data, callback,errback) {
-        this.POST(`${base}/manage/getRouteDetails`, data, callback,errback);
+    //获取路线详情
+    getRouteDetails(data, callback, errback) {
+        this.POST(`${base}/manage/getRouteDetails`, data, callback, errback);
     },
     //修改路线详情
-    updateRoute(data, callback,errback) {
-        this.POST(`${base}/manage/updateRoute`, data, callback,errback);
+    updateRoute(data, callback, errback) {
+        this.POST(`${base}/manage/updateRoute`, data, callback, errback);
     },
-      //查询产品列表
+    //查询产品列表
     queryCommodityList(data, callback, errback) {
         this.POST(`${base}/manage/queryCommodityList`, data, callback, errback);
     },
@@ -215,8 +230,8 @@ export default {
         this.POST(`${base}/manage/addCommodity`, data, callback, errback);
     },
     //修改产品详情
-    updateCommodity(data, callback,errback) {
-        this.POST(`${base}/manage/updateCommodity`, data, callback,errback);
+    updateCommodity(data, callback, errback) {
+        this.POST(`${base}/manage/updateCommodity`, data, callback, errback);
     },
     //删除移动端用户
     deleteAppUser(data, callback, errback) {
@@ -227,280 +242,308 @@ export default {
         this.POST(`${base}/manage/queryAppUserList`, data, callback, errback);
     },
     //设置可用状态
-    setAppUserEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/setAppUserEnableState`, data, callback,errback);
+    setAppUserEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setAppUserEnableState`, data, callback, errback);
     },
     //获取数据统计信息
-    getDataCube(data, callback,errback) {
-        this.POST(`${base}/manage/getDataCube`, data, callback,errback);
+    getDataCube(data, callback, errback) {
+        this.POST(`${base}/manage/getDataCube`, data, callback, errback);
     },
     //获取意见反馈列表
-    queryUserFeedbackList(data, callback,errback) {
-        this.POST(`${base}/manage/queryUserFeedbackList`, data, callback,errback);
+    queryUserFeedbackList(data, callback, errback) {
+        this.POST(`${base}/manage/queryUserFeedbackList`, data, callback, errback);
     },
     //获取支付方式
-    getPayType(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/getPayType`, data, callback,errback);
+    getPayType(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/getPayType`, data, callback, errback);
     },
     //设置支付方式
-    setPayType(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/setPayType`, data, callback,errback);
+    setPayType(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/setPayType`, data, callback, errback);
     },
     //添加支付选项
-    addPayOption(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/addPayOption`, data, callback,errback);
+    addPayOption(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/addPayOption`, data, callback, errback);
     },
     //修改支付选项
-    updatePayOption(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/updatePayOption`, data, callback,errback);
+    updatePayOption(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/updatePayOption`, data, callback, errback);
     },
     //删除支付选项
-    deletePayOption(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/deletePayOption`, data, callback,errback);
+    deletePayOption(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/deletePayOption`, data, callback, errback);
     },
     //查询支付选项列表
-    queryPayOptionList(data, callback,errback) {
-        this.POST(`${base}/manage/payconfig/queryPayOptionList`, data, callback,errback);
+    queryPayOptionList(data, callback, errback) {
+        this.POST(`${base}/manage/payconfig/queryPayOptionList`, data, callback, errback);
     },
     //新增页面链接
-    addPageLink(data, callback,errback) {
-        this.POST(`${base}/manage/addPageLink`, data, callback,errback);
+    addPageLink(data, callback, errback) {
+        this.POST(`${base}/manage/addPageLink`, data, callback, errback);
     },
     //查询页面链接列表
-    queryPageLinkList(data, callback,errback) {
-        this.POST(`${base}/manage/queryPageLinkList`, data, callback,errback);
+    queryPageLinkList(data, callback, errback) {
+        this.POST(`${base}/manage/queryPageLinkList`, data, callback, errback);
     },
     //修改页面链接信息
-    updatePageLink(data, callback,errback) {
-        this.POST(`${base}/manage/updatePageLink`, data, callback,errback);
+    updatePageLink(data, callback, errback) {
+        this.POST(`${base}/manage/updatePageLink`, data, callback, errback);
     },
-     //添加商城商品
-     addMallGoods(data, callback,errback) {
-        this.POST(`${base}/manage/addMallGoods`, data, callback,errback);
+    //添加商城商品
+    addMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/addMallGoods`, data, callback, errback);
     },
     //删除商城商品
-    deleteMallGoods(data, callback,errback) {
-        this.POST(`${base}/manage/deleteMallGoods`, data, callback,errback);
+    deleteMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/deleteMallGoods`, data, callback, errback);
     },
     //商品详情信息
-    getMallGoodsDetails(data, callback,errback) {
-        this.POST(`${base}/manage/getMallGoodsDetails`, data, callback,errback);
+    getMallGoodsDetails(data, callback, errback) {
+        this.POST(`${base}/manage/getMallGoodsDetails`, data, callback, errback);
     },
     //商城商品列表查询
-    queryMallGoodsList(data, callback,errback) {
-        this.POST(`${base}/manage/queryMallGoodsList`, data, callback,errback);
+    queryMallGoodsList(data, callback, errback) {
+        this.POST(`${base}/manage/queryMallGoodsList`, data, callback, errback);
     },
     //修改商品信息
-    updateMallGoods(data, callback,errback) {
-        this.POST(`${base}/manage/updateMallGoods`, data, callback,errback);
+    updateMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/updateMallGoods`, data, callback, errback);
     },
     //添加商城活动
-    addMallActivity(data, callback,errback) {
-        this.POST(`${base}/manage/addMallActivity`, data, callback,errback);
+    addMallActivity(data, callback, errback) {
+        this.POST(`${base}/manage/addMallActivity`, data, callback, errback);
     },
     //删除商城活动
-    deleteMallActivity(data, callback,errback) {
-        this.POST(`${base}/manage/deleteMallActivity`, data, callback,errback);
+    deleteMallActivity(data, callback, errback) {
+        this.POST(`${base}/manage/deleteMallActivity`, data, callback, errback);
     },
     //活动详情信息
-    getMalllActivityDetails(data, callback,errback) {
-        this.POST(`${base}/manage/getMalllActivityDetails`, data, callback,errback);
+    getMalllActivityDetails(data, callback, errback) {
+        this.POST(`${base}/manage/getMalllActivityDetails`, data, callback, errback);
     },
     //商城活动查询
-    queryMallActivityList(data, callback,errback) {
-        this.POST(`${base}/manage/queryMallActivityList`, data, callback,errback);
+    queryMallActivityList(data, callback, errback) {
+        this.POST(`${base}/manage/queryMallActivityList`, data, callback, errback);
     },
     //修改活动信息
-    updateMallActivity(data, callback,errback) {
-        this.POST(`${base}/manage/updateMallActivity`, data, callback,errback);
+    updateMallActivity(data, callback, errback) {
+        this.POST(`${base}/manage/updateMallActivity`, data, callback, errback);
     },
     //设置活动的可用状态
-    setMallActivityEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/setMallActivityEnableState`, data, callback,errback);
+    setMallActivityEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setMallActivityEnableState`, data, callback, errback);
     },
     //添加h5信息
-    addH5(data, callback,errback) {
-        this.POST(`${base}/manage/addH5`, data, callback,errback);
+    addH5(data, callback, errback) {
+        this.POST(`${base}/manage/addH5`, data, callback, errback);
     },
     //获取h5信息
-    getH5Details(data, callback,errback) {
-        this.POST(`${base}/manage/getH5Details`, data, callback,errback);
+    getH5Details(data, callback, errback) {
+        this.POST(`${base}/manage/getH5Details`, data, callback, errback);
     },
     //更新h5
-    updateH5(data, callback,errback) {
-        this.POST(`${base}/manage/updateH5`, data, callback,errback);
+    updateH5(data, callback, errback) {
+        this.POST(`${base}/manage/updateH5`, data, callback, errback);
     },
     //添加预约活动
-    addEvents(data, callback,errback) {
-        this.POST(`${base}/manage/addEvents`, data, callback,errback);
+    addEvents(data, callback, errback) {
+        this.POST(`${base}/manage/addEvents`, data, callback, errback);
     },
     //添加时段
-    addTimePart(data, callback,errback) {
-        this.POST(`${base}/manage/addTimePart`, data, callback,errback);
+    addTimePart(data, callback, errback) {
+        this.POST(`${base}/manage/addTimePart`, data, callback, errback);
     },
     //删除预约活动
-    deleteEvents(data, callback,errback) {
-        this.POST(`${base}/manage/deleteEvents`, data, callback,errback);
+    deleteEvents(data, callback, errback) {
+        this.POST(`${base}/manage/deleteEvents`, data, callback, errback);
     },
     //删除时段
-    deleteTimePart(data, callback,errback) {
-        this.POST(`${base}/manage/deleteTimePart`, data, callback,errback);
+    deleteTimePart(data, callback, errback) {
+        this.POST(`${base}/manage/deleteTimePart`, data, callback, errback);
     },
     //商城活动列表查询
-    queryEventsList(data, callback,errback) {
-        this.POST(`${base}/manage/queryEventsList`, data, callback,errback);
+    queryEventsList(data, callback, errback) {
+        this.POST(`${base}/manage/queryEventsList`, data, callback, errback);
     },
     //时间段列表查询
-    queryTimePartList(data, callback,errback) {
-        this.POST(`${base}/manage/queryTimePartList`, data, callback,errback);
+    queryTimePartList(data, callback, errback) {
+        this.POST(`${base}/manage/queryTimePartList`, data, callback, errback);
     },
     //设置活动的可用状态
-    setEventsEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/setEventsEnableState`, data, callback,errback);
+    setEventsEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setEventsEnableState`, data, callback, errback);
     },
     //设置时间段的可用状态
-    setTimePartEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/setTimePartEnableState`, data, callback,errback);
+    setTimePartEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setTimePartEnableState`, data, callback, errback);
     },
     //商城活动列表查询
-    updateEvents(data, callback,errback) {
-        this.POST(`${base}/manage/updateEvents`, data, callback,errback);
+    updateEvents(data, callback, errback) {
+        this.POST(`${base}/manage/updateEvents`, data, callback, errback);
     },
     //修改时间段信息
-    updateTimePart(data, callback,errback) {
-        this.POST(`${base}/manage/updateTimePart`, data, callback,errback);
+    updateTimePart(data, callback, errback) {
+        this.POST(`${base}/manage/updateTimePart`, data, callback, errback);
     },
     //添加全景图信息
-    addPanorama(data, callback,errback) {
-        this.POST(`${base}/manage/addPanorama`, data, callback,errback);
+    addPanorama(data, callback, errback) {
+        this.POST(`${base}/manage/addPanorama`, data, callback, errback);
     },
     //删除全景图信息
-    deletePanorama(data, callback,errback) {
-        this.POST(`${base}/manage/deletePanorama`, data, callback,errback);
+    deletePanorama(data, callback, errback) {
+        this.POST(`${base}/manage/deletePanorama`, data, callback, errback);
     },
     //获取全景图列表信息
-    queryPanoramaList(data, callback,errback) {
-        this.POST(`${base}/manage/queryPanoramaList`, data, callback,errback);
+    queryPanoramaList(data, callback, errback) {
+        this.POST(`${base}/manage/queryPanoramaList`, data, callback, errback);
     },
     //编辑全景图信息
-    updatePanorama(data, callback,errback) {
-        this.POST(`${base}/manage/updatePanorama`, data, callback,errback);
+    updatePanorama(data, callback, errback) {
+        this.POST(`${base}/manage/updatePanorama`, data, callback, errback);
     },
     //设置全景图是否可以用
-    setPanoramaEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/setPanoramaEnableState`, data, callback,errback);
+    setPanoramaEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/setPanoramaEnableState`, data, callback, errback);
     },
     //推送
-    simplePush(data, callback,errback) {
-        this.POST(`${base}/manage/simplePush`, data, callback,errback);
+    simplePush(data, callback, errback) {
+        this.POST(`${base}/manage/simplePush`, data, callback, errback);
     },
     //获取预约人数信息
-    getEventsNumList(data, callback,errback) {
-        this.POST(`${base}/manage/getEventsNumList`, data, callback,errback);
+    getEventsNumList(data, callback, errback) {
+        this.POST(`${base}/manage/getEventsNumList`, data, callback, errback);
     },
     //获取预约列表信息
-    getEventsUserList(data, callback,errback) {
-        this.POST(`${base}/manage/getEventsUserList`, data, callback,errback);
+    getEventsUserList(data, callback, errback) {
+        this.POST(`${base}/manage/getEventsUserList`, data, callback, errback);
     },
     //添加园区公告
-    addParkNotice(data, callback,errback) {
-        this.POST(`${base}/manage/addParkNotice`, data, callback,errback);
+    addParkNotice(data, callback, errback) {
+        this.POST(`${base}/manage/addParkNotice`, data, callback, errback);
     },
     //删除公告信息
-    deleteParkNotice(data, callback,errback) {
-        this.POST(`${base}/manage/deleteParkNotice`, data, callback,errback);
+    deleteParkNotice(data, callback, errback) {
+        this.POST(`${base}/manage/deleteParkNotice`, data, callback, errback);
     },
     //查询公告列表信息
-    queryParkNoticeList(data, callback,errback) {
-        this.POST(`${base}/manage/queryParkNoticeList`, data, callback,errback);
+    queryParkNoticeList(data, callback, errback) {
+        this.POST(`${base}/manage/queryParkNoticeList`, data, callback, errback);
     },
     //查询失物列表信息
-    queryLostPropertyList(data, callback,errback) {
-        this.POST(`${base}/manage/lost/queryLostPropertyList`, data, callback,errback);
+    queryLostPropertyList(data, callback, errback) {
+        this.POST(`${base}/manage/lost/queryLostPropertyList`, data, callback, errback);
     },
     //添加失物
-    addLostProperty(data, callback,errback) {
-        this.POST(`${base}/manage/lost/addLostProperty`, data, callback,errback);
+    addLostProperty(data, callback, errback) {
+        this.POST(`${base}/manage/lost/addLostProperty`, data, callback, errback);
     },
     //失物认领
-    reclaim(data, callback,errback) {
-        this.POST(`${base}/manage/lost/reclaim`, data, callback,errback);
+    reclaim(data, callback, errback) {
+        this.POST(`${base}/manage/lost/reclaim`, data, callback, errback);
     },
     //修改失物信息
-    updateLostProperty(data, callback,errback) {
-        this.POST(`${base}/manage/lost/updateLostProperty`, data, callback,errback);
+    updateLostProperty(data, callback, errback) {
+        this.POST(`${base}/manage/lost/updateLostProperty`, data, callback, errback);
     },
     //根据园区id获取园区领取须知
-    getParkInstructions(data, callback,errback) {
-        this.POST(`${base}/manage/lost/getParkInstructions`, data, callback,errback);
+    getParkInstructions(data, callback, errback) {
+        this.POST(`${base}/manage/lost/getParkInstructions`, data, callback, errback);
     },
     //添加领取须知
-    addInstructions(data, callback,errback) {
-        this.POST(`${base}/manage/lost/addInstructions`, data, callback,errback);
+    addInstructions(data, callback, errback) {
+        this.POST(`${base}/manage/lost/addInstructions`, data, callback, errback);
     },
     //游客租借
-    visitorLease(data, callback,errback) {
-        this.POST(`${base}/manage/lease/visitorLease`, data, callback,errback);
+    visitorLease(data, callback, errback) {
+        this.POST(`${base}/manage/lease/visitorLease`, data, callback, errback);
     },
     //租赁记录
-    queryLeaseRecords(data, callback,errback) {
-        this.POST(`${base}/manage/lease/queryLeaseRecords`, data, callback,errback);
+    queryLeaseRecords(data, callback, errback) {
+        this.POST(`${base}/manage/lease/queryLeaseRecords`, data, callback, errback);
     },
     //租赁物品-列表
-    queryLeaseResList(data, callback,errback) {
-        this.POST(`${base}/manage/lease/queryLeaseResList`, data, callback,errback);
+    queryLeaseResList(data, callback, errback) {
+        this.POST(`${base}/manage/lease/queryLeaseResList`, data, callback, errback);
     },
     //租赁物品-添加
-    addLeaseRes(data, callback,errback) {
-        this.POST(`${base}/manage/lease/addLeaseRes`, data, callback,errback);
+    addLeaseRes(data, callback, errback) {
+        this.POST(`${base}/manage/lease/addLeaseRes`, data, callback, errback);
     },
     //租赁物品-归还
-    leaseGiveBack(data, callback,errback) {
-        this.POST(`${base}/manage/lease/leaseGiveBack`, data, callback,errback);
+    leaseGiveBack(data, callback, errback) {
+        this.POST(`${base}/manage/lease/leaseGiveBack`, data, callback, errback);
     },
     //租赁物品-修改
-    updateLeaseRes(data, callback,errback) {
-        this.POST(`${base}/manage/lease/updateLeaseRes`, data, callback,errback);
+    updateLeaseRes(data, callback, errback) {
+        this.POST(`${base}/manage/lease/updateLeaseRes`, data, callback, errback);
     },
     //修改租赁信息
-    updateVisitorLease(data, callback,errback) {
-        this.POST(`${base}/manage/lease/updateVisitorLease`, data, callback,errback);
+    updateVisitorLease(data, callback, errback) {
+        this.POST(`${base}/manage/lease/updateVisitorLease`, data, callback, errback);
     },
     //租赁物品-删除
-    deleteLeaseRes(data, callback,errback) {
-        this.POST(`${base}/manage/lease/deleteLeaseRes`, data, callback,errback);
+    deleteLeaseRes(data, callback, errback) {
+        this.POST(`${base}/manage/lease/deleteLeaseRes`, data, callback, errback);
     },
     //租赁物品分布-查询
-    queryLeaseResManagement(data, callback,errback) {
-        this.POST(`${base}/manage/lease/queryLeaseResManagement`, data, callback,errback);
+    queryLeaseResManagement(data, callback, errback) {
+        this.POST(`${base}/manage/lease/queryLeaseResManagement`, data, callback, errback);
     },
     //租赁物品分布-增加
-    allocationLeaseRes(data, callback,errback) {
-        this.POST(`${base}/manage/lease/allocationLeaseRes`, data, callback,errback);
+    allocationLeaseRes(data, callback, errback) {
+        this.POST(`${base}/manage/lease/allocationLeaseRes`, data, callback, errback);
     },
     //租赁物品分布-修改
-    updateLeaseResManagement(data, callback,errback) {
-        this.POST(`${base}/manage/lease/updateLeaseResManagement`, data, callback,errback);
+    updateLeaseResManagement(data, callback, errback) {
+        this.POST(`${base}/manage/lease/updateLeaseResManagement`, data, callback, errback);
     },
     //租赁物品-设置启用禁用状态
-    setLeaseResEnableState(data, callback,errback) {
-        this.POST(`${base}/manage/lease/setLeaseResEnableState`, data, callback,errback);
+    setLeaseResEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/lease/setLeaseResEnableState`, data, callback, errback);
     },
     //根据parkid获取全部服务中心信息
-    getServiceCenterList(data, callback,errback) {
-        this.POST(`${base}/manage/lease/getServiceCenterList`, data, callback,errback);
+    getServiceCenterList(data, callback, errback) {
+        this.POST(`${base}/manage/lease/getServiceCenterList`, data, callback, errback);
     },
     //根据parkid获取全部租赁物品名
-    getLeaseResNames(data, callback,errback) {
-        this.POST(`${base}/manage/lease/getLeaseResNames`, data, callback,errback);
+    getLeaseResNames(data, callback, errback) {
+        this.POST(`${base}/manage/lease/getLeaseResNames`, data, callback, errback);
     },
     //查询兑换记录
-    queryExchangeList(data, callback,errback) {
-        this.POST(`${base}/manage/scores/queryExchangeList`, data, callback,errback);
+    queryExchangeList(data, callback, errback) {
+        this.POST(`${base}/manage/scores/queryExchangeList`, data, callback, errback);
     },
     //查询积分列表
-    queryScoreList(data, callback,errback) {
-        this.POST(`${base}/manage/scores/queryScoreList`, data, callback,errback);
+    queryScoreList(data, callback, errback) {
+        this.POST(`${base}/manage/scores/queryScoreList`, data, callback, errback);
+    },
+    //新增修改头图信息
+    addheadPic(data, callback, errback) {
+        this.POST(`${base}/manage/index/addOrModifyHeadPic`, data, callback, errback);
     },
 
+    // 通过园区id查询头图信息
+    getHeadPic(data, callback, errback) {
+        this.POST(`${base}/manage/index/getHeadPic`, data, callback, errback);
+    },
+    //通过id新增/修改首页元素信息
+    addOrModifyTheme(data, callback, errback) {
+        this.POST(`${base}/manage/index/addOrModifyTheme`, data, callback, errback);
+    },
+    //通过园区id查询一级标题信息
+    getTheme(data, callback, errback) {
+        this.POST(`${base}/manage/index/getTheme`, data, callback, errback);
+    },
+     //通过园区id查询一级标题信息
+     deleteTheme(data, callback, errback) {
+        this.POST(`${base}/manage/index/deleteTheme`, data, callback, errback);
+    },
+     //角色查询
+    queryRole(data, callback, errback) {
+        this.POST(`${base}/manage/index/deleteTheme`, data, callback, errback);
+    },
+    //添加角色
+    addRole(data, callback, errback) {
+        this.POST(`${base}/manage/role/addRole`, data, callback, errback);
+    },
 }

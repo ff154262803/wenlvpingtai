@@ -754,6 +754,7 @@ export default {
                     type: 'success',
                     message: '设置成功!'
                 });
+                this.getdetail();
             })
 		},
 		del(){

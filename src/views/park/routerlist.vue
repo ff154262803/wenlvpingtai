@@ -63,7 +63,7 @@
 							</div>
 							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
 						</el-form-item>
-					</el-form>
+					</el-form>  
 				</div>
 				<div class="el-dialog__footer">
 					<div class="dialog-footer">

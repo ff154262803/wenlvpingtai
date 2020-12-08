@@ -1,0 +1,408 @@
+<template>
+  <div class="classificationPage">
+    <el-input
+      placeholder="角色名"
+      v-model="query.condition"
+      clearable
+      @clear="search"
+      style="width: 300px"
+    ></el-input>
+    <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
+    <el-button class="addBtn" type="primary" @click.native="beginshow()"
+      >添加</el-button
+    >
+    <div class="filter">
+      <strong>园区：</strong>
+      <el-select v-model="query.roleid" clearable @change="search">
+        <el-option
+          v-for="item in roleList"
+          :value="item.id"
+          :key="item.id"
+          :label="item.name"
+        ></el-option>
+      </el-select>
+    </div>
+    <!-- <div class="filter">
+      <strong>权限：</strong>
+      <el-select v-model="query.roleid" clearable @change="search">
+        <el-option value label="无限制"></el-option>
+        <el-option v-for="item in dataList" :value="item.id" :key="item.id" :label="item.name"></el-option>
+      </el-select>
+    </div> -->
+    <!--表格内容-->
+    <el-table
+      ref="multipleTable"
+      :data="dataList"
+      tooltip-effect="dark"
+      style="width: 100%; margin-top: 30px"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column
+        prop="name"
+        label="角色名"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">{{
+          scope.row.isenable == 0 ? "禁用" : "启用"
+        }}</template>
+      </el-table-column>
+      <el-table-column prop="account" label="权限" align="center">
+        <template slot-scope="scope">{{
+          scope.row.permissions.map((n) => n.name).join("、")
+        }}</template>
+      </el-table-column>
+      <el-table-column prop="account" label="所属园区" align="center">
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="createtime"
+        show-overflow-tooltips
+        align="center"
+      ></el-table-column>
+      <el-table-column label="操作" width="150" align="center">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="Del(scope.row.id)"
+            >删除</el-button
+          >
+          <el-button type="text" size="small" @click="UpDown(scope.row)">{{
+            scope.row.isenable == 1 ? "禁用" : "启用"
+          }}</el-button>
+          <el-button type="text" size="small" @click="Edit(scope.row)"
+            >修改</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-col :span="24" class="toolbar">
+      <div class="allControl">
+        <el-button size="small" @click="delAll">删除</el-button>
+        <!--<el-button size="small" @click="enableState(1)">启用</el-button>-->
+        <!--<el-button size="small" @click="enableState(0)">冻结</el-button>-->
+      </div>
+      <el-pagination
+        background
+        layout="total,sizes, prev, pager, next, jumper"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+        :page-sizes="[10, 15, 20, 30, 50]"
+        :page-size="query.count"
+        :total="total"
+      ></el-pagination>
+      <el-button size="small">确定</el-button>
+    </el-col>
+    <!--角色新增-->
+    <el-dialog
+      :title="newdata.id ? '修改角色' : '添加角色'"
+      :visible.sync="Addshow"
+      v-if="Addshow"
+      class="demo-box"
+      width="590px"
+      :close-on-click-modal="false"
+      @close="cancel"
+    >
+      <el-form
+        :model="newdata"
+        :rules="rules"
+        ref="newdata"
+        label-width="100px"
+      >
+        <el-form-item label="园区" prop="garden">
+          <el-select v-model="newdata" placeholder="请选择园区">
+            <el-option label="奇幻光影森林" value="shanghai"></el-option>
+            <el-option label="白马仙台" value="beijing"></el-option>
+            <el-option label="精灵旅社" value="beijing1"></el-option>
+            <el-option label="世园会" value="beijing2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="角色名" prop="name">
+          <el-input
+            v-model="newdata.name"
+            placeholder="请输入角色名"
+            maxlength="20"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="账号" prop="name">
+          <el-tree
+            :data="roleTree"
+            show-checkbox
+            node-key="id"
+            ref="tree"
+            :props="defaultProps"
+          ></el-tree>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="add('newdata')">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import store from "@/vuex/store";
+
+export default {
+  name: "user",
+  data() {
+    return {
+      total: 0,
+      dataList: [],
+      roleList: store.state.role.list,
+      query: {
+        condition: "",
+        page: 1,
+        count: 10,
+      },
+      multipleSelection: [],
+      Addshow: false,
+      newdata: {},
+      rules: {
+        name: [{ required: true, message: "请输入角色名", trigger: "blur" }],
+        garden: [{ required: true, message: "请输入角色名", trigger: "blur" }],
+      },
+      roleTree: [
+        {
+          id: "播控管理",
+          name: "播控管理",
+          children: [
+            { id: 3, name: "播控计划" },
+            { id: 4, name: "播控设置" },
+            { id: 5, name: "播控记录" },
+          ],
+        },
+        {
+          id: "内容管理",
+          name: "内容管理",
+          children: [
+            { id: 6, name: "分类管理" },
+            { id: 7, name: "元素管理" },
+            { id: 8, name: "主题管理" },
+            { id: 9, name: "循环动画管理" },
+          ],
+        },
+        {
+          id: "审核管理",
+          name: "审核管理",
+          children: [{ id: 10, name: "常用语管理" }],
+        },
+        {
+          id: "抽奖管理",
+          name: "抽奖管理",
+          children: [
+            { id: 11, name: "抽奖" },
+            { id: 12, name: "中奖记录" },
+          ],
+        },
+        {
+          id: "权限管理",
+          name: "权限管理",
+          children: [
+            { id: 1, name: "管理员" },
+            { id: 2, name: "角色管理" },
+          ],
+        },
+      ],
+      defaultProps: {
+        children: "children",
+        label: "name",
+      },
+    };
+  },
+  mounted() {
+    this.queryRole();
+  },
+  methods: {
+    beginshow() {
+      this.Addshow = true;
+      this.newdata = {
+        name: "",
+      };
+      this.$refs.tree && this.$refs.tree.setCheckedKeys([]);
+    },
+    // enableState(val) {
+    //     if (this.multipleSelection.length > 0) {
+    //         let idlst = []
+    //         for (let i = 0; i < this.multipleSelection.length; i++) {
+    //             idlst.push(this.multipleSelection[i].id)
+    //         }
+    //         this.$ajax.setAppUserEnableState({idlst: idlst, isenable: val}, res => {
+    //             this.$message({
+    //                 type: 'success',
+    //                 message: '设置成功!'
+    //             });
+    //             this.queryRole()
+    //         })
+    //     }
+    // },
+    search() {
+      this.query.page = 1;
+      this.queryRole();
+    },
+    //查询角色
+    queryRole() {
+      this.$ajax.queryRole(this.query, (res) => {
+        this.dataList = res.data;
+        this.total = res.total;
+      });
+    },
+    //批量删除
+    delAll() {
+      if (this.multipleSelection.length > 0) {
+        let idlst = [];
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          idlst.push(this.multipleSelection[i].id);
+        }
+        this.Del(idlst);
+      }
+    },
+    //删除
+    Del(list) {
+      if (!list.length) list = [list];
+      this.$confirm("您确定要删除当前选中用户吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$ajax.deleteRole({ idlst: list }, (res) => {
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            this.queryRole();
+          });
+        })
+        .catch(() => {});
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    cancel() {
+      this.Addshow = false;
+      this.newdata = {};
+      this.$refs.tree.setCheckedKeys([]);
+    },
+    //增加
+    add(formName) {
+      let pemissions = this.$refs.tree.getCheckedKeys();
+      if (!pemissions.length) {
+        this.$message({ type: "warning", message: "请至少选择一项权限!" });
+        return false;
+      }
+      this.newdata.pemissions = pemissions.filter((n) => n >>> 0);
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.newdata.id) {
+            this.$ajax.updateRole(this.newdata, (res) => {
+              this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+              this.Addshow = false;
+              this.queryRole();
+            });
+          } else {
+            this.$ajax.addRole(this.newdata, (res) => {
+              this.$message({
+                type: "success",
+                message: "提交成功!",
+              });
+              this.Addshow = false;
+              this.queryRole();
+            });
+          }
+        } else {
+          return false;
+        }
+      });
+    },
+    //禁用启用
+    UpDown(item) {
+      let val = item.isenable == "1" ? "0" : "1";
+      this.$ajax.setRoleEnableState(
+        { idlst: [item.id], isenable: val },
+        (res) => {
+          this.$message({
+            type: "success",
+            message: "设置成功!",
+          });
+          this.queryRole();
+        }
+      );
+    },
+    Edit(item) {
+      this.Addshow = true;
+      this.newdata = item;
+      setTimeout(() => {
+        this.$refs.tree.setCheckedKeys(item.permissions.map((n) => n.id));
+      }, 100);
+    },
+    handleSizeChange(val) {
+      this.query.count = val;
+      this.query.page = 1;
+      this.queryRole();
+    },
+    handleCurrentChange(val) {
+      // 切换元页
+      this.query.page = val;
+      this.resLoading = true;
+      this.queryRole();
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.classificationPage {
+  .btn {
+    margin-left: 20px;
+  }
+
+  .addBtn {
+    margin-right: 50px;
+    float: right;
+  }
+
+  .filter {
+    line-height: 40px;
+    margin: 20px 0;
+
+    span {
+      display: inline-block;
+      line-height: 30px;
+      margin-left: 10px;
+      background-color: rgba(64, 158, 255, 0.1);
+      padding: 0 10px;
+      font-size: 12px;
+      color: #409eff;
+      border-radius: 4px;
+      box-sizing: border-box;
+      border: 1px solid rgba(64, 158, 255, 0.2);
+      white-space: nowrap;
+    }
+
+    .active {
+      background-color: #409eff;
+      color: #fff;
+    }
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+
+    .allControl {
+      position: absolute;
+      left: 15px;
+    }
+  }
+}
+</style>

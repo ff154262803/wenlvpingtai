@@ -291,6 +291,7 @@
                                 message: '归还成功!'
                             });
                             this.GiveBackBol = false;
+                            this.queryLeaseRecords();
                         })
                     }
                 })
