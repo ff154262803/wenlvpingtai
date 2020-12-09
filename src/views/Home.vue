@@ -55,7 +55,7 @@
               align="center"
               @click="clickOne(item, $router.options.routes)"
             >
-              {{ item.name }}
+              {{ item.children[0].meta.title }}
             </el-menu-item>
           </template>
           <!-- {{$store.state.child}} -->
@@ -77,9 +77,7 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="
-                item.name == '首页配置' && (parkid || $route.query.id) == 30
-              "
+              v-if="item.name == '首页配置' && (parkid || $route.query.id) == 3"
               align="center"
             >
               {{ item.name }}
@@ -133,13 +131,15 @@ export default {
       //     console.log(this.parkid);
     },
     backRoute() {
-      sessionStorage.removeItem("parkid");
       if (this.$store.state.child.length) {
         this.$store.state.child = [];
       }
       this.$route.meta.parent
         ? this.$router.replace({ path: this.$route.meta.parent })
         : history.back();
+      if (this.$route.query.id == 3) {
+        sessionStorage.removeItem("parkid");
+      }
     },
     handleopen() {},
     handleclose() {},

@@ -27,7 +27,18 @@ module.exports = {
     autoOpenBrowser: false,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      // '/api': {
+      //   // 目标服务器地址，也就是接口服务器的真实地址
+      //   target: 'http://qlv.test.zkshiwei.com:5051/api',
+      //   // 跨域时一般都设置该值 为 true
+      //   changeOrigin: true, // 开启代理：在本地会创建一个虚拟服务端，然后发送请求的数据，并同时接收请求的数据，这样服务端和服务端进行数据的交互就不会有跨域问题
+      //   // 重写接口路由
+      //   pathRewrite: {
+      //     '^/api': '' // 这样处理后，最终得到的接口路径为： http://localhost:8080/xxx
+      //   }
+      // },
+    },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)

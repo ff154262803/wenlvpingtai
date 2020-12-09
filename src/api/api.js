@@ -17,7 +17,7 @@ export default {
         axios({
             url: url, method: 'post', data: data,
             headers: {
-                'Authorization': storage && storage.uKey
+                'Authorization': storage && storage.uKey,
             }
         })
             .then(res => {
@@ -58,8 +58,8 @@ export default {
     },
     //登录
     login(data, callback, errback) {
-        console.log(data)
         this.POST(`${base}/manage/login`, data, callback, errback);
+        console.log(data)
     },
     //登出
     loginOut(data, callback, errback) {
@@ -546,4 +546,9 @@ export default {
     addRole(data, callback, errback) {
         this.POST(`${base}/manage/role/addRole`, data, callback, errback);
     },
+    //删除角色
+    deleteRole(data, callback, errback) {
+        this.POST(`${base}/manage/role/deleteRole`, data, callback, errback);
+    },
+
 }

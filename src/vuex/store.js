@@ -13,7 +13,12 @@ const state = {
     // ip:'http://platform.hw.zkshiwei.com:30020/api',//请求地址ip
     
     //ip:'http://qlv.test.zkshiwei.com/api',//请求地址ip00
-    ip:'http://192.192.0.241:8008/api',//请求地址ip00
+    //ip: 'http://192.192.0.241:8008/api',//请求地址ip00
+    //ip: 'http://192.192.1.45:5005/api',//请求地址ip00
+    ip:'http://qlv.test.zkshiwei.com:5051/api',//请求地址ip00
+    //ip:'http://qlv.test.zkshiwei.com:5000/api',//请求地址ip00
+    //ip:'http://qlv.test.zkshiwei.com:5050/api',//请求地址ip00
+    
     // resip:'https://qlv.test.zkshiwei.com/res/'
     resip: 'https://unicom-test.zkshiwei.com:12015/res/',
     role: {

@@ -41,6 +41,7 @@ import paySet from './views/pay/paySet'//充值设置
 import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
+import pagelist from './views/park/pagelist.vue'//页面链接管理
 
 // 商品管理
 import active from './views/shop/active'//商城活动
@@ -66,25 +67,25 @@ const router = new VueRouter({
         { path: '/404', component: NotFound, name: '404', hidden: true, meta: { requireAuth: false } },
         { path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue },
         {
-            path: '/', component: Home, name: '概览', hidden: false, meta: { requireAuth: true, level: 1 },
-            children: [{ path: '/', component: tongjihome, name: '概览', ...metaTrue },]
+            path: '/', component: Home, name: 'tongjihome', hidden: false, meta: { requireAuth: true, level: 1 },
+            children: [{ path: '/', component: tongjihome, name: '概览', ...metaTrue, meta: { title: "概览" } },]
         },
         {
-            path: '/', component: Home, name: '权限管理', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'role', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/roleManagement', component: roleManagement, name: '角色管理', meta: { requireAuth: true, parent: '/' } },
+                { path: '/roleManagement', component: roleManagement, name: '角色管理', meta: { title:"权限管理", requireAuth: true, parent: '/' } },
                 { path: '/adminManagement', component: adminManagement, name: '管理员管理', meta: { requireAuth: true, parent: '/' } },
             ]
         },
         {
-            path: '/', component: Home, name: '园区管理', hidden: false, meta: { requireAuth: true, level: 1 },
-            children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue },],
+            path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1 },
+            children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue ,meta: { title: "园区管理" }},],
         },
         
         {
-            path: '/', component: Home, name: '基础信息', hidden: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/base', component: base, name: '基础信息', meta: {requireAuth: true, parent: 'parklist' } },
                 { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: 'parklist' } },
@@ -98,34 +99,35 @@ const router = new VueRouter({
                 },
                 { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/pagelist', component: pagelist, name: '页面链接管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
         },
         {
-            path: '/', component: Home, name: '商品管理', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'shoplist', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/' } },
+                { path: '/shoplist', component: shoplist, name: '商品管理', meta: {title:"商品管理",  requireAuth: true, parent: '/' } },
                 { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/' } }
             ]
         },
         {
-            path: '/', component: Home, name: '消息推送', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'msgsend', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue },
+                { path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue, meta: { title: "消息推送" } },
             ]
         },
         {
-            path: '/', component: Home, name: '充值设置', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/paySet', component: paySet, name: '充值设置', meta: { requireAuth: true, parent: '/' } },
+                { path: '/paySet', component: paySet, name: '充值设置', meta: {title: "充值设置", requireAuth: true, parent: '/' } },
                 { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
                 { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
             ]
         },
         {
-            path: '/', component: Home, name: '用户管理', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'user', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/user', component: user, name: '用户管理', ...metaTrue },
+                { path: '/user', component: user, name: '用户管理', ...metaTrue, meta: { title: "用户管理" } },
             ],
             // },
             // {path: '/', component: Home, name: 'orderlist', hidden: false, meta: {requireAuth: true, level: 1},
@@ -134,28 +136,28 @@ const router = new VueRouter({
             //     ]
         },
         {
-            path: '/', component: Home, name: '基本设置', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/basic', component: basic, name: '基本设置', meta: { requireAuth: true, parent: '/' } },
+                { path: '/basic', component: basic, name: '基本设置', meta: {title: "基本设置", requireAuth: true, parent: '/' } },
                 { path: '/classification', component: classification, name: '分类管理', meta: { requireAuth: true, parent: '/' } },
                 { path: '/manage', component: manage, name: '管理员', meta: { requireAuth: true, parent: '/' } },
                 { path: '/page', component: page, name: '页面链接管理', meta: { requireAuth: true, parent: '/' } }
             ]
         },
         {
-            path: '/', component: Home, name: '景点信息', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+            path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
-                { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: { requireAuth: true, parent: 'sencelist' } },
+                { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: {requireAuth: true, parent: 'sencelist' } },
             ]
         },
         {
-            path: '/', component: Home, name: '时段列表', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+            path: '/', component: Home, name: 'partdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
                 { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
             ]
         },
         {
-            path: '/', component: Home, name: '租赁管理', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'lease', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } },
                 { path: '/leaseRes', component: leaseRes, name: '租赁物品管理', meta: { requireAuth: true, parent: 'base' } },
@@ -163,9 +165,9 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/', component: Home, name: '意见反馈', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'feedback', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue },
+                { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue,meta: { title: "意见反馈" }  },
             ],
         },
         {
