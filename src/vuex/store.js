@@ -14,9 +14,9 @@ const state = {
     
     //ip:'http://qlv.test.zkshiwei.com/api',//请求地址ip00
     //ip: 'http://192.192.0.241:8008/api',//请求地址ip00
-    //ip: 'http://192.192.1.45:5005/api',//请求地址ip00
+    //ip: 'http://192.192.0.241:5005/api',//请求地址ip00
     ip:'http://qlv.test.zkshiwei.com:5051/api',//请求地址ip00
-    //ip:'http://qlv.test.zkshiwei.com:5000/api',//请求地址ip00
+    //ip:'http://qlv.test.zkshiwei.com:5001/api',//请求地址ip00
     //ip:'http://qlv.test.zkshiwei.com:5050/api',//请求地址ip00
     
     // resip:'https://qlv.test.zkshiwei.com/res/'

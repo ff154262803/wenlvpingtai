@@ -15,8 +15,8 @@
       <strong>园区：</strong>
       <el-select v-model="query.roleid" clearable @change="search">
         <el-option
-          v-for="item in roleList"
-          :value="item.id"
+          v-for="item in ParkTypeList"
+          :value="item.typeName"
           :key="item.id"
           :label="item.name"
         ></el-option>
@@ -110,11 +110,13 @@
         label-width="100px"
       >
         <el-form-item label="园区" prop="garden">
-          <el-select v-model="newdata" placeholder="请选择园区">
-            <el-option label="奇幻光影森林" value="shanghai"></el-option>
-            <el-option label="白马仙台" value="beijing"></el-option>
-            <el-option label="精灵旅社" value="beijing1"></el-option>
-            <el-option label="世园会" value="beijing2"></el-option>
+          <el-select v-model="newdata.name" placeholder="请选择园区">
+            <el-option
+              v-for="item in ParkTypeList"
+              :value="item.typeName"
+              :key="item.id"
+              :label="item.name"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="角色名" prop="name">
@@ -152,59 +154,40 @@ export default {
     return {
       total: 0,
       dataList: [],
-      roleList: store.state.role.list,
+      roleList: [],
       query: {
         condition: "",
         page: 1,
         count: 10,
       },
+      ParkTypeList: [],
       multipleSelection: [],
       Addshow: false,
       newdata: {},
       rules: {
         name: [{ required: true, message: "请输入角色名", trigger: "blur" }],
-        garden: [{ required: true, message: "请输入角色名", trigger: "blur" }],
+        //garden: [{ required: true, message: "请输入角色名", trigger: "blur" }],
       },
       roleTree: [
         {
-          id: "播控管理",
-          name: "播控管理",
-          children: [
-            { id: 3, name: "播控计划" },
-            { id: 4, name: "播控设置" },
-            { id: 5, name: "播控记录" },
-          ],
+          id: "1",
+          name: "基础信息",
         },
         {
-          id: "内容管理",
-          name: "内容管理",
-          children: [
-            { id: 6, name: "分类管理" },
-            { id: 7, name: "元素管理" },
-            { id: 8, name: "主题管理" },
-            { id: 9, name: "循环动画管理" },
-          ],
+          id: "2",
+          name: "基础配置",
         },
         {
-          id: "审核管理",
-          name: "审核管理",
-          children: [{ id: 10, name: "常用语管理" }],
+          id: "3",
+          name: "景点列表",
         },
         {
-          id: "抽奖管理",
-          name: "抽奖管理",
-          children: [
-            { id: 11, name: "抽奖" },
-            { id: 12, name: "中奖记录" },
-          ],
+          id: "4",
+          name: "商品管理",
         },
         {
-          id: "权限管理",
-          name: "权限管理",
-          children: [
-            { id: 1, name: "管理员" },
-            { id: 2, name: "角色管理" },
-          ],
+          id: "5",
+          name: "活动管理",
         },
       ],
       defaultProps: {
@@ -215,12 +198,16 @@ export default {
   },
   mounted() {
     this.queryRole();
+    this.getParkTypeList();
   },
   methods: {
     beginshow() {
       this.Addshow = true;
       this.newdata = {
+        id: "",
         name: "",
+        parkid: "",
+        pemissions: "",
       };
       this.$refs.tree && this.$refs.tree.setCheckedKeys([]);
     },
@@ -241,13 +228,19 @@ export default {
     // },
     search() {
       this.query.page = 1;
-      this.queryRole();
+      //this.queryRole();
     },
     //查询角色
     queryRole() {
       this.$ajax.queryRole(this.query, (res) => {
         this.dataList = res.data;
         this.total = res.total;
+      });
+    },
+    //获取园区类型
+    getParkTypeList() {
+      this.$ajax.getParkTypeList(this.query, (res) => {
+        this.ParkTypeList = res.data;
       });
     },
     //批量删除
@@ -322,6 +315,7 @@ export default {
           return false;
         }
       });
+      console.log(formName);
     },
     //禁用启用
     UpDown(item) {

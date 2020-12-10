@@ -41,7 +41,7 @@ import paySet from './views/pay/paySet'//充值设置
 import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
-import pagelist from './views/park/pagelist.vue'//页面链接管理
+import pagelist from './views/park/pagelist'//页面链接管理
 
 // 商品管理
 import active from './views/shop/active'//商城活动
@@ -97,9 +97,9 @@ const router = new VueRouter({
                     //路由加载模块，导航加载菜单
                     children: [{ path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } }]
                 },
+                { path: '/pagelist', component: pagelist, name: '页面链接管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/pagelist', component: pagelist, name: '页面链接管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
         },

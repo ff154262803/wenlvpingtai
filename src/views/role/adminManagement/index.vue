@@ -41,7 +41,7 @@
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
-        prop="managename"
+        prop="account"
         label="用户名"
         align="center"
       ></el-table-column>
@@ -55,24 +55,24 @@
         label="账号"
         align="center"
       ></el-table-column>
-      <el-table-column label="角色" align="center">
-        <template slot-scope="scope">{{
-          scope.row.authRole ? scope.row.authRole.name : "无"
-        }}</template>
-      </el-table-column>
+      <el-table-column
+        prop="managename"
+        label="角色"
+        align="center"
+      ></el-table-column>
       <el-table-column label="所属园区" align="center">
         <template slot-scope="scope">{{
           scope.row.authRole ? scope.row.authRole.name : "无"
         }}</template>
       </el-table-column>
-      <el-table-column label="所属企业" align="center">
-        <template slot-scope="scope">{{
-          scope.row.authRole ? scope.row.authRole.name : "无"
-        }}</template>
-      </el-table-column>
+      <el-table-column
+        prop="companyname"
+        label="所属企业"
+        align="center"
+      ></el-table-column>
       <el-table-column
         label="创建时间"
-        prop="lastlogintime"
+        prop="createtime"
         show-overflow-tooltips
         align="center"
       ></el-table-column>
@@ -122,27 +122,22 @@
       :close-on-click-modal="false"
       @close="cancel"
     >
-      <el-form
-        :model="newdata"
-        :rules="rules"
-        ref="newdata"
-        label-width="100px"
-      >
-        <el-form-item label="类型" prop="managename">
-          <el-select v-model="newdata" placeholder="请选择类型">
-            <el-option label="系统管理员" value="shanghai"></el-option>
-            <el-option label="园区管理员" value="beijing"></el-option>
+      <el-form :model="forminfo" :rules="rules" ref="form" label-width="100px">
+        <el-form-item label="类型" prop="isadmin">
+          <el-select v-model="forminfo.id" placeholder="请选择类型">
+            <el-option label="系统管理员" value="1"></el-option>
+            <el-option label="园区管理员" value="2"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="企业" prop="managename">
-          <el-select v-model="newdata" placeholder="请选择企业">
-            <el-option label="中科视维" value="shanghai"></el-option>
-            <el-option label="融创" value="beijing"></el-option>
+        <el-form-item label="企业" prop="companyname">
+          <el-select v-model="forminfo.companyid" placeholder="请选择企业">
+            <el-option label="中科视维" value="1"></el-option>
+            <el-option label="融创" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="用户名" prop="managename">
           <el-input
-            v-model="newdata.managename"
+            v-model="forminfo.managename"
             placeholder="请输入用户名"
             maxlength="20"
             οnkeyup="this.value=this.value.replace(/[^\w_]/g,'');"
@@ -150,21 +145,21 @@
         </el-form-item>
         <el-form-item label="账号" prop="account">
           <el-input
-            v-model="newdata.account"
+            v-model="forminfo.account"
             placeholder="请输入账号"
             maxlength="20"
           ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
-            v-model="newdata.password"
+            v-model="forminfo.password"
             placeholder="请输入密码"
             maxlength="20"
             minlength="6"
           ></el-input>
         </el-form-item>
         <el-form-item label="园区和角色" prop="roleid">
-          <el-select v-model="newdata.roleid" style="width: 180px">
+          <el-select v-model="forminfo.parkid" style="width: 180px">
             <el-option
               v-for="item in roleList"
               :value="item.id"
@@ -172,7 +167,7 @@
               :label="item.name"
             ></el-option>
           </el-select>
-          <el-select v-model="newdata.roleid" style="width: 180px">
+          <el-select v-model="forminfo.roleid" style="width: 180px">
             <el-option
               v-for="item in roleList"
               :value="item.id"
@@ -185,7 +180,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="add('newdata')">确 定</el-button>
+        <el-button type="primary" @click="add()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -238,9 +233,22 @@ export default {
         ],
         account: [{ required: true, validator: acccont, trigger: "blur" }],
         password: [{ required: true, validator: pass, trigger: "blur" }],
-        roleid: [
-          { required: true, message: "请选择园区和角色", trigger: "blur" },
+        // roleid: [
+        //   { required: true, message: "请选择园区和角色", trigger: "blur" },
+        // ],
+      },
+      forminfo: {
+        account: "", //用户账号
+        companyid: 1, //企业id
+        isadmin: false, //t系统管理员，f园区管理员
+        managename: "", //用户名
+        parkRoles: [
+          {
+            parkid: 1, //园区id
+            roleid: 1, //角色id
+          },
         ],
+        password: "", //用户密码
       },
     };
   },
@@ -330,11 +338,40 @@ export default {
       this.Addshow = false;
       this.newdata = {};
     },
-    add(formName) {
-      this.$refs[formName].validate((valid) => {
+    // add(formName) {
+    //   console.log(this.$refs);
+    //   this.$refs[formName].validate((valid) => {
+    //     if (valid) {
+    //       if (this.newdata.uid) {
+    //         this.$ajax.updateManageUser(this.newdata, (res) => {
+    //           this.$message({
+    //             type: "success",
+    //             message: "修改成功!",
+    //           });
+    //           this.queryManageUserList();
+    //         });
+    //       } else {
+    //         //
+    //         this.$ajax.addManageUser(this.newdata, (res) => {
+    //           this.$message({
+    //             type: "success",
+    //             message: "提交成功!",
+    //           });
+    //           this.queryManageUserList();
+    //         });
+    //       }
+    //       this.Addshow = false;
+    //     } else {
+    //       return false;
+    //     }
+    //   });
+    // },
+    add() {
+      console.log(this.$refs.form);
+      this.$refs.form.validate((valid) => {
         if (valid) {
           if (this.newdata.uid) {
-            this.$ajax.updateManageUser(this.newdata, (res) => {
+            this.$ajax.updateManageUser(this.forminfo, (res) => {
               this.$message({
                 type: "success",
                 message: "修改成功!",
@@ -343,7 +380,7 @@ export default {
             });
           } else {
             //
-            this.$ajax.addManageUser(this.newdata, (res) => {
+            this.$ajax.addManageUser(this.forminfo, (res) => {
               this.$message({
                 type: "success",
                 message: "提交成功!",
@@ -357,6 +394,7 @@ export default {
         }
       });
     },
+
     //禁用/启用
     UpDown(item) {
       let val = item.isenable == "1" ? "0" : "1";

@@ -304,6 +304,7 @@ export default {
     //商城商品列表查询
     queryMallGoodsList(data, callback, errback) {
         this.POST(`${base}/manage/queryMallGoodsList`, data, callback, errback);
+        
     },
     //修改商品信息
     updateMallGoods(data, callback, errback) {
@@ -550,5 +551,8 @@ export default {
     deleteRole(data, callback, errback) {
         this.POST(`${base}/manage/role/deleteRole`, data, callback, errback);
     },
-
+    //权限查询
+    queryPermission(data, callback, errback) {
+        this.GET(`${base}/manage/permission/queryPermission`, data, callback, errback);
+    },
 }
