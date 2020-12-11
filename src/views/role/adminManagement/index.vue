@@ -15,9 +15,9 @@
       <strong>园区：</strong>
       <el-select v-model="query.roleid" clearable @change="search">
         <el-option
-          v-for="item in roleList"
+          v-for="item in ParkTypeList"
           :value="item.id"
-          :key="item.id"
+          :key="item.packid"
           :label="item.name"
         ></el-option>
       </el-select>
@@ -187,6 +187,22 @@
 </template>
 
 <script>
+let defaultItem = {
+  account: "", //用户账号
+  companyid: "", //企业id
+  isadmin: false, //t系统管理员，f园区管理员
+  managename: "", //用户名
+  parkRoles: [
+    {
+      parkid: "", //园区id
+      roleid: "", //角色id
+    },
+  ],
+  password: "", //用户密码
+};
+let resetItem = {
+  ...defaultItem,
+};
 export default {
   name: "user",
   data() {
@@ -224,6 +240,7 @@ export default {
         page: 1,
         count: 10,
       },
+      ParkTypeList: [],
       multipleSelection: [],
       Addshow: false,
       newdata: {},
@@ -237,24 +254,14 @@ export default {
         //   { required: true, message: "请选择园区和角色", trigger: "blur" },
         // ],
       },
-      forminfo: {
-        account: "", //用户账号
-        companyid: 1, //企业id
-        isadmin: false, //t系统管理员，f园区管理员
-        managename: "", //用户名
-        parkRoles: [
-          {
-            parkid: 1, //园区id
-            roleid: 1, //角色id
-          },
-        ],
-        password: "", //用户密码
-      },
+      forminfo: { ...defaultItem },
     };
   },
   mounted() {
     this.queryManageUserList();
     this.queryRole();
+    this.queryParkList();
+    // this.add()
   },
   methods: {
     beginshow() {
@@ -283,6 +290,13 @@ export default {
     queryRole() {
       this.$ajax.queryRole({}, (res) => {
         this.roleList = res.data;
+        console.log(this.roleList, "55555555");
+      });
+    },
+    //查询园区列表
+    queryParkList() {
+      this.$ajax.queryParkList(this.query, (res) => {
+        this.ParkTypeList = res.data;
       });
     },
     changetype(val) {
@@ -296,6 +310,7 @@ export default {
     //查询列表
     queryManageUserList() {
       this.$ajax.queryManageUserList(this.query, (res) => {
+        console.log(res);
         this.dataList = res.data;
         this.total = res.total;
       });
@@ -336,7 +351,7 @@ export default {
 
     cancel() {
       this.Addshow = false;
-      this.newdata = {};
+      this.forminfo = {};
     },
     // add(formName) {
     //   console.log(this.$refs);
@@ -367,7 +382,7 @@ export default {
     //   });
     // },
     add() {
-      console.log(this.$refs.form);
+      //console.log(this.$refs.form);
       this.$refs.form.validate((valid) => {
         if (valid) {
           if (this.newdata.uid) {
@@ -376,6 +391,7 @@ export default {
                 type: "success",
                 message: "修改成功!",
               });
+              console.log(33);
               this.queryManageUserList();
             });
           } else {
@@ -385,6 +401,8 @@ export default {
                 type: "success",
                 message: "提交成功!",
               });
+              console.log(22);
+              console.log(res, "555555");
               this.queryManageUserList();
             });
           }
@@ -413,7 +431,8 @@ export default {
       console.log(item);
       this.$set(item, "roleid", item.authRole && item.authRole.id);
       this.Addshow = true;
-      this.newdata = item;
+      //this.newdata = item;
+      this.forminfo = item;
     },
     handleSizeChange(val) {
       this.query.count = val;

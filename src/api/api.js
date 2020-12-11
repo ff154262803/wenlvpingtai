@@ -101,7 +101,7 @@ export default {
     updateServerStatus(data, callback, errback) {
         this.POST(`${base}/manage/updateServerStatus`, data, callback, errback);
     },
-    //查询园区管理
+    //查询园区列表
     queryParkList(data, callback, errback) {
         this.POST(`${base}/manage/queryParkList`, data, callback, errback);
     },
@@ -304,7 +304,7 @@ export default {
     //商城商品列表查询
     queryMallGoodsList(data, callback, errback) {
         this.POST(`${base}/manage/queryMallGoodsList`, data, callback, errback);
-        
+
     },
     //修改商品信息
     updateMallGoods(data, callback, errback) {
@@ -535,13 +535,17 @@ export default {
     getTheme(data, callback, errback) {
         this.POST(`${base}/manage/index/getTheme`, data, callback, errback);
     },
-     //通过园区id查询一级标题信息
-     deleteTheme(data, callback, errback) {
+    //通过园区id查询一级标题信息
+    deleteTheme(data, callback, errback) {
         this.POST(`${base}/manage/index/deleteTheme`, data, callback, errback);
     },
-     //角色查询
+    //角色查询
     queryRole(data, callback, errback) {
-        this.POST(`${base}/manage/index/deleteTheme`, data, callback, errback);
+        this.POST(`${base}/manage/role/queryRole`, data, callback, errback);
+    },
+    //角色修改
+    updateRole(data, callback, errback) {
+        this.POST(`${base}/manage/role/updateRole`, data, callback, errback);
     },
     //添加角色
     addRole(data, callback, errback) {
@@ -550,6 +554,10 @@ export default {
     //删除角色
     deleteRole(data, callback, errback) {
         this.POST(`${base}/manage/role/deleteRole`, data, callback, errback);
+    },
+    //角色启用
+    setRoleEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/role/setRoleEnableState`, data, callback, errback);
     },
     //权限查询
     queryPermission(data, callback, errback) {

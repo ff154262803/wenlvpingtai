@@ -13,12 +13,12 @@
     >
     <div class="filter">
       <strong>园区：</strong>
-      <el-select v-model="query.roleid" clearable @change="search">
+      <el-select v-model="ParkTypeList.parkid" clearable @change="search">
         <el-option
           v-for="item in ParkTypeList"
-          :value="item.typeName"
-          :key="item.id"
-          :label="item.name"
+          :value="item.parkid"
+          :key="item.parkid"
+          :label="item.caption"
         ></el-option>
       </el-select>
     </div>
@@ -48,12 +48,12 @@
           scope.row.isenable == 0 ? "禁用" : "启用"
         }}</template>
       </el-table-column>
-      <el-table-column prop="account" label="权限" align="center">
+      <el-table-column prop="account" label="权限">
         <template slot-scope="scope">{{
           scope.row.permissions.map((n) => n.name).join("、")
         }}</template>
       </el-table-column>
-      <el-table-column prop="account" label="所属园区" align="center">
+      <el-table-column prop="parkName" label="所属园区" align="center">
       </el-table-column>
       <el-table-column
         label="创建时间"
@@ -95,7 +95,7 @@
     </el-col>
     <!--角色新增-->
     <el-dialog
-      :title="newdata.id ? '修改角色' : '添加角色'"
+      :title="newdata.parkid ? '修改角色' : '添加角色'"
       :visible.sync="Addshow"
       v-if="Addshow"
       class="demo-box"
@@ -110,12 +110,12 @@
         label-width="100px"
       >
         <el-form-item label="园区" prop="garden">
-          <el-select v-model="newdata.name" placeholder="请选择园区">
+          <el-select v-model="newdata.parkid" placeholder="请选择园区">
             <el-option
               v-for="item in ParkTypeList"
-              :value="item.typeName"
+              :value="item.parkid"
+              :label="item.caption"
               :key="item.id"
-              :label="item.name"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -155,6 +155,8 @@ export default {
       total: 0,
       dataList: [],
       roleList: [],
+      //查询园区列表
+      ParkList: [],
       query: {
         condition: "",
         page: 1,
@@ -166,27 +168,26 @@ export default {
       newdata: {},
       rules: {
         name: [{ required: true, message: "请输入角色名", trigger: "blur" }],
-        //garden: [{ required: true, message: "请输入角色名", trigger: "blur" }],
       },
       roleTree: [
         {
-          id: "1",
+          id: "20",
           name: "基础信息",
         },
         {
-          id: "2",
+          id: "21",
           name: "基础配置",
         },
         {
-          id: "3",
+          id: "22",
           name: "景点列表",
         },
         {
-          id: "4",
+          id: "23",
           name: "商品管理",
         },
         {
-          id: "5",
+          id: "24",
           name: "活动管理",
         },
       ],
@@ -196,9 +197,11 @@ export default {
       },
     };
   },
+
   mounted() {
     this.queryRole();
-    this.getParkTypeList();
+    this.queryParkList();
+    //this.queryManageUserList();
   },
   methods: {
     beginshow() {
@@ -228,19 +231,36 @@ export default {
     // },
     search() {
       this.query.page = 1;
-      //this.queryRole();
+      //this.queryManageUserList();
+      this.queryRole();
     },
     //查询角色
     queryRole() {
       this.$ajax.queryRole(this.query, (res) => {
         this.dataList = res.data;
         this.total = res.total;
+        console.log(this.dataList, "333333");
+      });
+    },
+    //获取平台用户列表（查询列表）
+    queryManageUserList() {
+      this.$ajax.queryManageUserList(this.query, (res) => {
+        this.dataList = res.data;
+        this.total = res.total;
+        console.log(this.dataList, ".....");
       });
     },
     //获取园区类型
-    getParkTypeList() {
-      this.$ajax.getParkTypeList(this.query, (res) => {
+    // getParkTypeList() {
+    //   this.$ajax.getParkTypeList(this.query, (res) => {
+    //     this.ParkTypeList = res.data;
+    //   });
+    // },
+    //查询园区列表
+    queryParkList() {
+      this.$ajax.queryParkList(this.query, (res) => {
         this.ParkTypeList = res.data;
+        console.log(this.ParkTypeList, "查询园区列表");
       });
     },
     //批量删除
@@ -302,6 +322,7 @@ export default {
               this.queryRole();
             });
           } else {
+            console.log(this.newdata);
             this.$ajax.addRole(this.newdata, (res) => {
               this.$message({
                 type: "success",
