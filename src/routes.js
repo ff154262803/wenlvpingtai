@@ -73,19 +73,19 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'role', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/roleManagement', component: roleManagement, name: '角色管理', meta: { title:"权限管理", requireAuth: true, parent: '/' } },
+                { path: '/roleManagement', component: roleManagement, name: '角色管理', meta: { title: "权限管理", requireAuth: true, parent: '/' } },
                 { path: '/adminManagement', component: adminManagement, name: '管理员管理', meta: { requireAuth: true, parent: '/' } },
             ]
         },
         {
             path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1 },
-            children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue ,meta: { title: "园区管理" }},],
+            children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue, meta: { title: "园区管理" } },],
         },
-        
+
         {
             path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/base', component: base, name: '基础信息', meta: {requireAuth: true, parent: 'parklist' } },
+                { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: 'parklist' } },
@@ -97,7 +97,7 @@ const router = new VueRouter({
                     //路由加载模块，导航加载菜单
                     children: [{ path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } }]
                 },
-                { path: '/pagelist', component: pagelist, name: '页面链接管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
@@ -106,7 +106,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'shoplist', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/shoplist', component: shoplist, name: '商品管理', meta: {title:"商品管理",  requireAuth: true, parent: '/' } },
+                { path: '/shoplist', component: shoplist, name: '商品管理', meta: { title: "商品管理", requireAuth: true, parent: '/' } },
                 { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/' } }
             ]
         },
@@ -119,7 +119,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/paySet', component: paySet, name: '充值设置', meta: {title: "充值设置", requireAuth: true, parent: '/' } },
+                { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
                 { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
                 { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
             ]
@@ -138,7 +138,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/basic', component: basic, name: '基本设置', meta: {title: "基本设置", requireAuth: true, parent: '/' } },
+                { path: '/basic', component: basic, name: '基本设置', meta: { title: "基本设置", requireAuth: true, parent: '/' } },
                 { path: '/classification', component: classification, name: '分类管理', meta: { requireAuth: true, parent: '/' } },
                 { path: '/manage', component: manage, name: '管理员', meta: { requireAuth: true, parent: '/' } },
                 { path: '/page', component: page, name: '页面链接管理', meta: { requireAuth: true, parent: '/' } }
@@ -147,7 +147,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
-                { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: {requireAuth: true, parent: 'sencelist' } },
+                { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: { requireAuth: true, parent: 'sencelist' } },
             ]
         },
         {
@@ -167,7 +167,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'feedback', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue,meta: { title: "意见反馈" }  },
+                { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue, meta: { title: "意见反馈" } },
             ],
         },
         {

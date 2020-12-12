@@ -13,7 +13,7 @@
     >
     <div class="filter">
       <strong>园区：</strong>
-      <el-select v-model="ParkTypeList.parkid" clearable @change="search">
+      <el-select v-model="query.parkid" clearable @change="search">
         <el-option
           v-for="item in ParkTypeList"
           :value="item.parkid"
@@ -39,6 +39,11 @@
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
+        prop="id"
+        label="角色id"
+        align="center"
+      ></el-table-column>
+      <el-table-column
         prop="name"
         label="角色名"
         align="center"
@@ -53,6 +58,11 @@
           scope.row.permissions.map((n) => n.name).join("、")
         }}</template>
       </el-table-column>
+      <el-table-column
+        prop="parkid"
+        label="园区parkid"
+        align="center"
+      ></el-table-column>
       <el-table-column prop="parkName" label="所属园区" align="center">
       </el-table-column>
       <el-table-column

@@ -5,7 +5,7 @@
       v-model="query.condition"
       clearable
       @clear="search"
-      style="width: 300px"
+      style="width: 330px"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
     <el-button class="addBtn" type="primary" @click.native="beginshow()"
@@ -13,12 +13,12 @@
     >
     <div class="filter">
       <strong>园区：</strong>
-      <el-select v-model="query.roleid" clearable @change="search">
+      <el-select v-model="query.parkid" clearable @change="search">
         <el-option
           v-for="item in ParkTypeList"
-          :value="item.id"
-          :key="item.packid"
-          :label="item.name"
+          :value="item.parkid"
+          :key="item.parkid"
+          :label="item.caption"
         ></el-option>
       </el-select>
       <strong class="role">角色：</strong>
@@ -55,14 +55,14 @@
         label="账号"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="managename"
-        label="角色"
-        align="center"
-      ></el-table-column>
-      <el-table-column label="所属园区" align="center">
+      <el-table-column label="角色" align="center">
         <template slot-scope="scope">{{
-          scope.row.authRole ? scope.row.authRole.name : "无"
+          scope.row.parkRoles ? scope.row.parkRoles.roleName : "系统管理员"
+        }}</template>
+      </el-table-column>
+      <el-table-column label="所属园区" align="center"
+        ><template slot-scope="scope">{{
+          scope.row.parkRoles ? scope.row.parkRoles.parkName : "无"
         }}</template>
       </el-table-column>
       <el-table-column
@@ -75,8 +75,9 @@
         prop="createtime"
         show-overflow-tooltips
         align="center"
+        width="150"
       ></el-table-column>
-      <el-table-column label="操作" width="150" align="center">
+      <el-table-column label="操作" width="250" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="Del(scope.row.uid)"
             >删除</el-button
@@ -87,8 +88,12 @@
           <!--<el-button type="text" size="small" v-show="scope.row.isenable==0"-->
           <!--@click="UpDown(scope.row.uid,'1')">启用-->
           <!--</el-button>-->
+
           <el-button type="text" size="small" @click="Edit(scope.row)"
             >修改</el-button
+          >
+          <el-button type="text" size="small" @click="detail(scope.row)"
+            >详情</el-button
           >
         </template>
       </el-table-column>
@@ -114,25 +119,35 @@
     </el-col>
     <!--角色新增-->
     <el-dialog
-      :title="newdata.uid ? '修改管理员' : '添加管理员'"
+      :title="
+        detailBol ? '元素详情' : newdata.uid ? '修改管理员' : '添加管理员'
+      "
       :visible.sync="Addshow"
       v-if="Addshow"
       class="demo-box"
-      width="590px"
+      width="670px"
       :close-on-click-modal="false"
       @close="cancel"
     >
       <el-form :model="forminfo" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="类型" prop="isadmin">
-          <el-select v-model="forminfo.id" placeholder="请选择类型">
-            <el-option label="系统管理员" value="1"></el-option>
-            <el-option label="园区管理员" value="2"></el-option>
+          <el-select
+            v-model="forminfo.isadmin"
+            placeholder="请选择类型"
+            :disabled="detailBol"
+          >
+            <el-option label="系统管理员" :value="true"></el-option>
+            <el-option label="园区管理员" :value="false"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="企业" prop="companyname">
-          <el-select v-model="forminfo.companyid" placeholder="请选择企业">
-            <el-option label="中科视维" value="1"></el-option>
-            <el-option label="融创" value="2"></el-option>
+        <el-form-item label="企业" prop="companyid">
+          <el-select
+            v-model="forminfo.companyid"
+            placeholder="请选择企业"
+            :disabled="detailBol"
+          >
+            <el-option label="中科视维" :value="1"></el-option>
+            <el-option label="融创" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="用户名" prop="managename">
@@ -141,6 +156,7 @@
             placeholder="请输入用户名"
             maxlength="20"
             οnkeyup="this.value=this.value.replace(/[^\w_]/g,'');"
+            :disabled="detailBol"
           ></el-input>
         </el-form-item>
         <el-form-item label="账号" prop="account">
@@ -148,6 +164,7 @@
             v-model="forminfo.account"
             placeholder="请输入账号"
             maxlength="20"
+            :disabled="detailBol"
           ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
@@ -156,10 +173,31 @@
             placeholder="请输入密码"
             maxlength="20"
             minlength="6"
+            :disabled="detailBol"
           ></el-input>
         </el-form-item>
-        <el-form-item label="园区和角色" prop="roleid">
-          <el-select v-model="forminfo.parkid" style="width: 180px">
+        <el-form-item
+          label="园区和角色"
+          prop="ParkRoles"
+          v-if="forminfo.isadmin == false"
+        >
+          <el-select
+            v-model="forminfo.parkRoles[0].parkid"
+            style="width: 180px"
+            :disabled="detailBol"
+          >
+            <el-option
+              v-for="item in ParkTypeList"
+              :value="item.parkid"
+              :key="item.id"
+              :label="item.caption"
+            ></el-option>
+          </el-select>
+          <el-select
+            v-model="forminfo.parkRoles[0].roleid"
+            style="width: 180px"
+            :disabled="detailBol"
+          >
             <el-option
               v-for="item in roleList"
               :value="item.id"
@@ -167,18 +205,11 @@
               :label="item.name"
             ></el-option>
           </el-select>
-          <el-select v-model="forminfo.roleid" style="width: 180px">
-            <el-option
-              v-for="item in roleList"
-              :value="item.id"
-              :key="item.id"
-              :label="item.name"
-            ></el-option>
-          </el-select>
+          <el-button type="primary"> 添加</el-button>
           <el-button>删除</el-button>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-if="!detailBol">
         <el-button @click="cancel()">取 消</el-button>
         <el-button type="primary" @click="add()">确 定</el-button>
       </div>
@@ -189,8 +220,7 @@
 <script>
 let defaultItem = {
   account: "", //用户账号
-  companyid: "", //企业id
-  isadmin: false, //t系统管理员，f园区管理员
+  isadmin: true, //t系统管理员，f园区管理员
   managename: "", //用户名
   parkRoles: [
     {
@@ -243,6 +273,7 @@ export default {
       ParkTypeList: [],
       multipleSelection: [],
       Addshow: false,
+      detailBol: false,
       newdata: {},
       rules: {
         managename: [
@@ -250,6 +281,8 @@ export default {
         ],
         account: [{ required: true, validator: acccont, trigger: "blur" }],
         password: [{ required: true, validator: pass, trigger: "blur" }],
+        isadmin: [{ required: true, trigger: "blur" }],
+        companyid: [{ required: true, trigger: "blur" }],
         // roleid: [
         //   { required: true, message: "请选择园区和角色", trigger: "blur" },
         // ],
@@ -288,15 +321,16 @@ export default {
     // },
     //角色查询
     queryRole() {
-      this.$ajax.queryRole({}, (res) => {
+      this.$ajax.queryRole(this.query, (res) => {
         this.roleList = res.data;
-        console.log(this.roleList, "55555555");
+        console.log(this.roleList, "roleList");
       });
     },
     //查询园区列表
     queryParkList() {
       this.$ajax.queryParkList(this.query, (res) => {
         this.ParkTypeList = res.data;
+        console.log(this.ParkTypeList, "ParkTypeList");
       });
     },
     changetype(val) {
@@ -307,12 +341,22 @@ export default {
       this.query.page = 1;
       this.queryManageUserList();
     },
+    search1(e) {
+      let ParkTypeList = this.ParkTypeList;
+      ParkTypeList.forEach((item) => {
+        if (item.parkid == e) {
+          this.query.condition = item.caption;
+        }
+      });
+      this.queryManageUserList();
+      this.queryRole();
+    },
     //查询列表
     queryManageUserList() {
       this.$ajax.queryManageUserList(this.query, (res) => {
-        console.log(res);
         this.dataList = res.data;
         this.total = res.total;
+        console.log(this.dataList, "查询管理员列表");
       });
     },
     //批量删除
@@ -325,6 +369,7 @@ export default {
         this.Del(idlst);
       }
     },
+
     //删除
     Del(list) {
       if (!list.length) list = [list];
@@ -343,6 +388,7 @@ export default {
           });
         })
         .catch(() => {});
+      this.queryManageUserList();
     },
 
     handleSelectionChange(val) {
@@ -351,7 +397,13 @@ export default {
 
     cancel() {
       this.Addshow = false;
-      this.forminfo = {};
+      this.newdata = {};
+      setTimeout(() => {
+        this.detailBol = false;
+        this.forminfo = {
+          ...defaultItem,
+        };
+      }, 200);
     },
     // add(formName) {
     //   console.log(this.$refs);
@@ -385,28 +437,30 @@ export default {
       //console.log(this.$refs.form);
       this.$refs.form.validate((valid) => {
         if (valid) {
-          if (this.newdata.uid) {
+          if (this.newdata.id) {
             this.$ajax.updateManageUser(this.forminfo, (res) => {
               this.$message({
                 type: "success",
                 message: "修改成功!",
               });
-              console.log(33);
               this.queryManageUserList();
+              console.log(this.forminfo, "修改成功");
             });
           } else {
             //
             this.$ajax.addManageUser(this.forminfo, (res) => {
+              console.log(this.forminfo, "添加角色");
               this.$message({
                 type: "success",
                 message: "提交成功!",
               });
-              console.log(22);
-              console.log(res, "555555");
               this.queryManageUserList();
+              console.log(this.forminfo, "提交成功");
             });
           }
+
           this.Addshow = false;
+          this.forminfo = {};
         } else {
           return false;
         }
@@ -427,11 +481,19 @@ export default {
         }
       );
     },
+
+    //修改
     Edit(item) {
-      console.log(item);
+      console.log(item, "修改");
       this.$set(item, "roleid", item.authRole && item.authRole.id);
       this.Addshow = true;
       //this.newdata = item;
+      this.forminfo = item;
+    },
+    //详情
+    detail(item) {
+      this.detailBol = true;
+      this.Addshow = true;
       this.forminfo = item;
     },
     handleSizeChange(val) {

@@ -559,6 +559,10 @@ export default {
     setRoleEnableState(data, callback, errback) {
         this.POST(`${base}/manage/role/setRoleEnableState`, data, callback, errback);
     },
+    //查询企业
+    getCompanyist(data, callback, errback) {
+        this.GET(`${base}/manage/getCompanyist`, data, callback, errback);
+    },
     //权限查询
     queryPermission(data, callback, errback) {
         this.GET(`${base}/manage/permission/queryPermission`, data, callback, errback);
