@@ -113,11 +113,13 @@ export default {
       sysName: "文旅平台管理系统",
       collapsed: false,
       sysUserName: "",
+      showList: [],
       child: [],
       parkid: sessionStorage.getItem("parkid"),
     };
   },
   created() {},
+  mounted() {},
   methods: {
     clickTWOS() {
       this.parkid = sessionStorage.getItem("parkid");
@@ -169,6 +171,19 @@ export default {
     },
   },
   mounted() {
+    //权限设置
+    let showItem = this.$router.options.routes.filter((n) => !n.hidden);
+    let roleItem = JSON.parse(sessionStorage.getItem("permissions"));
+    // let showList = showItem.filter((n) => {
+    //   n.children = n.children.filter((m) => {
+    //     if (~m.path.indexOf("index")) return true; //第一条首页的特例
+    //     return !!roleItem.filter((j) => {
+    //       if (m.code == j.code) return true;
+    //     }).length;
+    //   });
+    //   return n.children.length;
+    // });
+    console.log("showItem", showItem);
     var user = JSON.parse(sessionStorage.getItem("user"));
     if (user) {
       this.sysUserName = user.name || "admin";

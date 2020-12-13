@@ -61,6 +61,126 @@ import roleManagement from './views/role/roleManagement';//角色管理
 import adminManagement from './views/role/adminManagement';//管理员管理
 const metaTrue = { meta: { requireAuth: true } }
 
+// const router = new VueRouter({
+//     routes: [
+//         { path: '/login', component: Login, name: '', hidden: true, ...metaTrue },
+//         { path: '/404', component: NotFound, name: '404', hidden: true, meta: { requireAuth: false } },
+//         { path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue },
+//         {
+//             path: '/', component: Home, name: 'tongjihome', hidden: false, meta: { requireAuth: true, level: 1 },
+//             children: [{ path: '/', component: tongjihome, name: '概览', ...metaTrue, meta: { title: "概览" } },]
+//         },
+//         {
+//             path: '/', component: Home, name: 'role', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+//             children: [
+//                 { path: '/roleManagement', component: roleManagement, name: '角色管理', meta: { title: "权限管理", requireAuth: true, parent: '/' } },
+//                 { path: '/adminManagement', component: adminManagement, name: '管理员管理', meta: { requireAuth: true, parent: '/' } },
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1 },
+//             children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue, meta: { title: "园区管理" } },],
+//         },
+
+//         {
+//             path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
+//             children: [
+//                 { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: 'parklist' } },
+//                 {
+//                     path: '/leaseItem', component: leaseItem, redirect: 'leaseItem', name: '租赁管理', meta: { requireAuth: true, parent: 'parklist' },
+//                     //路由加载模块，导航加载菜单
+//                     children: [{ path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } }]
+//                 },
+//                 { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
+//                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
+//             ],
+//         },
+//         {
+//             path: '/', component: Home, name: 'shoplist', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+//             children: [
+//                 { path: '/shoplist', component: shoplist, name: '商品管理', meta: { title: "商品管理", requireAuth: true, parent: '/' } },
+//                 { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/' } }
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'msgsend', hidden: false, meta: { requireAuth: true, level: 1 },
+//             children: [
+//                 { path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue, meta: { title: "消息推送" } },
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+//             children: [
+//                 { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
+//                 { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
+//                 { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'user', hidden: false, meta: { requireAuth: true, level: 1 },
+//             children: [
+//                 { path: '/user', component: user, name: '用户管理', ...metaTrue, meta: { title: "用户管理" } },
+//             ],
+//             // },
+//             // {path: '/', component: Home, name: 'orderlist', hidden: false, meta: {requireAuth: true, level: 1},
+//             //     children: [
+//             //         {path: '/orderlist', component: orderlist, name: '订单管理', ...metaTrue},
+//             //     ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+//             children: [
+//                 { path: '/basic', component: basic, name: '基本设置', meta: { title: "基本设置", requireAuth: true, parent: '/' } },
+//                 { path: '/classification', component: classification, name: '分类管理', meta: { requireAuth: true, parent: '/' } },
+//                 { path: '/manage', component: manage, name: '管理员', meta: { requireAuth: true, parent: '/' } },
+//                 { path: '/page', component: page, name: '页面链接管理', meta: { requireAuth: true, parent: '/' } }
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+//             children: [
+//                 { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: { requireAuth: true, parent: 'sencelist' } },
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'partdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+//             children: [
+//                 { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'lease', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+//             children: [
+//                 { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } },
+//                 { path: '/leaseRes', component: leaseRes, name: '租赁物品管理', meta: { requireAuth: true, parent: 'base' } },
+//                 { path: '/leaseDistribution', component: leaseDistribution, name: '物品分布管理', meta: { requireAuth: true, parent: 'base' } }
+//             ]
+//         },
+//         {
+//             path: '/', component: Home, name: 'feedback', hidden: false, meta: { requireAuth: true, level: 1 },
+//             children: [
+//                 { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue, meta: { title: "意见反馈" } },
+//             ],
+//         },
+//         {
+//             path: '/heads', component: heads, name: '头图管理'
+//         }, {
+//             path: '/functions', component: functions, name: '功能按钮'
+//         }, {
+//             path: '/multiprobe', component: multiprobe, name: '夜探阿朵'
+//         }, {
+//             path: '/bright', component: bright, name: '夜游亮点'
+//         }
+//     ]
+// });
 const router = new VueRouter({
     routes: [
         { path: '/login', component: Login, name: '', hidden: true, ...metaTrue },

@@ -57,12 +57,14 @@
       ></el-table-column>
       <el-table-column label="角色" align="center">
         <template slot-scope="scope">{{
-          scope.row.parkRoles ? scope.row.parkRoles.roleName : "系统管理员"
+          scope.row.parkRoles == null
+            ? "系统管理员"
+            : scope.row.parkRoles[0].roleName
         }}</template>
       </el-table-column>
       <el-table-column label="所属园区" align="center"
         ><template slot-scope="scope">{{
-          scope.row.parkRoles ? scope.row.parkRoles.parkName : "无"
+          scope.row.parkRoles == null ? "无" : scope.row.parkRoles[0].parkName
         }}</template>
       </el-table-column>
       <el-table-column
