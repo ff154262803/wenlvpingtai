@@ -12,7 +12,7 @@
       <el-col :span="4" class="userinfo">
         {{ sysUserName }}
         <el-button type="text" @click="logout">退出登录</el-button>
-        <!--<el-dropdown trigger="hover">-->
+        <!-- <el-dropdown trigger="hover">-->
         <!--<span class="el-dropdown-link userinfo-inner">-->
         <!--&lt;!&ndash; <img src="../../static/img/user.png" alt=""> &ndash;&gt;-->
         <!--{{sysUserName}}</span>-->
@@ -21,12 +21,11 @@
         <!--&lt;!&ndash;<el-dropdown-item>设置</el-dropdown-item>&ndash;&gt;-->
         <!--<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>-->
         <!--</el-dropdown-menu>-->
-        <!--</el-dropdown>-->
+        <!--</el-dropdown> -->
       </el-col>
     </el-col>
     <el-col :span="24" class="main">
       <aside :class="collapsed ? 'menu-collapsed' : 'menu-expanded'">
-        <!--导航菜单-->
         <el-menu
           :default-active="$route.path"
           class="el-menu-vertical-demo"
@@ -77,23 +76,57 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="item.name == '首页配置' && (parkid || $route.query.id) == 3"
+              v-if="
+                item.name == '首页配置' && (parkid || $route.query.id) == 30
+              "
               align="center"
             >
               {{ item.name }}
             </el-menu-item>
           </template>
         </el-menu>
+        <!--导航菜单-->
+        <!-- 改版后 -->
+        <!-- <el-menu
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          @open="handleopen"
+          @close="handleclose"
+          @select="handleselect"
+          router
+          v-show="!collapsed"
+        > -->
+        <!-- {{ showList }} -->
+        <!-- <template v-for="(item, index) in showList" v-if="!item.hidden"> -->
+        <!--有折叠-->
+        <!-- <el-submenu :index="index + ''" v-if="!item.leaf"> -->
+        <!-- <template slot="title"> -->
+        <!--<i :class="item.iconCls"></i>-->
+        <!-- {{ item.name }}</template -->
+        <!-- > -->
+        <!-- <el-menu-item -->
+        <!-- v-for="child in item.children" -->
+        <!-- :index="child.path" -->
+        <!-- :key="child.path" -->
+        <!-- v-if="!child.hidden" -->
+        <!-- > -->
+        <!-- {{ child.name }} -->
+        <!-- </el-menu-item> -->
+        <!-- </el-submenu> -->
+        <!--无折叠-->
+        <!-- <el-menu-item -->
+        <!-- v-if="item.leaf && item.children.length > 0" -->
+        <!-- :index="item.children[0].path" -->
+        <!-- > -->
+        <!-- {{ item.children[0].name }} -->
+        <!-- </el-menu-item> -->
+        <!-- </template> -->
+        <!-- </el-menu> -->
       </aside>
       <section class="content-container">
         <div class="grid-content bg-purple-light">
           <el-col :span="24" class="breadcrumb-container">
             <h2 class="title">{{ $route.name }}</h2>
-            <!--<el-breadcrumb separator="/" class="breadcrumb-inner">-->
-            <!--<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">-->
-            <!--{{ item.name }}-->
-            <!--</el-breadcrumb-item>-->
-            <!--</el-breadcrumb>-->
           </el-col>
           <el-col :span="24" class="content-wrapper">
             <transition name="fade" mode="out-in">
@@ -160,6 +193,7 @@ export default {
               message: "退出成功!",
             });
             sessionStorage.removeItem("user");
+            sessionStorage.removeItem("permissions");
             this.$router.push("/login");
           });
         })
@@ -174,22 +208,26 @@ export default {
     //权限设置
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
     let roleItem = JSON.parse(sessionStorage.getItem("permissions"));
+    console.log("showItem", showItem);
+    console.log("roleItem", roleItem);
     // let showList = showItem.filter((n) => {
     //   n.children = n.children.filter((m) => {
+    //     console.log("m", m);
     //     if (~m.path.indexOf("index")) return true; //第一条首页的特例
     //     return !!roleItem.filter((j) => {
     //       if (m.code == j.code) return true;
     //     }).length;
     //   });
+    //   console.log("n.children.length", n.children.length);
     //   return n.children.length;
     // });
-    console.log("showItem", showItem);
+    //this.showList = showList;
+    // console.log("showList", showList);
     var user = JSON.parse(sessionStorage.getItem("user"));
     if (user) {
       this.sysUserName = user.name || "admin";
     }
     this.parkid = sessionStorage.getItem("parkid");
-    console.log(this.parkid);
   },
 };
 </script>

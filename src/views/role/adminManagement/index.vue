@@ -187,6 +187,7 @@
             v-model="forminfo.parkRoles[0].parkid"
             style="width: 180px"
             :disabled="detailBol"
+            @change="changeSelect"
           >
             <el-option
               v-for="item in ParkTypeList"
@@ -224,6 +225,7 @@ let defaultItem = {
   account: "", //用户账号
   isadmin: true, //t系统管理员，f园区管理员
   managename: "", //用户名
+  companyid: "",
   parkRoles: [
     {
       parkid: "", //园区id
@@ -321,6 +323,18 @@ export default {
     //         })
     //     }
     // },
+    //添加弹框中下拉框上下级联动
+    changeSelect() {
+      //清空角色类型
+      this.forminfo.parkRoles[0].roleid = "";
+      //遍历园区的下拉选项数组
+      for (let k in this.ParkTypeList) {
+        //园区下拉后的parkid 是否等于 角色列表中的 id
+        if (this.ParkTypeList.id === this.roleList.id) {
+        }
+        console.log("this.ParkTypeList.id", this.ParkTypeList[k].parkid);
+      }
+    },
     //角色查询
     queryRole() {
       this.$ajax.queryRole(this.query, (res) => {

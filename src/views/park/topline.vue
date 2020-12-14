@@ -118,6 +118,8 @@
               <el-input
                 v-model="addData.content"
                 style="width: 350px"
+                maxlength="16"
+                placeholder="请输入最多16个字符"
               ></el-input>
             </el-form-item>
             <el-form-item label="详情" label-width="65px" prop="h5id">
@@ -176,8 +178,8 @@ export default {
         content: [
           { required: true, message: "请输入内容", trigger: "blur" },
           {
-            max: 50,
-            message: "最多50个字符",
+            max: 16,
+            message: "最多16个字符",
             trigger: "blur",
           },
         ],

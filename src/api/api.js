@@ -281,9 +281,13 @@ export default {
     addPageLink(data, callback, errback) {
         this.POST(`${base}/manage/addPageLink`, data, callback, errback);
     },
-    //查询页面链接列表
+    //查询外部页面链接列表
     queryPageLinkList(data, callback, errback) {
         this.POST(`${base}/manage/queryPageLinkList`, data, callback, errback);
+    },
+    //查询内部页面链接列表
+    queryInternalPageLinkList(data, callback, errback) {
+        this.POST(`${base}/manage/queryInternalPageLinkList`, data, callback, errback);
     },
     //修改页面链接信息
     updatePageLink(data, callback, errback) {
