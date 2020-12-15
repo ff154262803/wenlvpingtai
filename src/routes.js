@@ -42,8 +42,12 @@ import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
 import pagelist from './views/park/pagelist'//页面链接管理
+<<<<<<< HEAD
 import newsmanagement from './views/park/newsmanagement' //新闻管理
 import message from './views/park/message';//消息推送
+=======
+import newsmanagement from './views/park/newsmanagement.vue' //新闻管理
+>>>>>>> 9671cc29ea78f6e2bb1fa4447a14092833147b34
 
 // 商品管理
 import active from './views/shop/active'//商城活动
