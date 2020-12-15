@@ -76,9 +76,7 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="
-                item.name == '首页配置' && (parkid || $route.query.id) == 30
-              "
+              v-if="item.name == '首页配置' && (parkid || $route.query.id) == 3"
               align="center"
             >
               {{ item.name }}

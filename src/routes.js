@@ -42,6 +42,7 @@ import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
 import pagelist from './views/park/pagelist'//页面链接管理
+import newsmanagement from './views/park/newsmanagement.vue' //新闻管理
 
 // 商品管理
 import active from './views/shop/active'//商城活动
@@ -92,6 +93,7 @@ const router = new VueRouter({
                 { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
                 {
                     path: '/leaseItem', component: leaseItem, redirect: 'leaseItem', name: '租赁管理', meta: { requireAuth: true, parent: 'parklist' },
                     //路由加载模块，导航加载菜单
