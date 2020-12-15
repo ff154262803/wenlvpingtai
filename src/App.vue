@@ -76,4 +76,14 @@ body {
 .fade-leave-active {
 	opacity: 0;
 }
+.el-checkbox{
+	display: block !important;
+}
+.el-checkbox+.el-checkbox{
+	margin-left: 0 !important;
+	
+}
+.el-checkbox__label{
+	font-size: medium !important;
+}
 </style>

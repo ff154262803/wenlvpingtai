@@ -76,9 +76,7 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="
-                item.name == '首页配置' && (parkid || $route.query.id) == 30
-              "
+              v-if="item.name == '首页配置' && (parkid || $route.query.id) == 3"
               align="center"
             >
               {{ item.name }}
@@ -156,7 +154,7 @@ export default {
   methods: {
     clickTWOS() {
       this.parkid = sessionStorage.getItem("parkid");
-      console.log(this.parkid);
+      //console.log(this.parkid);
     },
     clickOne(item) {
       if (item.unfold) {
@@ -208,8 +206,8 @@ export default {
     //权限设置
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
     let roleItem = JSON.parse(sessionStorage.getItem("permissions"));
-    console.log("showItem", showItem);
-    console.log("roleItem", roleItem);
+    //console.log("showItem", showItem);
+    //console.log("roleItem", roleItem);
     // let showList = showItem.filter((n) => {
     //   n.children = n.children.filter((m) => {
     //     console.log("m", m);

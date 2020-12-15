@@ -434,6 +434,8 @@ export default {
     queryParkNoticeList(data, callback, errback) {
         this.POST(`${base}/manage/queryParkNoticeList`, data, callback, errback);
     },
+    //公告开启与关闭
+
     //查询失物列表信息
     queryLostPropertyList(data, callback, errback) {
         this.POST(`${base}/manage/lost/queryLostPropertyList`, data, callback, errback);
@@ -570,5 +572,9 @@ export default {
     //权限查询
     queryPermission(data, callback, errback) {
         this.GET(`${base}/manage/permission/queryPermission`, data, callback, errback);
+    },
+    //园区二级菜单列表查询
+    getParkMenuList(data, callback, errback) {
+        this.GET(`${base}/manage/getParkMenuList`, data, callback, errback);
     },
 }

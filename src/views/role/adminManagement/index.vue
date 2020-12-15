@@ -183,8 +183,12 @@
           prop="ParkRoles"
           v-if="forminfo.isadmin == false"
         >
+        <div 
+        style="margin-bottom: 20px"
+        v-for="(key, val) in forminfo.parkRoles"
+          :key="val">
           <el-select
-            v-model="forminfo.parkRoles[0].parkid"
+            v-model="key.parkid"
             style="width: 180px"
             :disabled="detailBol"
             @change="changeSelect"
@@ -197,7 +201,7 @@
             ></el-option>
           </el-select>
           <el-select
-            v-model="forminfo.parkRoles[0].roleid"
+            v-model="key.roleid"
             style="width: 180px"
             :disabled="detailBol"
           >
@@ -208,13 +212,14 @@
               :label="item.name"
             ></el-option>
           </el-select>
-          <el-button type="primary"> 添加</el-button>
-          <el-button>删除</el-button>
+          <el-button type="primary" @click="addSelect()"> 添加</el-button>
+          <el-button  @click="delSelect(key)" v-if="forminfo.parkRoles.length!=1">删除</el-button>
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="!detailBol">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="add()">确 定</el-button>
+        <el-button type="primary" @click="add()" >确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -449,6 +454,19 @@ export default {
     //     }
     //   });
     // },
+    //添加弹框中园区和角色的下拉框
+    addSelect(){
+      if (5 > this.forminfo.parkRoles.length) {
+        this.forminfo.parkRoles.push({city: "",roleid: ""});
+      }
+    },
+    //删除弹框中园区和角色的下拉框
+    delSelect(item){
+      var index = this.forminfo.parkRoles.indexOf(item)
+        if (index !== -1) {
+          this.forminfo.parkRoles.splice(index, 1)
+        }
+    },
     add() {
       //console.log(this.$refs.form);
       this.$refs.form.validate((valid) => {
