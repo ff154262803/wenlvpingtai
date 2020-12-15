@@ -42,6 +42,8 @@ import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
 import pagelist from './views/park/pagelist'//页面链接管理
+import newsmanagement from './views/park/newsmanagement' //新闻管理
+import message from './views/park/message';//消息推送
 
 // 商品管理
 import active from './views/shop/active'//商城活动
@@ -86,19 +88,21 @@ const router = new VueRouter({
             path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
             children: [
                 { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/topline', component: topline, redirect: 'topline', name: '基础配置', meta: { requireAuth: true, parent: 'parklist' },
+                    children:[{path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' }}]
+                },
                 { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
                 {
                     path: '/leaseItem', component: leaseItem, redirect: 'leaseItem', name: '租赁管理', meta: { requireAuth: true, parent: 'parklist' },
                     //路由加载模块，导航加载菜单
                     children: [{ path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } }]
                 },
-                { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
@@ -154,6 +158,14 @@ const router = new VueRouter({
             path: '/', component: Home, name: 'partdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
                 { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
+            ]
+        },
+        {
+            path: '/', component: Home, name: 'underlying', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            children: [
+                { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' } },
+                {path: '/message', component: message, name: '消息推送 ', meta: { requireAuth: true, parent: 'base' } },
+                { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: 'base' } }
             ]
         },
         {
