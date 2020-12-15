@@ -509,7 +509,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel('menu')">取 消</el-button>
-        <el-button type="primary" @click="add('menu')"
+        <el-button type="primary" @click="editParkMenu"
           >确 定</el-button
         >
       </div>
@@ -568,6 +568,7 @@ export default {
       editdata: {},
       list: [],
       area: [],
+      arr:[],
       areacity: [],
       MenuList:{},
       ParkMenuList:[],
@@ -667,11 +668,16 @@ export default {
   methods: {
     //多选
     CheckAllChange(row){
-      console.log(row);
-      // this.checkarr.push(row.id)
-      // console.log(this.ParkMenuList.menu);
+      this.checkarr.push(row.id)
+      this.arr = [...new Set(this.checkarr)]
+      console.log(this.arr);
     },
-
+    editParkMenu() {
+      this.$ajax.editParkMenu({idlst:[...this.arr],parkid:sessionStorage.getItem("parkid") * 1}, (res) => {
+        this.menuShow=false
+        this.getdetail();
+      });
+    },
     select(e) {
       this.GDPolyBlue.close();
       this.GDPolyRed.close();
