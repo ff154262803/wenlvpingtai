@@ -577,4 +577,11 @@ export default {
     getParkMenuList(data, callback, errback) {
         this.GET(`${base}/manage/getParkMenuList`, data, callback, errback);
     },
+<<<<<<< HEAD
+=======
+    //修改二级菜单列表
+    editParkMenu(data, callback, errback) {
+        this.POST(`${base}/manage/editParkMenu`, data, callback, errback);
+    },
+>>>>>>> 1fcca28b5462cd6d5247154b6fbf6194f69195ef
 }
