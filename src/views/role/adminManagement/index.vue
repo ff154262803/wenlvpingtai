@@ -87,10 +87,6 @@
           <el-button type="text" size="small" @click="UpDown(scope.row)">
             {{ scope.row.isenable == 1 ? "禁用" : "启用" }}
           </el-button>
-          <!--<el-button type="text" size="small" v-show="scope.row.isenable==0"-->
-          <!--@click="UpDown(scope.row.uid,'1')">启用-->
-          <!--</el-button>-->
-
           <el-button type="text" size="small" @click="Edit(scope.row)"
             >修改</el-button
           >

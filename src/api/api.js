@@ -577,11 +577,40 @@ export default {
     getParkMenuList(data, callback, errback) {
         this.GET(`${base}/manage/getParkMenuList`, data, callback, errback);
     },
-<<<<<<< HEAD
-=======
     //修改二级菜单列表
     editParkMenu(data, callback, errback) {
         this.POST(`${base}/manage/editParkMenu`, data, callback, errback);
     },
->>>>>>> 1fcca28b5462cd6d5247154b6fbf6194f69195ef
+    //开启园区公告
+    openNotice(data, callback, errback) {
+        this.POST(`${base}/manage/openNotice`, data, callback, errback);
+    },
+    //查询新闻分页列表
+    queryNewManagePage(data, callback, errback) {
+        this.POST(`${base}/manage/queryNewManagePage`, data, callback, errback);
+    },
+    //查询新闻列表
+    queryNewManage(data, callback, errback) {
+        this.POST(`${base}/resources/queryNewManage`, data, callback, errback);
+    },
+    //删除新闻列表
+    deleteById(data, callback, errback) {
+        this.POST(`${base}/manage/deleteById`, data, callback, errback);
+    },
+    //启用禁用新闻列表
+    openOrClose(data, callback, errback) {
+        this.POST(`${base}/manage/openOrClose`, data, callback, errback);
+    },
+    //添加新闻列表
+    addNewManage(data, callback, errback) {
+        this.POST(`${base}/manage/addNewManage`, data, callback, errback);
+    },
+    //修改新闻列表
+    updateNewManage(data, callback, errback) {
+        this.POST(`${base}/manage/updateNewManage`, data, callback, errback);
+    },
+    //文件上传管理
+    uploadResource(data, callback, errback) {
+        this.POST(`${base}/resources/uploadResource`, data, callback, errback);
+    },
 }
