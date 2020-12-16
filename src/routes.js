@@ -80,7 +80,7 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1},
             children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue, meta: { title: "园区管理" } },],
         },
 
@@ -133,11 +133,6 @@ const router = new VueRouter({
             children: [
                 { path: '/user', component: user, name: '用户管理', ...metaTrue, meta: { title: "用户管理" } },
             ],
-            // },
-            // {path: '/', component: Home, name: 'orderlist', hidden: false, meta: {requireAuth: true, level: 1},
-            //     children: [
-            //         {path: '/orderlist', component: orderlist, name: '订单管理', ...metaTrue},
-            //     ]
         },
         {
             path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
@@ -193,142 +188,6 @@ const router = new VueRouter({
         }
     ]
 });
-// let routes = [
-//     {
-//         path: '/login',
-//         component: Login,
-//         name: '',
-//         hidden: true,
-//     }, {
-//         path: '/404',
-//         component: NotFound,
-//         name: '',
-//         hidden: true,
-//     },
-//     //{ path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue },
-//     {
-//         path: '/',
-//         component: Home,
-//         name: '',
-//         leaf: true,
-//         children: []
-//     },
-//     {
-//         path: '/',
-//         component: Home,
-//         name: '概览',
-//         children: [{ path: '/', component: tongjihome, name: '概览', },]
-//     },
-//     {
-//         path: '/',
-//         component: Home,
-//         name: '权限管理',
-//         children: [
-//             { path: '/roleManagement', component: roleManagement, name: '角色管理', code: 'SYSTEM_PERMISSION_ROLE' },
-//             { path: '/adminManagement', component: adminManagement, name: '管理员管理', code: 'SYSTEM_PERMISSION_ADMIN' },
-//         ]
-//     },
-//     {
-//         path: '/',
-//         component: Home,
-//         name: '园区管理',
-//         children: [
-//             {
-//                 path: '/parklist',
-//                 component: parklist,
-//                 name: '园区管理',
-//                 code: 'PLATFORM_PARK_SITE_ALL',
-//                 children: [
-//                     {
-//                         path: '/base',
-//                         component: base,
-//                         name: '基础信息',
-//                     },
-//                     { path: '/sencelist', component: sencelist, name: '景点列表', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     { path: '/routerlist', component: routerlist, name: '路线列表', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     { path: '/procam', component: procam, name: '全景资源管理', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     { path: '/product', component: product, name: '商品列表', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     { path: '/schedule', component: schedule, name: '活动管理', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     { path: '/lostManage', component: lostManage, name: '失物管理', code: 'PLATFORM_PARK_SITE_ALL', },
-//                     {
-//                         path: '/leaseItem', component: leaseItem, redirect: 'leaseItem', name: '租赁管理',
-//                         //路由加载模块，导航加载菜单
-//                         children: [{
-//                             path: '/leaseItem', component: leaseItem, name: '租赁管理',
-//                         },
-//                         { path: '/pagelist', component: pagelist, name: '页面链接管理 ', },
-//                         { path: '/topline', component: topline, name: '公告管理', },
-//                         { path: '/schedunum', component: schedunum, name: '预约统计', },
-//                         { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', },
-//                         ]
-//                     },
-//                 ],
-//             },]
-//     },
-//     {
-//         path: '/', component: Home, name: '商品管理',
-//         children: [
-//             { path: '/shoplist', component: shoplist, name: '商品管理', code: 'PLATFORM_PARK_SITE_ALL', },
-//             { path: '/active', component: active, name: '商城活动', }
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '消息推送',
-//         children: [
-//             { path: '/msgsend', component: msgsend, name: '消息推送', },
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '充值设置',
-//         children: [
-//             { path: '/paySet', component: paySet, name: '充值设置', },
-//             { path: '/IntegralRecord', component: IntegralRecord, },
-//             { path: '/exchangeRecord', component: exchangeRecord, }
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '用户管理',
-//         children: [
-//             { path: '/user', component: user, name: '用户管理', },
-//         ],
-//     },
-//     {
-//         path: '/', component: Home, name: '基本设置',
-//         children: [
-//             { path: '/basic', component: basic, name: '基本设置', },
-//             { path: '/classification', component: classification, name: '分类管理', },
-//             { path: '/manage', component: manage, name: '管理员', },
-//             { path: '/page', component: page, name: '页面链接管理', }
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '景点信息',
-//         children: [
-//             { path: '/scenicdetail', component: scenicdetail, name: '景点信息', },
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '时段列表',
-//         children: [
-//             { path: '/partdetail', component: partdetail, name: '时段列表', },
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '租赁管理',
-//         children: [
-//             { path: '/leaseItem', component: leaseItem, name: '租赁管理', },
-//             { path: '/leaseRes', component: leaseRes, name: '租赁物品管理', },
-//             { path: '/leaseDistribution', component: leaseDistribution, name: '物品分布管理', }
-//         ]
-//     },
-//     {
-//         path: '/', component: Home, name: '意见反馈',
-//         children: [
-//             { path: '/feedback', component: feedback, name: '意见反馈', },
-//         ],
-//     },
-// ]
-
 
 // 全局路由钩子
 router.beforeEach((to, from, next) => {
@@ -341,6 +200,14 @@ router.beforeEach((to, from, next) => {
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({ path: '/login' })
         } else {
+            // let isadmin = JSON.parse(sessionStorage.getItem('user')).isadmin || false
+            // if(!isadmin){
+                // router.options.routes=router.options.routes.filter(n=>{
+                //     if(n.name=="parklist" || n.name=="base"){
+                //         return true
+                //     }
+                // })
+            // }
             router.options.routes.map(n => {
                 if (n.name != to.name) {
                     if (n.children) n.children.map(m => {
@@ -350,6 +217,7 @@ router.beforeEach((to, from, next) => {
                     })
                 }
             })
+            
             next();
         }
     } else {

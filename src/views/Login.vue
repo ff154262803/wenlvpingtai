@@ -85,6 +85,7 @@ export default {
                   uKey: res.data.ukey,
                   uid: res.data.uid,
                   name: res.data.account,
+                  isadmin: res.data.isadmin,
                 };
 
                 if (res.data.authRole == null) {
@@ -97,7 +98,11 @@ export default {
                   );
                 }
                 console.log(res, "用户登录");
-                this.$router.push({ path: "/" });
+                if (res.data.isadmin) {
+                  this.$router.push({ path: "/" });
+                } else {
+                  this.$router.push({ path: "/parklist" });
+                }
               } else {
                 this.$message.error("账号禁用");
               }

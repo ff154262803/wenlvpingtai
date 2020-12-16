@@ -44,7 +44,7 @@
           </template>
           <!--一级标题-->
           <template
-            v-for="(item, index) in $router.options.routes"
+            v-for="(item, index) in showItem"
             v-if="!item.hidden && !item.back"
           >
             <el-menu-item
@@ -52,7 +52,7 @@
               :key="item.children[0].path"
               v-if="item.children && !$store.state.child.length"
               align="center"
-              @click="clickOne(item, $router.options.routes)"
+              @click="clickOne(item, showItem)"
             >
               {{ item.children[0].meta.title }}
             </el-menu-item>
@@ -149,8 +149,6 @@ export default {
       parkid: sessionStorage.getItem("parkid"),
     };
   },
-  created() {},
-  mounted() {},
   methods: {
     clickTWOS() {
       this.parkid = sessionStorage.getItem("parkid");
@@ -204,23 +202,17 @@ export default {
   },
   mounted() {
     //权限设置
+    let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
-    let roleItem = JSON.parse(sessionStorage.getItem("permissions"));
-    //console.log("showItem", showItem);
-    //console.log("roleItem", roleItem);
-    // let showList = showItem.filter((n) => {
-    //   n.children = n.children.filter((m) => {
-    //     console.log("m", m);
-    //     if (~m.path.indexOf("index")) return true; //第一条首页的特例
-    //     return !!roleItem.filter((j) => {
-    //       if (m.code == j.code) return true;
-    //     }).length;
-    //   });
-    //   console.log("n.children.length", n.children.length);
-    //   return n.children.length;
-    // });
-    //this.showList = showList;
-    // console.log("showList", showList);
+    if (isadmin) {
+
+    } else {
+      showItem = showItem.filter((ele) => {
+        return ele.name == "parklist";
+      });
+    }
+    this.showItem = showItem;
+    console.log("showItem", showItem);
     var user = JSON.parse(sessionStorage.getItem("user"));
     if (user) {
       this.sysUserName = user.name || "admin";

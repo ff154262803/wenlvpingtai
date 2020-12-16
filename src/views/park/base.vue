@@ -504,7 +504,9 @@
     >
       <el-form :model="MenuList" ref="menu" label-width="100px">
         <el-form-item label="" >
-            <el-checkbox v-for="item in ParkMenuList" @change="CheckAllChange(item)" :key="item.id" >{{item.caption}}</el-checkbox>
+          <el-checkbox-group  @change="CheckAllChange">
+            <el-checkbox v-for="item in ParkMenuList" :key="item.id" >{{item.caption}}</el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -884,6 +886,7 @@ export default {
      //多选
      CheckAllChange(row){
       this.checkarr.push(row.id)
+      console.log('wor',row)
       this.arr = [...new Set(this.checkarr)]
       console.log(this.arr);
     },
