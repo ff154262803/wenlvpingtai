@@ -48,21 +48,30 @@
     <div class="el-dialog__wrapper" v-show="Addshow">
       <div class="el-dialog el-dialogadd" style="width: 1000px">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">{{newdata.id?'修改新闻':'新增新闻'}}</span>
+          <span class="el-dialog__title">{{detailBol ? '新闻详情':newdata.id?'修改新闻':'新增新闻'}}</span>
           <button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i
               class="el-dialog__close el-icon el-icon-close"></i></button>
         </div>
         <div class="el-dialog__body">
           <el-form :model="newdata" :rules="rules" ref="newdata" label-width="120px">
             <el-form-item label="标题" prop="title">
-              <el-input v-model="newdata.title " style="width: 600px"></el-input>
+              <el-input v-model="newdata.title " style="width: 600px" :disabled="detailBol"></el-input>
             </el-form-item>
             <el-form-item label="简介" prop="summary">
-              <el-input v-model="newdata.summary" style="width: 600px"></el-input>
+              <el-input v-model="newdata.summary" style="width: 600px" :disabled="detailBol"></el-input>
             </el-form-item>
+            <!-- <el-form-item label="介绍图" prop="picurl">
+              <el-upload class="avatar-uploader" :action="$store.state.ip+'/resources/uploadResource'"
+                :headers="headers" :show-file-list="false" :on-success="onsuccsesspic" :before-upload="beforeUploadpic">
+                {{newdata.picurl}}
+                <img src="http://192.192.0.241:5005/2b1e211dc18a425684e533ea39e1eb5d.png" alt="">
+                <img v-if="newdata.picurl" :src="newdata.picurl" class="avatar" />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item> -->
             <el-form-item label="介绍图" prop="picurl">
               <el-upload :action="$store.state.ip+'/resources/uploadResource'" list-type="picture-card"
-                :before-upload="beforeUploadpic" :on-success="onsuccsesspic">
+                :before-upload="beforeUploadpic" :on-success="onsuccsesspic" :disabled="detailBol">
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{file}">
                   <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
@@ -83,32 +92,32 @@
 
             <el-form-item label="语音讲解" prop="voiceUrl">
               <el-upload :action="$store.state.ip+'/resources/uploadResource'" accept=".mp3" :on-success="onsuccsessmp3"
-                :before-upload="beforeUploadmp3">
+                :before-upload="beforeUploadmp3" :disabled="detailBol">
                 <el-button size="small" type="primary" icon="el-icon-upload">点击上传</el-button>
               </el-upload>
             </el-form-item>
             <el-form-item label="视频讲解" prop="videoUrl">
               <el-upload :action="$store.state.ip+'/resources/uploadResource'" accept="video/mp4"
-                :on-success="onsuccsessmp4" :before-upload="beforeUploadmp4">
+                :on-success="onsuccsessmp4" :before-upload="beforeUploadmp4" :disabled="detailBol">
                 <el-button size="small" type="primary" icon="el-icon-upload">点击上传</el-button>
               </el-upload>
             </el-form-item>
 
-            <el-form-item label="详情类型" prop="detailType">
-              <el-radio v-model="newdata.detailType" label="1">链接</el-radio>
-              <el-radio v-model="newdata.detailType" label="2">编辑器</el-radio>
+            <el-form-item label="详情类型" prop="detailType" :disabled="detailBol">
+              <el-radio v-model="newdata.detailType" :label="1" :disabled="detailBol">链接</el-radio>
+              <el-radio v-model="newdata.detailType" :label="2" :disabled="detailBol">编辑器</el-radio>
             </el-form-item>
             <el-form-item label="详情链接" prop="details" v-if="newdata.detailType==1">
               <el-input v-model="newdata.details" style="width: 600px"></el-input>
             </el-form-item>
-            <el-form-item label="详情" prop="h5id" v-if="newdata.detailType==2">
+            <el-form-item label="详情" prop="details" v-model="newdata.details" v-if="newdata.detailType==2">
               <div style="height: 500px">
                 <tinymce-editor ref="editor" v-model="h5.content"></tinymce-editor>
               </div>
             </el-form-item>
           </el-form>
         </div>
-        <div class="el-dialog__footer">
+        <div class="el-dialog__footer" v-if="!detailBol">
           <div class="dialog-footer">
             <el-button @click="cancel('newdata')">取 消</el-button>
             <el-button type="primary" @click="add('newdata')">确 定</el-button>
@@ -116,25 +125,7 @@
         </div>
       </div>
     </div>
-    <!--详情查看-->
-    <div class="el-dialog__wrapper" v-show="Detailshow">
-      <div class="el-dialog el-dialogedit">
-        <div class="el-dialog__header">
-          <span class="el-dialog__title">编辑详情</span>
-          <button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('')"><i
-              class="el-dialog__close el-icon el-icon-close"></i></button>
-        </div>
-        <div class="el-dialog__body">
-          <tinymce-editor ref="editor" v-model="h5.content"> </tinymce-editor>
-        </div>
-        <div class="el-dialog__footer">
-          <div class="dialog-footer">
-            <el-button @click="cancel('')">取 消</el-button>
-            <el-button type="primary" @click="submith5('')">确 定</el-button>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 <script>
@@ -146,6 +137,7 @@
     },
     data() {
       return {
+        detailBol: false,
         //详情类型
         linktype: [],
         fileList: [],
@@ -165,7 +157,7 @@
         Addshow: false,
         Detailshow: false,
         newdata: {
-          detailType: 2,
+          detailType: 1,
           details: "",
           picurl: "",
           status: 1,
@@ -175,14 +167,12 @@
           voiceUrl: ""
         },
         rules: {
-          caption: [{ required: true, message: '名称不能为空' }, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-          address: [{ required: true, message: '地址不能为空' }, { max: 20, message: '最多20个字符', trigger: 'blur' }],
-          type: [{ required: true, message: '类型不能为空' }],
-          detailType: [{ required: true, message: '必选' }],
-          //picurl: [{ required: true, message: '必填项' }],
-          thumbnail: [{ required: true, message: '必填项' }],
-          time: [{ required: true, message: '起始日期不能为空' }]
+          title: [{ required: true, message: '活动标题不能为空' }],
+          summary: [{ required: true, message: '简介不能为空' }],
+          detailType: [{ required: true, message: '请选择详情类型' }],
+          details: [{ required: true, message: '详情不能为空' }],
         },
+        headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
         sitelist: [],
         h5: {
           content: ''
@@ -195,6 +185,12 @@
       this.getsitelist()
     },
     methods: {
+      //详情
+      detail(item) {
+        this.detailBol = true;
+        this.Addshow = true;
+        this.newdata = item;
+      },
       //文件上传成功
       uploadResource() {
         this.$ajax.uploadResource({}, (res) => {
@@ -218,6 +214,7 @@
       },
       //上传图片成功后的钩子函数
       onsuccsesspic(response, file, fileList) {
+        // console.log();
         this.newdata.picurl = response.url
         console.log('this.newdata.picurl', this.newdata.picurl);
       },
@@ -268,44 +265,9 @@
         }
 
       },
-      detail(res) {
-        this.Detailshow = true
-        if (res.h5id) {
-          this.h5.id = res.h5id
-          this.$ajax.getH5Details({ id: res.h5id }, res => {
-            this.h5 = res.data
-          })
-        } else {
-          this.h5 = { caption: '', content: '' }
-          this.newdata = res
-        }
-      },
-
       handleSizeChange(val) {
         this.query.count = val;
         this.getlist();
-      },
-      timeform: function (format, time) {//转化时间格式传输给后台
-        var d = new Date(time)
-        var date = {
-          'M+': d.getMonth() + 1,
-          'd+': d.getDate(),
-          'h+': d.getHours(),
-          'm+': d.getMinutes(),
-          's+': d.getSeconds(),
-          'q+': Math.floor((d.getMonth() + 3) / 3),
-          'S+': d.getMilliseconds()
-        }
-        // 正则替换文本
-        if (/(y+)/i.test(format)) {
-          format = format.replace(RegExp.$1, (d.getFullYear() + '').substr(4 - RegExp.$1.length))
-        }
-        for (var k in date) {
-          if (new RegExp('(' + k + ')').test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? date[k] : ('00' + date[k]).substr(('' + date[k]).length))
-          }
-        }
-        return format
       },
       handleLoading() {
         this.fullscreenLoading = true;
@@ -346,16 +308,25 @@
       search() {
         this.getlist();
       },
+      //修改表单
       beginshow(data) {
         this.Addshow = true
         this.Detailshow = false
         if (data) {
+          console.log('this.newdata', this.newdata);
+          console.log('data', data);
+          console.log('this.fileList', this.fileList);
           this.newdata = { ...data }
-          this.fileList = data.picurl.split(',')
+          // if (data.detailType == 2) {
+
+          // }
+          this.h5.content = data.details
+          this.fileList = data.picurl
+          this.detailBol = false;
         } else {
           this.fileList = []
           this.newdata = {
-            detailType: '',
+            detailType: '1',
             details: "",
             picurl: "",
             status: 1,
@@ -363,7 +334,11 @@
             title: "",
             videoUrl: "",
             voiceUrl: ""
-          }
+          },
+            this.h5 = {
+              content: ''
+            },
+            this.detailBol = false;
         }
       },
       cancel(formName) {
@@ -393,13 +368,8 @@
       add(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            // if (this.newdata.time[0]) {
-            //   this.newdata.starttime = this.timeform('yyyy-MM-dd', this.newdata.time[0])
-            // }
-            // if (this.newdata.time[1]) {
-            //   this.newdata.endtime = this.timeform('yyyy-MM-dd', this.newdata.time[1])
-            // }
             if (this.newdata.id) {
+              console.log('进入修改');
               this.$ajax.updateNewManage({
                 id: this.newdata.id, parameters: {
                   picurl: this.newdata.picurl,
@@ -416,13 +386,15 @@
                   type: 'success',
                   message: '修改成功!'
                 });
+                console.log('data', res.data);
                 this.Addshow = false
                 this.getlist()
               })
             } else {
+              console.log('进入添加');
               this.$ajax.addNewManage({
                 picurl: this.newdata.picurl,
-                details: this.newdata.details,
+                details: this.h5.content ? this.h5.content : this.newdata.details,
                 detailType: this.newdata.detailType,
                 summary: this.newdata.summary,
                 title: this.newdata.title,
@@ -482,7 +454,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            this.$ajax.deleteEvents({ idlst: idlst }, res => {
+            this.$ajax.deleteById({ idlst: idlst }, res => {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -497,6 +469,8 @@
         this.$ajax.queryNewManagePage(this.query, res => {
           this.tableData = res.data
           this.total = res.total
+          console.log('this.tableData', this.tableData);
+          console.log('this.total', this.total);
         })
       },
       getsitelist() {
@@ -504,6 +478,7 @@
           this.sitelist = res.data
         })
       },
+      //当选择项发生变化时会触发该事件
       handleSelectionChange(val) {
         this.multipleSelection = val;
       }
@@ -565,5 +540,11 @@
       top: -10px;
       width: 20px;
     }
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
   }
 </style>

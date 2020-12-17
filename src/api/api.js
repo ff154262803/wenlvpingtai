@@ -587,30 +587,35 @@ export default {
     },
     //查询新闻分页列表
     queryNewManagePage(data, callback, errback) {
-        this.POST(`${base}/manage/queryNewManagePage`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/queryNewManagePage`, data, callback, errback);
     },
     //查询新闻列表
     queryNewManage(data, callback, errback) {
-        this.POST(`${base}/resources/queryNewManage`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/queryNewManage`, data, callback, errback);
     },
     //删除新闻列表
     deleteById(data, callback, errback) {
-        this.POST(`${base}/manage/deleteById`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/deleteById`, data, callback, errback);
     },
     //启用禁用新闻列表
     openOrClose(data, callback, errback) {
-        this.POST(`${base}/manage/openOrClose`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/openOrClose`, data, callback, errback);
     },
     //添加新闻列表
     addNewManage(data, callback, errback) {
-        this.POST(`${base}/manage/addNewManage`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/addNewManage`, data, callback, errback);
     },
     //修改新闻列表
     updateNewManage(data, callback, errback) {
-        this.POST(`${base}/manage/updateNewManage`, data, callback, errback);
+        this.POST(`${base}/manage/newmanage/updateNewManage`, data, callback, errback);
     },
     //文件上传管理
     uploadResource(data, callback, errback) {
         this.POST(`${base}/resources/uploadResource`, data, callback, errback);
+    },
+    //亮点管理
+    //亮点列表分页接口
+    queryHighLightPage(data, callback, errback) {
+        this.POST(`${base}/manage/highlight/queryHighLightPage`, data, callback, errback);
     },
 }

@@ -1,203 +1,374 @@
 <template>
   <div>
+    <!-- 过滤区 -->
+    <el-input placeholder="请输入名称" v-model="query.condition" style="width:300px"></el-input>
+    <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
     <div class="filter">
-      <el-button class="addBtn" type="primary" @click="beginshow()"
-        >添加</el-button
-      >
+      <el-button class="addBtn" type="primary" @click="beginshow()">添加亮点</el-button>
     </div>
-    <template>
-      <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="themeName" label="名称"> </el-table-column>
-        <el-table-column prop="summary" label="展园简介"> </el-table-column>
-        <el-table-column prop="themeImgUrl" label="链接"> </el-table-column>
-        <el-table-column prop="weight" label="权重"> </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small"
-              >修改</el-button
-            >
-            <el-button
-              type="text"
-              size="small"
-              @click="delectClick(scope.row.id)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-    </template>
-
-    <el-dialog title="新增/修改" :visible.sync="dialogFormVisible">
-      <el-form :model="form" ref="form" :rules="rules">
-        <el-form-item label="亮点名称" label-width="100px" prop="themeName">
-          <el-input v-model="form.themeName" style="width: 300px"></el-input>
-        </el-form-item>
-        <el-form-item label="亮点简介" prop="summary" label-width="100px">
-          <el-input
-            v-model="form.summary"
-            style="width: 300px"
-            maxlength="20"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="亮点链接" prop="themeImgUrl" label-width="100px">
-          <el-input v-model="form.themeImgUrl" style="width: 300px"></el-input>
-        </el-form-item>
-        <el-form-item label="亮点权重" label-width="100px" prop="weight ">
-          <el-input v-model="form.weight " style="width: 300px"></el-input>
-        </el-form-item>
-        <el-form-item label="缩略图" prop="imgUrl" class="imgurl">
-          <el-upload
-            class="avatar-uploader"
-            action="http://192.192.0.241:5005/api/manage/ferriswheel/resources/upload"
-            :headers="headers"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addOrModifyTheme('form')"
-          >确 定</el-button
-        >
+    <!-- 表格区 -->
+    <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
+      @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column prop="title" label="名称" align="center"></el-table-column>
+      <el-table-column label="排序" prop="sort" align="center"></el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">{{ scope.row.status==1?'启用':'禁用' }}</template>
+      </el-table-column>
+      <el-table-column label="操作" width="250" align="center">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="Del(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="beginshow(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--底部工具条-->
+    <el-col :span="24" class="toolbar" style="display:flex;justify-content: flex-end;position:relative">
+      <div style="position:absolute;left:10px;top:5px">
+        <el-button @click="delAll()">删除</el-button>
+        <el-button @click="setenableState(1)">启用</el-button>
+        <el-button @click="setenableState(0)">禁用</el-button>
       </div>
-    </el-dialog>
+      <el-pagination background layout="total,sizes, prev, pager, next, jumper" @current-change="handleCurrentChange"
+        @size-change="handleSizeChange" :page-sizes="[10, 15, 20, 30, 50]" :current-page.sync="query.page"
+        :page-size="query.count" :total="total">
+      </el-pagination>
+      <el-button size="small">确定</el-button>
+    </el-col>
+    <!--商品新增-->
+    <div class="el-dialog__wrapper" v-show="Addshow">
+      <div class="el-dialog el-dialogadd" style="width: 600px">
+        <div class="el-dialog__header">
+          <span class="el-dialog__title">{{newdata.id?'修改亮点':'新增亮点'}}</span>
+          <button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i
+              class="el-dialog__close el-icon el-icon-close"></i></button>
+        </div>
+        <div class="el-dialog__body">
+          <el-form :model="newdata" :rules="rules" ref="newdata" label-width="80px">
+            <el-form-item label="新闻" prop="title">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="排序" prop="summary">
+              <el-input v-model="newdata.summary"></el-input>
+            </el-form-item>
+            <el-form-item label="详情类型" prop="detailType" :disabled="detailBol">
+              <el-radio v-model="newdata.detailType" :label="1" :disabled="detailBol">启用</el-radio>
+              <el-radio v-model="newdata.detailType" :label="2" :disabled="detailBol">禁用</el-radio>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="el-dialog__footer" v-if="!detailBol">
+          <div class="dialog-footer">
+            <el-button @click="cancel('newdata')">取 消</el-button>
+            <el-button type="primary" @click="add('newdata')">确 定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
-
 <script>
-export default {
-  name: "bright",
-  data() {
-    return {
-      uploaddata: {
-        type: "",
-        uKey: JSON.parse(sessionStorage.getItem("user")).uKey,
+  export default {
+    name: 'list',
+    data() {
+      return {
+        detailBol: false,
+        //详情类型
+        linktype: [],
+        fileList: [],
+        uploaddata: {
+          type: '',
+          uKey: JSON.parse(sessionStorage.getItem('user')).uKey
+        },
+        tableData: [],
+        multipleSelection: [],
+        total: 0,
+        query: {
+          parkid: sessionStorage.getItem('parkid') ? sessionStorage.getItem('parkid') : "",
+          condition: '',
+          page: 1,
+          count: 10
+        },
+        Addshow: false,
+        Detailshow: false,
+        newdata: {
+          detailType: 1,
+          details: "",
+          picurl: "",
+          status: 1,
+          summary: "",
+          title: "",
+          videoUrl: "",
+          voiceUrl: ""
+        },
+        rules: {
+          title: [{ required: true, message: '活动标题不能为空' }],
+          summary: [{ required: true, message: '简介不能为空' }],
+          detailType: [{ required: true, message: '请选择详情类型' }],
+          details: [{ required: true, message: '详情不能为空' }],
+        },
+        headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
+        getNewsLists: {},
+        h5: {
+          content: ''
+        },
+      }
+    },
+    mounted() {
+      window.v = this;
+      this.getlist();
+      this.getNewsList()
+    },
+    methods: {
+      //详情
+      detail(item) {
+        this.detailBol = true;
+        this.Addshow = true;
+        this.newdata = item;
       },
-      tableData: [],
-      dialogTableVisible: false,
-      dialogFormVisible: false,
-      form: {
-        type: "4",
+      //底部分页栏
+      handleSizeChange(val) {
+        this.query.count = val;
+        this.getlist();
       },
-      formLabelWidth: "120px",
-      rules: {
-         weight : [
-          { required: true, message: "请输入亮点权重123", trigger: "blur" },
-        ],
-        themeName: [
-          { required: true, message: "请输入亮点名称", trigger: "blur" },
-        ],
-        summary: [
-          { required: true, message: "请输入亮点简介", trigger: "blur" },
-        ],
+      //查找按钮
+      search() {
+        this.getlist();
+      },
+      //修改表单
+      beginshow(data) {
+        this.Addshow = true
+        this.Detailshow = false
+        if (data) {
+          console.log('this.newdata', this.newdata);
+          console.log('data', data);
+          console.log('this.fileList', this.fileList);
+          this.newdata = { ...data }
+          // if (data.detailType == 2) {
 
-        themeImgUrl: [
-          { required: true, message: "请输入链接", trigger: "blur" },
-        ],
-        imgUrl: [{ required: true, message: "请选择图片" }],
-      },
-      headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
-    };
-  },
-  mounted() {
-    this.form.parkId = sessionStorage.getItem("parkid");
-    this.getTheme();
-  },
-  methods: {
-    //删除
-    delectClick(id) {
-      this.$confirm("您确定要删除该类型吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(() => {
-        this.$ajax.deleteTheme({ id: id }, (res) => {
-          this.getTheme();
-        });
-      });
-    },
-    //新增
-    beginshow(data) {
-      this.dialogFormVisible = true;
-    },
-    //
-    getTheme() {
-      this.$ajax.getTheme(this.form, (res) => {
-        // console.log(res);
-        this.tableData = res.data;
-      });
-    },
-    //新增确定
-    addOrModifyTheme(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.$ajax.addOrModifyTheme(this.form, (res) => {
-            this.$message({
-              type: "success",
-              message: "提交成功!",
-            });
-            this.form = {
-              type: 4,
-              parkId: sessionStorage.getItem("parkid"),
-            };
-            this.getTheme();
-            this.dialogFormVisible = false;
-          });
+          // }
+          this.h5.content = data.details
+          this.fileList = data.picurl
+          this.detailBol = false;
         } else {
-          console.log("error submit!!");
-          return false;
+          this.fileList = []
+          this.newdata = {
+            detailType: '1',
+            details: "",
+            picurl: "",
+            status: 1,
+            summary: "",
+            title: "",
+            videoUrl: "",
+            voiceUrl: ""
+          },
+            this.h5 = {
+              content: ''
+            },
+            this.detailBol = false;
         }
-      });
-    },
-    //修改
-    handleClick(row) {
-      this.form = row;
-      this.dialogFormVisible = true;
-      this.getTheme();
-    },
-    //图片上传
-    beforeAvatarUpload(file) {
-      const isJPG =
-        !!~file.type.indexOf("jpeg") ||
-        !!~file.type.indexOf("jpg") ||
-        !!~file.type.indexOf("png");
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) this.$message.error("上传图片只能是 JPG/PNG/JPEG 格式!");
-      if (!isLt2M) this.$message.error("上传图片大小不能超过 2MB!");
-      // console.log(file);
-      return isJPG && isLt2M;
-    },
-    handleAvatarSuccess(val) {
-      // console.log(val);
-      this.$set(this.form, "imgUrl", val.data.url);
-      this.$refs.form.validate();
-    },
-  },
-};
+      },
+      cancel(formName) {
+        this.Addshow = false
+        this.Detailshow = false
+      },
+      //删除
+      Del(list) {
+        if (!list.length) list = [list];
+        this.$confirm("您确定要删除当前选中用户吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            this.$ajax.deleteById({ idlst: list }, (res) => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+              this.getlist();
+            });
+          })
+          .catch(() => { });
+        this.getlist();
+      },
+      add(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            if (this.newdata.id) {
+              console.log('进入修改');
+              this.$ajax.updateNewManage({
+                id: this.newdata.id, parameters: {
+                  picurl: this.newdata.picurl,
+                  details: this.newdata.details,
+                  detailType: this.newdata.detailType,
+                  summary: this.newdata.summary,
+                  title: this.newdata.title,
+                  status: 1,
+                  videoUrl: this.newdata.videoUrl,
+                  voiceUrl: this.newdata.voiceUrl
+                }
+              }, res => {
+                this.$message({
+                  type: 'success',
+                  message: '修改成功!'
+                });
+                console.log('data', res.data);
+                this.Addshow = false
+                this.getlist()
+              })
+            } else {
+              console.log('进入添加');
+              this.$ajax.addNewManage({
+                picurl: this.newdata.picurl,
+                details: this.h5.content ? this.h5.content : this.newdata.details,
+                detailType: this.newdata.detailType,
+                summary: this.newdata.summary,
+                title: this.newdata.title,
+                status: 1,
+                videoUrl: this.newdata.videoUrl,
+                voiceUrl: this.newdata.voiceUrl
+              }, res => {
+                this.$message({
+                  type: 'success',
+                  message: '提交成功!'
+                });
+                this.Addshow = false
+                this.getlist()
+              })
+            }
+          } else {
+            return false;
+          }
+        });
+      },
+      handleCurrentChange(val) { // 切换元页
+        this.query.page = val
+        this.getlist()
+      },
+      //多选启用禁用
+      setenableState(id, val) {
+        if (this.multipleSelection.length > 0) {
+          let idlst = []
+          for (let i = 0; i < this.multipleSelection.length; i++) {
+            idlst.push(this.multipleSelection[i].id)
+          }
+          this.$ajax.setEventsEnableState({ idlst: idlst, status: val }, res => {
+            this.$message({
+              type: 'success',
+              message: '设置成功!'
+            });
+            this.getlist()
+          })
+        }
+      },
+      //多选删除
+      delAll() {
+        if (this.multipleSelection.length != 0) {
+          let idlst = []
+          for (let i = 0; i < this.multipleSelection.length; i++) {
+            idlst.push(this.multipleSelection[i].id)
+          }
+          this.$confirm('您确定要删除选中商品吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$ajax.deleteById({ idlst: idlst }, res => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.getlist()
+            })
+          }).catch(() => { });
+        }
+      },
+      //获取亮点管理列表
+      getlist() {
+        this.$ajax.queryHighLightPage(this.query, res => {
+          this.tableData = res.data
+          this.total = res.total
+          console.log('this.tableData', this.tableData);
+          console.log('this.total', this.total);
+        })
+      },
+      getNewsList() {
+        this.$ajax.queryNewManage(this.query, res => {
+          console.log(res, 'res');
+        })
+      },
+      //当选择项发生变化时会触发该事件
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      }
+    }
+  }
 </script>
+<style>
+  .el-upload-list--picture-card .el-upload-list__item {
+    width: 80px;
+    height: 80px;
+  }
 
+  .el-upload--picture-card {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+  }
+
+  #uppic {
+    padding: 2px;
+  }
+</style>
 <style lang="scss" scoped>
-.filter {
-  position: relative;
-  height: 50px;
-}
-.addBtn {
-  float: right;
-  margin-right: 100px;
-}
-.avatar {
-  width: 100px;
-  height: 100px;
-}
-.imgurl {
-  position: relative;
-  left: 20px;
-}
+  .filter {
+    position: relative;
+    height: 50px;
+  }
+
+  .addBtn {
+    float: right;
+    margin-right: 100px;
+  }
+
+  .el-dialog__wrapper {
+    z-index: 999;
+    background: rgba(0, 0, 0, .8);
+
+    .el-dialogadd {
+      width: 500px;
+      margin-top: 15vh;
+    }
+
+    .el-dialogedit {
+      width: 1000px;
+      margin-top: 15vh;
+    }
+  }
+
+  .pic {
+    position: relative;
+    display: inline-block;
+    height: 60px;
+    width: 80px;
+    margin-right: 10px;
+
+    .close {
+      position: absolute;
+      right: -10px;
+      top: -10px;
+      width: 20px;
+    }
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
+  }
 </style>
