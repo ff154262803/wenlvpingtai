@@ -618,4 +618,20 @@ export default {
     queryHighLightPage(data, callback, errback) {
         this.POST(`${base}/manage/highlight/queryHighLightPage`, data, callback, errback);
     },
+    //新增亮点
+    addHighLight(data, callback, errback) {
+        this.POST(`${base}/manage/highlight/addHighLight`, data, callback, errback);
+    },
+    //修改亮点
+    editHighLight(data, callback, errback) {
+        this.POST(`${base}/manage/highlight/editHighLight?id=${data.nid}`, data, callback, errback);
+    },
+    //删除亮点
+    deleteHighLight(data, callback, errback) {
+        this.POST(`${base}/manage/highlight/deleteHighLight`, data, callback, errback);
+    },
+    //启用禁用亮点
+    openOrCloseHighLight(data, callback, errback) {
+        this.POST(`${base}/manage/highlight/openOrCloseHighLight`, data, callback, errback);
+    },
 }

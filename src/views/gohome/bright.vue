@@ -39,28 +39,29 @@
     <div class="el-dialog__wrapper" v-show="Addshow">
       <div class="el-dialog el-dialogadd" style="width: 600px">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">{{newdata.id?'修改亮点':'新增亮点'}}</span>
+          <span class="el-dialog__title">{{newdata.nid?'修改亮点':'新增亮点'}}</span>
           <button class="el-dialog__headerbtn" aria-label="Close" type="button" @click="cancel('newdata')"><i
               class="el-dialog__close el-icon el-icon-close"></i></button>
         </div>
         <div class="el-dialog__body">
           <el-form :model="newdata" :rules="rules" ref="newdata" label-width="80px">
-            <el-form-item label="新闻" prop="title">
-              <el-select v-model="value" placeholder="请选择">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            <el-form-item label="新闻" prop="id">
+              <el-select v-model="newdata" value-key="title" @change="changehandle($event)" placeholder="请选择新闻标题">
+                <el-option v-for="item in getNewsLists" :key="item.id" :label="item.title"
+                  :value="{id:item.id,title:item.title}">
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="排序" prop="summary">
-              <el-input v-model="newdata.summary"></el-input>
+            <el-form-item label="排序" prop="sort">
+              <el-input v-model="newdata.sort"></el-input>
             </el-form-item>
-            <el-form-item label="详情类型" prop="detailType" :disabled="detailBol">
-              <el-radio v-model="newdata.detailType" :label="1" :disabled="detailBol">启用</el-radio>
-              <el-radio v-model="newdata.detailType" :label="2" :disabled="detailBol">禁用</el-radio>
+            <el-form-item label="详情类型" prop="status">
+              <el-radio v-model="newdata.status" :label="1">启用</el-radio>
+              <el-radio v-model="newdata.status" :label="0">禁用</el-radio>
             </el-form-item>
           </el-form>
         </div>
-        <div class="el-dialog__footer" v-if="!detailBol">
+        <div class="el-dialog__footer">
           <div class="dialog-footer">
             <el-button @click="cancel('newdata')">取 消</el-button>
             <el-button type="primary" @click="add('newdata')">确 定</el-button>
@@ -79,7 +80,6 @@
         detailBol: false,
         //详情类型
         linktype: [],
-        fileList: [],
         uploaddata: {
           type: '',
           uKey: JSON.parse(sessionStorage.getItem('user')).uKey
@@ -96,26 +96,18 @@
         Addshow: false,
         Detailshow: false,
         newdata: {
-          detailType: 1,
-          details: "",
-          picurl: "",
-          status: 1,
-          summary: "",
-          title: "",
-          videoUrl: "",
-          voiceUrl: ""
+          id: '',
+          sort: "",
+          title: '',
+          status: '',
         },
         rules: {
-          title: [{ required: true, message: '活动标题不能为空' }],
-          summary: [{ required: true, message: '简介不能为空' }],
-          detailType: [{ required: true, message: '请选择详情类型' }],
-          details: [{ required: true, message: '详情不能为空' }],
+          //title: [{ required: true, message: '活动标题不能为空' }],
+          sort: [{ required: true, message: '请输入排序' }],
         },
         headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
+        //新闻下拉列表
         getNewsLists: {},
-        h5: {
-          content: ''
-        },
       }
     },
     mounted() {
@@ -124,6 +116,12 @@
       this.getNewsList()
     },
     methods: {
+      //添加弹框中的change事件
+      changehandle(event) {
+        console.log(event);
+        this.newdata.id = event.id
+        this.newdata.title = event.title
+      },
       //详情
       detail(item) {
         this.detailBol = true;
@@ -146,30 +144,18 @@
         if (data) {
           console.log('this.newdata', this.newdata);
           console.log('data', data);
-          console.log('this.fileList', this.fileList);
-          this.newdata = { ...data }
-          // if (data.detailType == 2) {
-
-          // }
-          this.h5.content = data.details
-          this.fileList = data.picurl
-          this.detailBol = false;
+          this.newdata.id = data.nid
+          this.newdata.nid = data.id
+          this.newdata.title = data.title
+          this.newdata.sort = data.sort
+          this.newdata.status = data.status
         } else {
-          this.fileList = []
           this.newdata = {
-            detailType: '1',
-            details: "",
-            picurl: "",
+            id: '',
+            sort: "",
             status: 1,
-            summary: "",
-            title: "",
-            videoUrl: "",
-            voiceUrl: ""
-          },
-            this.h5 = {
-              content: ''
-            },
-            this.detailBol = false;
+          }
+
         }
       },
       cancel(formName) {
@@ -185,7 +171,7 @@
           type: "warning",
         })
           .then(() => {
-            this.$ajax.deleteById({ idlst: list }, (res) => {
+            this.$ajax.deleteHighLight({ idlst: list }, (res) => {
               this.$message({
                 type: "success",
                 message: "删除成功!",
@@ -199,20 +185,9 @@
       add(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.newdata.id) {
+            if (this.newdata.nid) {
               console.log('进入修改');
-              this.$ajax.updateNewManage({
-                id: this.newdata.id, parameters: {
-                  picurl: this.newdata.picurl,
-                  details: this.newdata.details,
-                  detailType: this.newdata.detailType,
-                  summary: this.newdata.summary,
-                  title: this.newdata.title,
-                  status: 1,
-                  videoUrl: this.newdata.videoUrl,
-                  voiceUrl: this.newdata.voiceUrl
-                }
-              }, res => {
+              this.$ajax.editHighLight(this.newdata, res => {
                 this.$message({
                   type: 'success',
                   message: '修改成功!'
@@ -221,25 +196,18 @@
                 this.Addshow = false
                 this.getlist()
               })
+              console.log('进入修改', this.newdata);
             } else {
               console.log('进入添加');
-              this.$ajax.addNewManage({
-                picurl: this.newdata.picurl,
-                details: this.h5.content ? this.h5.content : this.newdata.details,
-                detailType: this.newdata.detailType,
-                summary: this.newdata.summary,
-                title: this.newdata.title,
-                status: 1,
-                videoUrl: this.newdata.videoUrl,
-                voiceUrl: this.newdata.voiceUrl
-              }, res => {
-                this.$message({
-                  type: 'success',
-                  message: '提交成功!'
-                });
-                this.Addshow = false
-                this.getlist()
-              })
+              this.$ajax.addHighLight(this.newdata
+                , res => {
+                  this.$message({
+                    type: 'success',
+                    message: '提交成功!'
+                  });
+                  this.Addshow = false
+                  this.getlist()
+                })
             }
           } else {
             return false;
@@ -257,7 +225,7 @@
           for (let i = 0; i < this.multipleSelection.length; i++) {
             idlst.push(this.multipleSelection[i].id)
           }
-          this.$ajax.setEventsEnableState({ idlst: idlst, status: val }, res => {
+          this.$ajax.openOrCloseHighLight({ idlst: idlst, status: val }, res => {
             this.$message({
               type: 'success',
               message: '设置成功!'
@@ -278,7 +246,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            this.$ajax.deleteById({ idlst: idlst }, res => {
+            this.$ajax.deleteHighLight({ idlst: idlst }, res => {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -299,7 +267,8 @@
       },
       getNewsList() {
         this.$ajax.queryNewManage(this.query, res => {
-          console.log(res, 'res');
+          this.getNewsLists = res.data
+          console.log(this.getNewsLists, 'this.getNewsLists');
         })
       },
       //当选择项发生变化时会触发该事件
