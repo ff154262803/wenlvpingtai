@@ -181,30 +181,16 @@ export default {
       },
       roleTree: [
         {
-          id: "权限管理",
-          name: "权限管理",
-          children: [
-            {
-              id: "1",
-              name: "管理员管理",
-            },
-            {
-              id: "2",
-              name: "角色管理",
-            },
-          ],
-        },
-        {
-          id: "16",
+          id: "1",
           name: "园区管理",
           children: [
             {
-              id: "17",
-              name: "路线管理",
+              id: "16",
+              name: "基础信息",
             },
             {
-              id: "18",
-              name: "租赁管理",
+              id: "17",
+              name: "基础配置",
             },
             {
               id: "19",

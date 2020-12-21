@@ -327,9 +327,6 @@
     <el-dialog title="管理模块范围修改" :visible.sync="menuShow" class="demo-box" width="400px" :close-on-click-modal="false">
       <el-form ref="menu" label-width="100px">
         <el-form-item label="">
-          <!-- <el-checkbox-group v-model="ParkMenuList" @change="CheckAllChange">
-            <el-checkbox v-for="item in ParkMenuList" :key="item.id">{{item.caption}}</el-checkbox>
-          </el-checkbox-group> -->
           <el-checkbox-group v-model="menuArr">
             <el-checkbox v-for="item in ParkMenuList" :key="item.id" :label="item.id">{{item.caption}}</el-checkbox>
           </el-checkbox-group>
@@ -630,14 +627,12 @@
       getParkMenuList() {
         this.$ajax.getParkMenuList({}, (res) => {
           this.ParkMenuList = res.data;
-          console.log('res', res);
         });
       },
       getdetail() {
         if (this.parkid) {
           this.$ajax.getParkDetails({ id: this.parkid }, (res) => {
             this.detail = res.data;
-            console.log("this.detail", this.detail);
             this.electronicfencelist = res.data.electronicfencelist
               ? JSON.parse(res.data.electronicfencelist)
               : [];
@@ -719,29 +714,30 @@
         this.menuArr = [...new Set(this.checkarr)]
         console.log(this.menuArr);
       },
+      //编辑管理模块范围
       editParkMenu() {
         this.$ajax.editParkMenu({ idlst: [...this.menuArr], parkid: sessionStorage.getItem("parkid") * 1 }, (res) => {
           this.menuShow = false
           this.getdetail();
         });
       },
+      //修改
       edit(formName) {
         this[formName + "Show"] = true;
         this.editdata = { ...this.detail };
-        this.menuArr = this.editdata.menu.menuid
-        console.log('menu', this.editdata.menu.menuid);
         console.log('this.editdata', this.editdata);
-        if (
-          formName == "discountperiod" &&
-          this.detail.discountperiod.indexOf(" - ") > 0
-        ) {
-          console.log('11111');
-          this.editdata.discountperiodarr = this.detail.discountperiod.split(
-            " - "
-          );
+        if (formName == "discountperiod" && this.detail.discountperiod.indexOf(" - ") > 0) {
+          this.editdata.discountperiodarr = this.detail.discountperiod.split(" - ");
         } else if (formName == "menu") {
-          this.menuArr = this.editdata.menu.menuid
-
+          //设置一个自定义数组
+          let arr = []
+          //循环数组中menu
+          for (let i in this.editdata.menu) {
+            //取出的值放入自定义的数组中
+            arr.push(this.editdata.menu[i].menuid)
+          }
+          //把自定义的数组赋值给menuArr
+          this.menuArr = arr
         }
       },
       add(formName) {
@@ -758,13 +754,7 @@
                 " - " +
                 this.editdata.discountperiodarr[1];
             } else if (formName == "menu") {
-
-
-              // prams.id = this.checkarr
-
-              // prams.caption = this.ParkMenuList.menu.caption
               console.log(this.ParkMenuList);
-
             } else {
               prams[formName] = this.editdata[formName];
             }

@@ -19,32 +19,48 @@ import user from './views/user/user'//用户管理
 import parklist from './views/park/parklist'//园区管理
 import msgsend from './views/msg/msgsend'//商品列表
 import feedback from './views/feedback/feedback'//商品列表
-import shoplist from './views/shop/list'//商品列表
 // import orderlist from './views/order/list'//订单列表
 // import shoplist from './components/editor'//订单列表
 // 园区管理
-import base from './views/park/base'//园区基础信息
-import routerlist from './views/park/routerlist'//路线列表
-import scenicdetail from './views/park/scenicdetail'//景点详情
-import sencelist from './views/park/senceList'//景点列表
+//基础信息
+import base from './views/park/base'//基础信息
+//基础配置
+import topline from './views/park/deploy/topline'//公告管理
+import message from './views/park/deploy/message';//消息推送
+import pagelist from './views/park/deploy/pagelist'//页面链接管理
+//景点管理
+import sencelist from './views/park/scenicSpotAdmin/senceList'//景点列表
+import procam from './views/park/scenicSpotAdmin/procam'//全景资源管理
+import routerlist from './views/park/scenicSpotAdmin/routerlist'//路线列表
+//商品管理
+import shoplist from './views/shop/list'//商品管理 
 import product from './views/park/product'//商品列表
-import schedule from './views/park/active'//活动管理
-import schedunum from './views/park/schedunum'//预约统计
-import topline from './views/park/topline'//头条管理
-import procam from './views/park/procam'//全景资源管理
+import schedule from './views/park/active'//商品活动
+//活动管理
 import partdetail from './views/park/partdetail'//活动管理
+import schedunum from './views/park/schedunum'//预约统计
+//游客服务
 import lostManage from './views/park/lostManage'//失物管理
+//租赁管理
 import leaseItem from './views/park/lease/leaseItem'//租赁管理
 import leaseRes from './views/park/lease/leaseRes'//租赁物品
 import leaseDistribution from './views/park/lease/leaseDistribution'//租赁分布
+import scenicdetail from './views/park/scenicdetail'//景点详情
 import paySet from './views/pay/paySet'//充值设置
 import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
-import homeConfiguration from './views/park/homeConfiguration'//首页配置
-import pagelist from './views/park/pagelist'//页面链接管理
+//新闻管理
 import newsmanagement from './views/park/newsmanagement' //新闻管理
-import message from './views/park/message';//消息推送
-
+//票务管理
+import ticketAdmin from './views/park/ticketAdmin';//票务管理
+//酒店管理
+import hotelAdmin from './views/park/hotelAdmin';//酒店管理
+//游客管理
+import touristAdmin from './views/park/touristAdmin';//游客管理
+//首页配置
+import homeConfiguration from './views/park/homeConfiguration'//首页配置
+//景观设备管理
+import landscapeAdmin from './views/park/landscapeAdmin';//景观设备管理
 // 商品管理
 import active from './views/shop/active'//商城活动
 
@@ -53,11 +69,6 @@ import basic from './views/basic/basic'//基本设置
 import classification from './views/basic/classification'//分类管理
 import manage from './views/basic/manage'//管理员
 import page from './views/basic/page'//页面链接管理
-//首页配置
-import heads from './views/gohome/heads'//头图管理
-import functions from './views/gohome/functions'//功能按钮
-import bright from './views/gohome/bright'//夜游亮点
-import multiprobe from './views/gohome/multiprobe'// 夜探阿朵
 //权限管理
 import roleManagement from './views/role/roleManagement';//角色管理
 import adminManagement from './views/role/adminManagement';//管理员管理
@@ -70,7 +81,7 @@ const router = new VueRouter({
         { path: '/back', component: Home, name: '返回', hidden: true, back: true, ...metaTrue },
         {
             path: '/', component: Home, name: 'tongjihome', hidden: false, meta: { requireAuth: true, level: 1 },
-            children: [{ path: '/', component: tongjihome, name: '概览', ...metaTrue, meta: { title: "概览" } },]
+            children: [{ path: '/', component: tongjihome, name: '数据统计', ...metaTrue, meta: { title: "数据统计" } },]
         },
         {
             path: '/', component: Home, name: 'role', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
@@ -80,7 +91,7 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1},
+            path: '/', component: Home, name: 'parklist', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [{ path: '/parklist', component: parklist, name: '园区管理', ...metaTrue, meta: { title: "园区管理" } },],
         },
 
@@ -88,32 +99,43 @@ const router = new VueRouter({
             path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
             children: [
                 { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/topline', component: topline, redirect: 'topline', name: '基础配置', meta: { requireAuth: true, parent: 'parklist' },
-                    children:[{path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' }}]
-                },
-                { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
                 {
-                    path: '/leaseItem', component: leaseItem, redirect: 'leaseItem', name: '租赁管理', meta: { requireAuth: true, parent: 'parklist' },
-                    //路由加载模块，导航加载菜单
-                    children: [{ path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } }]
+                    path: '/topline', component: topline, redirect: 'topline', name: '基础配置', meta: { requireAuth: true, parent: 'parklist' },
+                    children: [{ path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' } }]
                 },
-                { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: 'parklist' } },
+                {
+                    path: '/sencelist', component: sencelist, name: '景点管理', meta: { requireAuth: true, parent: 'parklist' },
+                    children: [{
+                        path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'base' }
+                    },]
+                },
+                {
+                    path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, level: 2 },
+                    children: [
+                        { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/base' } },
+                    ]
+                },
+                {
+                    path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' },
+                    children: [
+                        { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: '/base' } },
+                    ]
+                },
+                {
+                    path: '/lostManage', component: lostManage, name: '游客服务', meta: { requireAuth: true, parent: 'parklist' },
+                    children: [
+                        { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: '/base' } },
+                    ]
+                },
+                { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/ticketAdmin', component: ticketAdmin, name: '票务管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/hotelAdmin', component: hotelAdmin, name: '酒店管理', meta: { requireAuth: true, parent: 'parklist' } },
+                { path: '/touristAdmin', component: touristAdmin, name: '游客管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
+                { path: '/landscapeAdmin', component: landscapeAdmin, name: '景观设备管理', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
         },
-        {
-            path: '/', component: Home, name: 'shoplist', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
-            children: [
-                { path: '/shoplist', component: shoplist, name: '商品管理', meta: { title: "商品管理", requireAuth: true, parent: '/' } },
-                { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/' } }
-            ]
-        },
+
         {
             path: '/', component: Home, name: 'msgsend', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
@@ -155,20 +177,57 @@ const router = new VueRouter({
                 { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
             ]
         },
+        //基础配置
         {
             path: '/', component: Home, name: 'underlying', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
-                { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' } },
-                {path: '/message', component: message, name: '消息推送 ', meta: { requireAuth: true, parent: 'base' } },
-                { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: 'base' } }
+                { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/message', component: message, name: '消息推送 ', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/pagelist', component: pagelist, name: '页面链接管理 ', meta: { requireAuth: true, parent: '/base' } }
             ]
         },
+        //景点管理
         {
-            path: '/', component: Home, name: 'lease', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'scenicSpotAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
-                { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'base' } },
-                { path: '/leaseRes', component: leaseRes, name: '租赁物品管理', meta: { requireAuth: true, parent: 'base' } },
-                { path: '/leaseDistribution', component: leaseDistribution, name: '物品分布管理', meta: { requireAuth: true, parent: 'base' } }
+                { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/routerlist', component: routerlist, name: '路线列表', meta: { requireAuth: true, parent: '/base' } },
+            ]
+        },
+        //商品管理
+        {
+            path: '/', component: Home, name: 'shopAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            children: [
+                { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: '/base' } },
+
+            ]
+        },
+        //活动管理
+        {
+            path: '/', component: Home, name: 'activityAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            children: [
+                { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: '/base' } },
+            ]
+        },
+        //游客管理
+        {
+            path: '/', component: Home, name: 'touristAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            children: [
+                { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: '/lostManage' } }
+            ]
+        },
+        //租赁管理
+        {
+            path: '/', component: Home, name: 'lease', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'lostManage', level: 4 },
+            children: [
+                { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: 'lostManage' } },
+                { path: '/leaseRes', component: leaseRes, name: '租赁物品管理', meta: { requireAuth: true, parent: 'lostManage' } },
+                { path: '/leaseDistribution', component: leaseDistribution, name: '物品分布管理', meta: { requireAuth: true, parent: 'lostManage' } }
             ]
         },
         {
@@ -177,15 +236,15 @@ const router = new VueRouter({
                 { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue, meta: { title: "意见反馈" } },
             ],
         },
-        {
-            path: '/heads', component: heads, name: '头图管理'
-        }, {
-            path: '/functions', component: functions, name: '功能按钮'
-        }, {
-            path: '/multiprobe', component: multiprobe, name: '夜探阿朵'
-        }, {
-            path: '/bright', component: bright, name: '夜游亮点'
-        }
+        // {
+        //     path: '/heads', component: heads, name: '头图管理'
+        // }, {
+        //     path: '/functions', component: functions, name: '功能按钮'
+        // }, {
+        //     path: '/multiprobe', component: multiprobe, name: '夜探阿朵'
+        // }, {
+        //     path: '/bright', component: bright, name: '夜游亮点'
+        // }
     ]
 });
 
@@ -202,11 +261,11 @@ router.beforeEach((to, from, next) => {
         } else {
             // let isadmin = JSON.parse(sessionStorage.getItem('user')).isadmin || false
             // if(!isadmin){
-                // router.options.routes=router.options.routes.filter(n=>{
-                //     if(n.name=="parklist" || n.name=="base"){
-                //         return true
-                //     }
-                // })
+            // router.options.routes=router.options.routes.filter(n=>{
+            //     if(n.name=="parklist" || n.name=="base"){
+            //         return true
+            //     }
+            // })
             // }
             router.options.routes.map(n => {
                 if (n.name != to.name) {
@@ -217,7 +276,7 @@ router.beforeEach((to, from, next) => {
                     })
                 }
             })
-            
+
             next();
         }
     } else {

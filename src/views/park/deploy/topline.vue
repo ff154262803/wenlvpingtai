@@ -96,7 +96,7 @@
   </div>
 </template>
 <script>
-  import TinymceEditor from "../../components/editor";
+  import TinymceEditor from "@/components/editor";
 
   export default {
     name: "list",
