@@ -130,7 +130,12 @@ const router = new VueRouter({
                 { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/ticketAdmin', component: ticketAdmin, name: '票务管理', meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/hotelAdmin', component: hotelAdmin, name: '酒店管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/touristAdmin', component: touristAdmin, name: '游客管理', meta: { requireAuth: true, parent: 'parklist' } },
+                {
+                    path: '/touristAdmin', component: touristAdmin, name: '游客管理', meta: { requireAuth: true, parent: 'parklist' },
+                    children: [
+                        { path: '/touristAdmin', component: touristAdmin, name: '游客列表', meta: { requireAuth: true, parent: '/base' } },
+                    ]
+                },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
                 { path: '/landscapeAdmin', component: landscapeAdmin, name: '景观设备管理', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],

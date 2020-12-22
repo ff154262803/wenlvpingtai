@@ -634,4 +634,17 @@ export default {
     openOrCloseHighLight(data, callback, errback) {
         this.POST(`${base}/manage/highlight/openOrCloseHighLight`, data, callback, errback);
     },
+    //小程序端-用户相关
+    //获取小程序端用户列表
+    queryWebUserList(data, callback, errback) {
+        this.POST(`${base}/web/user/queryWebUserList`, data, callback, errback);
+    },
+    //删除小程序端用户
+    deleteWebUser(data, callback, errback) {
+        this.POST(`${base}/web/user/deleteWebUser`, data, callback, errback);
+    },
+    //小程序端用户设置可用状态
+    setWebUserEnableState(data, callback, errback) {
+        this.POST(`${base}/web/user/setWebUserEnableState`, data, callback, errback);
+    },
 }
