@@ -434,6 +434,10 @@ export default {
     queryParkNoticeList(data, callback, errback) {
         this.POST(`${base}/manage/queryParkNoticeList`, data, callback, errback);
     },
+    //园区中后台微信小程序消息推送
+    pushNoticeForWeChat(data, callback, errback) {
+        this.POST(`${base}/manage/pushNoticeForWeChat`, data, callback, errback);
+    },
     //公告开启与关闭
 
     //查询失物列表信息
@@ -647,4 +651,14 @@ export default {
     setWebUserEnableState(data, callback, errback) {
         this.POST(`${base}/web/user/setWebUserEnableState`, data, callback, errback);
     },
+    //小程序商品信息设置
+    //商品信息设置列表查询
+    queryMallGoodsList(data, callback, errback) {
+        this.POST(`${base}/manage/product/queryMallGoodsList`, data, callback, errback);
+    },
+    //商品信息设置添加商品
+    addMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/product/addMallGoods`, data, callback, errback);
+    },
+
 }

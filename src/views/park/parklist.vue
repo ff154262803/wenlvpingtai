@@ -161,6 +161,9 @@
         ref="newdata"
         label-width="100px"
       >
+        <el-form-item label="ID" prop="id">
+          <el-input v-model="newdata.id" placeholder="请输入id"></el-input>
+        </el-form-item>
         <el-form-item label="园区名" prop="caption">
           <el-input
             v-model="newdata.caption"
@@ -301,6 +304,7 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.newdata.id = this.newdata.id * 1;
           this.$ajax.addPark(this.newdata, (res) => {
             this.$message({
               type: "success",

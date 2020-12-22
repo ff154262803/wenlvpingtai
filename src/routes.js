@@ -33,10 +33,14 @@ import sencelist from './views/park/scenicSpotAdmin/senceList'//景点列表
 import procam from './views/park/scenicSpotAdmin/procam'//全景资源管理
 import routerlist from './views/park/scenicSpotAdmin/routerlist'//路线列表
 //商品管理
-import shoplist from './views/shop/list'//商品管理 
-import product from './views/park/product'//商品列表
-import schedule from './views/park/active'//商品活动
+import shopMessage from './views/park/shop/shopMessage';//商品信息管理
+import shopOrder from './views/park/shop/shopOrder';//商品订单管理
+import shopBinding from './views/park/shop/shopBinding';//绑定管理
+import shopDistribution from './views/park/shop/shopDistribution';//商品分布管理
+// import shoplist from './views/park/shop/list'//商品管理 
+// import product from './views/park/shop/product'//商品列表
 //活动管理
+import schedule from './views/park/shop/active.vue'//活动管理
 import partdetail from './views/park/partdetail'//活动管理
 import schedunum from './views/park/schedunum'//预约统计
 //游客服务
@@ -62,7 +66,7 @@ import homeConfiguration from './views/park/homeConfiguration'//首页配置
 //景观设备管理
 import landscapeAdmin from './views/park/landscapeAdmin';//景观设备管理
 // 商品管理
-import active from './views/shop/active'//商城活动
+// import active from './views/park/active'//商城活动
 
 //基本设置
 import basic from './views/basic/basic'//基本设置
@@ -110,9 +114,9 @@ const router = new VueRouter({
                     },]
                 },
                 {
-                    path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, level: 2 },
+                    path: '/shopMessage', component: shopMessage, name: '商品管理', meta: { requireAuth: true, level: 2 },
                     children: [
-                        { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/base' } },
+                        { path: '/shopMessage', component: shopMessage, name: '商品信息设置', meta: { requireAuth: true, parent: '/base' } },
                     ]
                 },
                 {
@@ -204,9 +208,13 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'shopAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
-                { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/base' } },
-                { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/base' } },
-                { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/shopMessage', component: shopMessage, name: '商品信息设置', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/shopOrder', component: shopOrder, name: '商品订单管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/shopBinding', component: shopBinding, name: '绑定管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/shopDistribution', component: shopDistribution, name: '商品分布管理', meta: { requireAuth: true, parent: '/base' } },
+                // { path: '/shoplist', component: shoplist, name: '商品管理', meta: { requireAuth: true, parent: '/base' } },
+                // { path: '/active', component: active, name: '商城活动', meta: { requireAuth: true, parent: '/base' } },
+                // { path: '/product', component: product, name: '商品列表', meta: { requireAuth: true, parent: '/base' } },
 
             ]
         },

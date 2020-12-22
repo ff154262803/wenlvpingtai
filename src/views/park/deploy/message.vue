@@ -3,10 +3,10 @@
     <!-- 表格区 -->
     <el-form :model="newdata" ref="newdata" label-width="120px">
       <el-form-item label="目标平台" prop="plats">
-        <el-checkbox-group v-model="newdata.plats">
+        <el-checkbox-group v-model="newdata.type">
+          <el-checkbox label="3">小程序</el-checkbox>
           <el-checkbox label="1">安卓</el-checkbox>
           <el-checkbox label="2">ios</el-checkbox>
-          <el-checkbox label="3">小程序</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="通知标题" prop="title">
@@ -21,22 +21,22 @@
           placeholder="请填写您要推送的内容，中文120字以内"
         ></el-input>
       </el-form-item>
-      <el-form-item label="后续动作" prop="nextab">
+      <!-- <el-form-item label="后续动作" prop="nextab">
         <el-radio-group v-model="newdata.nextab">
           <el-radio label="1">启动首页</el-radio>
           <el-radio label="2">打开链接</el-radio>
           <el-radio label="3">应用内跳转</el-radio>
         </el-radio-group>
-      </el-form-item>
+      </el-form-item> -->
       <!-- 应用内跳转显示 -->
-      <el-form-item label="Scheme地址" prop="scheme" v-if="newdata.nextab == 3">
+      <!-- <el-form-item label="Scheme地址" prop="scheme" v-if="newdata.nextab == 3">
         <el-input
           v-model="newdata.scheme"
           placeholder="以http:// 或者https://开头"
         ></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <!-- 应用内跳转显示 -->
-      <el-form-item label="链接地址" prop="data" v-if="newdata.nextab == 2">
+      <!-- <el-form-item label="链接地址" prop="data" v-if="newdata.nextab == 2">
         <el-input
           v-model="newdata.data"
           placeholder="以http:// 或者https://开头"
@@ -79,7 +79,7 @@
           <el-input v-model="key.val" style="width: 150px"></el-input>
           <el-button type="primary" @click="add(val)">添加</el-button>
         </div>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即发送</el-button>
       </el-form-item>
@@ -92,15 +92,9 @@ export default {
   data() {
     return {
       newdata: {
-        plats: ["1", "2", "3"],
+        type: [],
         title: "",
         content: "",
-        data: "",
-        scheme: "",
-        nextab: "1",
-        workType: "0",
-        outline: "0",
-        extras: [{ key: "", val: "" }],
       },
       rules: {
         plats: [{ required: true, message: "目标平台不能为空" }],
@@ -116,90 +110,82 @@ export default {
     };
   },
   methods: {
-    add(add) {
-      if (5 > this.newdata.extras.length) {
-        this.newdata.extras.splice(add + 1, 0, { key: "", val: "" });
-      }
-    },
+    add(add) {},
     onSubmit(formName) {
-      var data = {
-        city: "",
-        target: 1,
-      };
-      if (this.newdata.plats.length == 0) {
-        this.$message.error("至少一个目标平台");
-        return false;
-      } else {
-        data.plats = this.newdata.plats;
-      }
-      if (this.newdata.title.length > 20) {
-        this.$message.error("通知标题不可超过20字");
-        return false;
-      } else {
-        data.title = this.newdata.title;
-      }
-      if (!this.newdata.content || this.newdata.content.length > 120) {
-        this.$message.error("通知内容为必填项且不可超过120字");
-        return false;
-      } else {
-        data.content = this.newdata.content;
-      }
-      if (this.newdata.nextab == 1) {
-        data.scheme = "";
-        data.data = "";
-      } else if (this.newdata.nextab == 2) {
-        data.scheme = "";
-        data.data = this.newdata.data;
-        if (!this.newdata.data || this.newdata.data.length > 120) {
-          this.$message.error("链接地址为必填项且不可超过120字");
-          return false;
-        }
-      } else if (this.newdata.nextab == 3) {
-        data.data = "";
-        data.scheme = this.newdata.scheme;
-        if (!this.newdata.scheme || this.newdata.scheme.length > 120) {
-          this.$message.error("scheme地址为必填项且不可超过120字");
-          return false;
-        }
-      } else {
-        this.$message.error("后续动作为必填项");
-        return false;
-      }
-      if (this.newdata.workType == 0) {
-        data.workType = 0;
-        data.taskTime = 0;
-      } else if (this.newdata.workType == 1 && !this.newdata.workdate) {
-        this.$message.error("推送日期为必填项");
-        return false;
-      } else {
-        data.workType = 1;
-        data.taskTime = new Date(this.newdata.workdate).getTime();
-      }
-      if (this.newdata.outline == 0) {
-        data.unlineTime = 0;
-      } else if (this.newdata.outline == 1 && !this.newdata.unlineTime) {
-        this.$message.error("有效天数为必填");
-        return false;
-      } else {
-        data.unlineTime = this.newdata.unlineTime;
-      }
-      let json = {};
-      for (let i = 0; i < this.newdata.extras.length; i++) {
-        if (
-          this.newdata.extras[i].key != "" &&
-          this.newdata.extras[i].val != ""
-        ) {
-          json[this.newdata.extras[i].key] = this.newdata.extras[i].val;
-        }
-      }
-      json.scheme = data.scheme;
-      json.data = data.data;
-      data.extras = JSON.stringify(json);
-      this.$ajax.simplePush(data, (res) => {
+      this.newdata.type = this.newdata.type[0];
+      // var data = {
+      //   city: "",
+      //   target: 1,
+      // };
+      // if (this.newdata.plats.length == 0) {
+      //   this.$message.error("至少一个目标平台");
+      //   return false;
+      // } else {
+      //   data.plats = this.newdata.plats;
+      // }
+      // if (this.newdata.title.length > 20) {
+      //   this.$message.error("通知标题不可超过20字");
+      //   return false;
+      // } else {
+      //   data.title = this.newdata.title;
+      // }
+      // if (!this.newdata.content || this.newdata.content.length > 120) {
+      //   this.$message.error("通知内容为必填项且不可超过120字");
+      //   return false;
+      // } else {
+      //   data.content = this.newdata.content;
+      // }
+      // if (this.newdata.nextab == 1) {
+      //   data.scheme = "";
+      //   data.data = "";
+      // } else if (this.newdata.nextab == 3) {
+      //   data.data = "";
+      //   data.scheme = this.newdata.scheme;
+      //   if (!this.newdata.scheme || this.newdata.scheme.length > 120) {
+      //     this.$message.error("scheme地址为必填项且不可超过120字");
+      //     return false;
+      //   }
+      // } else {
+      //   this.$message.error("后续动作为必填项");
+      //   return false;
+      // }
+      // if (this.newdata.workType == 0) {
+      //   data.workType = 0;
+      //   data.taskTime = 0;
+      // } else if (this.newdata.workType == 1 && !this.newdata.workdate) {
+      //   this.$message.error("推送日期为必填项");
+      //   return false;
+      // } else {
+      //   data.workType = 1;
+      //   data.taskTime = new Date(this.newdata.workdate).getTime();
+      // }
+      // if (this.newdata.outline == 0) {
+      //   data.unlineTime = 0;
+      // } else if (this.newdata.outline == 1 && !this.newdata.unlineTime) {
+      //   this.$message.error("有效天数为必填");
+      //   return false;
+      // } else {
+      //   data.unlineTime = this.newdata.unlineTime;
+      // }
+      // let json = {};
+      // for (let i = 0; i < this.newdata.extras.length; i++) {
+      //   if (
+      //     this.newdata.extras[i].key != "" &&
+      //     this.newdata.extras[i].val != ""
+      //   ) {
+      //     json[this.newdata.extras[i].key] = this.newdata.extras[i].val;
+      //   }
+      // }
+      // json.scheme = data.scheme;
+      // json.data = data.data;
+      // data.extras = JSON.stringify(json);
+      this.$ajax.pushNoticeForWeChat(this.newdata, (res) => {
         this.$message({
           type: "success",
           message: "发送成功!",
         });
+        this.newdata = { type: [], title: "", content: "" };
+        console.log("res", res);
       });
     },
   },
