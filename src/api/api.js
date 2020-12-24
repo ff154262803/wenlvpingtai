@@ -686,4 +686,22 @@ export default {
     completeOrder(data, callback, errback) {
         this.POST(`${base}/manage/systemOrder/completeOrder`, data, callback, errback);
     },
+    //小程序道具绑定
+    //道具绑定列表查询
+    queryPropsBind(data, callback, errback) {
+        this.POST(`${base}/manage/props/queryPropsBind`, data, callback, errback);
+    },
+    //道具绑定启用禁用
+    setStatus(data, callback, errback) {
+        this.POST(`${base}/manage/props/setStatus`, data, callback, errback);
+    },
+    //小程序商品分布
+    //商品分布列表查询
+    querySiteDistributedList(data, callback, errback) {
+        this.POST(`${base}/manage/siteDistributed/querySiteDistributedList`, data, callback, errback);
+    },
+    //添加商品分布信息
+    addSiteDistributed(data, callback, errback) {
+        this.POST(`${base}/manage/siteDistributed/addSiteDistributed`, data, callback, errback);
+    },
 }

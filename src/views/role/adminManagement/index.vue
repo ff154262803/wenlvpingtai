@@ -41,7 +41,7 @@
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
-        prop="account"
+        prop="managename"
         label="用户名"
         align="center"
       ></el-table-column>
@@ -118,7 +118,7 @@
     <!--角色新增-->
     <el-dialog
       :title="
-        detailBol ? '管理员详情' : forminfo.uid ? '修改管理员' : '添加管理员'
+        detailBol ? '元素详情' : forminfo.uid ? '修改管理员' : '添加管理员'
       "
       :visible.sync="Addshow"
       v-if="Addshow"
@@ -292,10 +292,7 @@ export default {
         account: [{ required: true, validator: acccont, trigger: "blur" }],
         password: [{ required: true, validator: pass, trigger: "blur" }],
         isadmin: [{ required: true, trigger: "blur" }],
-        companyid: [{ required: true, trigger: "blur" }],
-        // roleid: [
-        //   { required: true, message: "请选择园区和角色", trigger: "blur" },
-        // ],
+        companyid: [{ required: true, trigger: "blur", message: "请选择企业" }],
       },
       forminfo: { ...defaultItem },
     };
@@ -314,21 +311,6 @@ export default {
         roleid: "",
       };
     },
-    // enableState(val) {
-    //     if (this.multipleSelection.length > 0) {
-    //         let idlst = []
-    //         for (let i = 0; i < this.multipleSelection.length; i++) {
-    //             idlst.push(this.multipleSelection[i].id)
-    //         }
-    //         this.$ajax.setAppUserEnableState({idlst: idlst, isenable: val}, res => {
-    //             this.$message({
-    //                 type: 'success',
-    //                 message: '设置成功!'
-    //             });
-    //             this.queryManageUserList()
-    //         })
-    //     }
-    // },
     //添加弹框中下拉框上下级联动
     changeSelect() {
       //清空角色类型
@@ -427,34 +409,6 @@ export default {
         };
       }, 200);
     },
-    // add(formName) {
-    //   console.log(this.$refs);
-    //   this.$refs[formName].validate((valid) => {
-    //     if (valid) {
-    //       if (this.newdata.uid) {
-    //         this.$ajax.updateManageUser(this.newdata, (res) => {
-    //           this.$message({
-    //             type: "success",
-    //             message: "修改成功!",
-    //           });
-    //           this.queryManageUserList();
-    //         });
-    //       } else {
-    //         //
-    //         this.$ajax.addManageUser(this.newdata, (res) => {
-    //           this.$message({
-    //             type: "success",
-    //             message: "提交成功!",
-    //           });
-    //           this.queryManageUserList();
-    //         });
-    //       }
-    //       this.Addshow = false;
-    //     } else {
-    //       return false;
-    //     }
-    //   });
-    // },
     //添加弹框中园区和角色的下拉框
     addSelect() {
       if (5 > this.forminfo.parkRoles.length) {
@@ -472,7 +426,8 @@ export default {
       //console.log(this.$refs.form);
       this.$refs.form.validate((valid) => {
         if (valid) {
-          if (this.newdata.id) {
+          if (this.forminfo.uid) {
+            this.forminfo.id = this.forminfo.uid;
             this.$ajax.updateManageUser(this.forminfo, (res) => {
               this.$message({
                 type: "success",
@@ -527,6 +482,7 @@ export default {
     },
     //详情
     detail(item) {
+      console.log(item);
       this.detailBol = true;
       this.Addshow = true;
       this.forminfo = item;
