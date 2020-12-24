@@ -162,7 +162,7 @@
             style="display: none"
             :on-remove="onremove"
             :data="uploaddata"
-            :action="$store.state.ip + '/resources/uploadResource'"
+            :action="$store.state.ip + '/manage/ferriswheel/resources/upload'"
             :on-progress="handleLoading"
             :on-success="onsuccsesspic"
             accept="image/jpeg,image/jpg,image/png"
@@ -461,6 +461,7 @@ export default {
       this.query.count = val;
       this.queryLostPropertyList();
     },
+    //详情
     detailLost(item) {
       this.changeBol = 2;
       this.addBol = true;
@@ -468,6 +469,7 @@ export default {
       this.addData = item;
       this.fileList = item.picurl.length ? item.picurl.split(",") : [];
     },
+    //修改
     edit(data) {
       this.changeBol = 1;
       this.addBol = true;
@@ -569,6 +571,7 @@ export default {
         }
       });
     },
+    //添加按钮
     addBtn() {
       this.addBol = true;
       this.addData = {};
@@ -631,6 +634,7 @@ export default {
     onremove(file, fileList) {
       console.log(file);
     },
+    //删除图标
     close(i) {
       this.fileList.splice(i, 1);
       this.addData.picurl = this.fileList.join();
@@ -654,7 +658,7 @@ export default {
     },
     onsuccsesspic(response, file, fileList) {
       if (response.resb == 200) {
-        this.fileList.push(response.shortUrl);
+        this.fileList.push(response.data.shortUrl);
         this.addData.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       }

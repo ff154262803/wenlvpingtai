@@ -6,23 +6,6 @@
       clearable
       style="width: 300px"
     ></el-input>
-    <!--        <el-button icon="el-icon-search" class="btn" @click="search"></el-button>-->
-    <el-button class="addBtn" type="primary" @click="addBtn">租借</el-button>
-    <div class="filter">
-      <strong>物品：</strong>
-      <span
-        @click="query.leaseresid = ''"
-        :class="query.leaseresid == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span
-        v-for="item in leaseResIdList"
-        :key="item.id"
-        :class="query.leaseresid == item.id ? 'active' : ''"
-        @click="query.leaseresid = item.id"
-        >{{ item.caption }}</span
-      >
-    </div>
     <div class="filter">
       <strong>时间：</strong>
       <el-date-picker
@@ -36,24 +19,6 @@
       >
       </el-date-picker>
     </div>
-    <div class="filter">
-      <strong>状态：</strong>
-      <span
-        @click="query.status = ''"
-        :class="query.status == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span
-        @click="query.status = '1'"
-        :class="query.status == '1' ? 'active' : ''"
-        >已归还</span
-      >
-      <span
-        @click="query.status = '0'"
-        :class="query.status == '0' ? 'active' : ''"
-        >未归还</span
-      >
-    </div>
     <!--表格内容-->
     <el-table
       ref="multipleTable"
@@ -62,10 +27,19 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column prop="name" label="姓名" width="100"> </el-table-column>
-      <el-table-column prop="phone" label="手机号" width="150">
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="name" label="道具ID" width="100">
       </el-table-column>
-      <el-table-column prop="caption" label="物品" width="100">
+      <el-table-column prop="name" label="道具名" width="100">
+      </el-table-column>
+      <el-table-column prop="phone" label="用户" width="150"> </el-table-column>
+      <el-table-column prop="caption" label="手机号" width="100">
+      </el-table-column>
+      <el-table-column prop="caption" label="绑定时间" width="100">
       </el-table-column>
       <el-table-column prop="num" label="数量"> </el-table-column>
       <el-table-column label="状态">
@@ -437,11 +411,7 @@ export default {
     search() {
       this.queryLeaseRecords();
     },
-    addBtn() {
-      this.addBol = true;
-      this.addData = { num: 0 };
-      this.unused = 0;
-    },
+
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -531,10 +501,6 @@ export default {
 .classificationPage {
   .btn {
     margin-left: 20px;
-  }
-
-  .addBtn {
-    margin-left: 80px;
   }
 
   .filter {

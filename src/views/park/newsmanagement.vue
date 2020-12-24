@@ -279,8 +279,8 @@ export default {
       multipleSelection: [],
       total: 0,
       query: {
-        parkid: sessionStorage.getItem("parkid")
-          ? sessionStorage.getItem("parkid")
+        parkId: sessionStorage.getItem("parkid")
+          ? sessionStorage.getItem("parkid") * 1
           : "",
         condition: "",
         page: 1,
@@ -314,7 +314,6 @@ export default {
   mounted() {
     window.v = this;
     this.getlist();
-    this.getsitelist();
   },
   methods: {
     //文件上传成功
@@ -476,9 +475,7 @@ export default {
           videoUrl: "",
           voiceUrl: "",
         }),
-          (this.h5 = {
-            content: "",
-          }),
+          (this.h5 = { content: "" }),
           (this.detailBol = false);
       }
     },
@@ -537,8 +534,12 @@ export default {
             );
           } else {
             console.log("进入添加");
+
             this.$ajax.addNewManage(
               {
+                parkId: sessionStorage.getItem("parkid")
+                  ? sessionStorage.getItem("parkid") * 1
+                  : "",
                 picurl: this.newdata.picurl,
                 details: this.h5.content
                   ? this.h5.content
@@ -628,19 +629,6 @@ export default {
         console.log("this.tableData", this.tableData);
         console.log("this.total", this.total);
       });
-    },
-    getsitelist() {
-      this.$ajax.querySiteList(
-        {
-          count: 999,
-          page: 1,
-          parkid: sessionStorage.getItem("parkid"),
-          typelist: [6],
-        },
-        (res) => {
-          this.sitelist = res.data;
-        }
-      );
     },
     //当选择项发生变化时会触发该事件
     handleSelectionChange(val) {

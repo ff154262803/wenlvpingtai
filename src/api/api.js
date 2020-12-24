@@ -613,6 +613,11 @@ export default {
     updateNewManage(data, callback, errback) {
         this.POST(`${base}/manage/newmanage/updateNewManage`, data, callback, errback);
     },
+    //
+    //文件上传管理 ——摩天轮
+    upload(data, callback, errback) {
+        this.POST(`${base}/manage/ferriswheel/resources/upload`, data, callback, errback);
+    },
     //文件上传管理
     uploadResource(data, callback, errback) {
         this.POST(`${base}/resources/uploadResource`, data, callback, errback);
@@ -660,5 +665,25 @@ export default {
     addMallGoods(data, callback, errback) {
         this.POST(`${base}/manage/product/addMallGoods`, data, callback, errback);
     },
-
+    //商品信息设置删除商品
+    deleteMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/product/deleteMallGoods`, data, callback, errback);
+    },
+    //商品信息设置修改商品
+    updateMallGoods(data, callback, errback) {
+        this.POST(`${base}/manage/product/updateMallGoods`, data, callback, errback);
+    },
+    //商品信息设置启用禁用商品状态
+    setProductEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/product/setProductEnableState`, data, callback, errback);
+    },
+    //小程序商品订单管理
+    //查询商品订单
+    queryOrderList(data, callback, errback) {
+        this.POST(`${base}/manage/systemOrder/queryOrderList`, data, callback, errback);
+    },
+    //商品订单核销和退款操作
+    completeOrder(data, callback, errback) {
+        this.POST(`${base}/manage/systemOrder/completeOrder`, data, callback, errback);
+    },
 }

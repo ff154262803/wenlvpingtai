@@ -5,36 +5,44 @@
       placeholder="请输入商品名称"
       v-model="query.condition"
       style="width: 300px"
+      clearable
+      @clear="get"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-    <el-button class="addBtn" type="primary" @click="beginshow">添加</el-button>
+    <el-button class="addBtn" type="primary" @click="beginshow()"
+      >添加</el-button
+    >
+    <div class="filter">
+      <strong>类型：</strong>
+      <span
+        @click="changelevel('all')"
+        :class="query.type == '' ? 'active' : ''"
+        >不限</span
+      >
+      <span
+        v-for="(item, index) in typelist"
+        :key="index"
+        :class="query.type == item ? 'active' : ''"
+        @click="changelevel(item)"
+        >{{ item }}</span
+      >
+    </div>
     <div class="filter">
       <strong>分类：</strong>
       <span
-        @click="changetype('')"
-        :class="query.typelist.length == 0 ? 'active' : ''"
+        @click="changetype('all')"
+        :class="query.productClass == '' ? 'active' : ''"
         >不限</span
       >
       <span
-        v-for="(item, index) in list"
+        v-for="(item, index) in typeNamelist"
         :key="index"
-        :class="query.typelist.indexOf(item.id) > -1 ? 'active' : ''"
-        @click="changetype(item.id)"
-        >{{ item.typeName }}</span
+        :class="query.productClass == item ? 'active' : ''"
+        @click="changetype(item)"
+        >{{ item }}</span
       >
     </div>
-    <div class="filter" style="border-bottom: 1px solid #ddd">
-      <strong>AR：</strong>
-      <span @click="changeisar('all')" :class="query.isar == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span :class="query.isar == '0' ? 'active' : ''" @click="changeisar('0')"
-        >否</span
-      >
-      <span :class="query.isar == '1' ? 'active' : ''" @click="changeisar('1')"
-        >是</span
-      >
-    </div>
+
     <!-- 表格区 -->
     <el-table
       ref="multipleTable"
@@ -48,27 +56,55 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="商品名"></el-table-column>
-      <el-table-column prop="typeName" label="分类"></el-table-column>
-      <el-table-column label="状态">
+      <el-table-column
+        prop="caption"
+        label="商品名"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="type"
+        label="类型"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="price"
+        label="价格"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.isenable == 0 ? "禁用" : "启用"
+          scope.row.status == 0 ? "禁用" : "启用"
         }}</template>
       </el-table-column>
-      <el-table-column label="是否AR">
+      <el-table-column
+        prop="banNum"
+        label="批量限制"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="productClass"
+        label="商品分类"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="createtime"
+        label="创建时间"
+        align="center"
+        width="150px"
+      ></el-table-column>
+      <el-table-column prop="bind" label="绑定" align="center">
         <template slot-scope="scope">{{
-          scope.row.isar == 0 ? "否" : "是"
+          scope.row.bind == 0 ? "无" : "有"
         }}</template>
       </el-table-column>
-      <el-table-column label="显示范围">
-        <template slot-scope="scope"
-          >{{ scope.row.lowlevel }}-{{ scope.row.highlevel }}</template
-        >
-      </el-table-column>
-      <el-table-column label="操作">
+
+      <el-table-column label="操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="update(scope.row)"
-            >编辑</el-button
+          <el-button type="text" size="small" @click="beginshow(scope.row)"
+            >修改</el-button
+          >
+          <el-button type="text" size="small" @click="detail(scope.row)"
+            >详情</el-button
           >
           <el-button type="text" size="small" @click="del(scope.row.id)"
             >删除</el-button
@@ -100,11 +136,13 @@
       </el-pagination>
       <el-button size="small">确定</el-button>
     </el-col>
-    <!--景点新增-->
+    <!--商品新增-->
     <div class="el-dialog__wrapper" v-show="Addshow">
       <div class="el-dialog">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">添加商品信息</span>
+          <span class="el-dialog__title">{{
+            detailBol ? "商品详情" : newdata.id ? "修改商品" : "新增商品"
+          }}</span>
           <button
             class="el-dialog__headerbtn"
             aria-label="Close"
@@ -122,111 +160,124 @@
             label-width="120px"
           >
             <el-form-item label="类型" prop="type">
-              <el-select v-model="newdata.type">
+              <el-select v-model="newdata.type" :disabled="detailBol">
                 <el-option
-                  v-for="item in list"
-                  :label="item.typeName"
-                  :value="item.id"
-                  :key="item.id"
+                  v-for="item in typelist"
+                  :label="item"
+                  :value="item"
+                  :key="item.index"
                 ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="商品名称" prop="caption">
               <el-input
                 v-model="newdata.caption"
-                placeholder="请填写景点名字"
+                placeholder="请填写商品名称"
+                :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="介绍图" prop="picurl">
-              <el-upload
-                :action="$store.state.ip + '/resources/uploadResource'"
-                list-type="picture-card"
-                :before-upload="beforeUploadpic"
-                :on-success="onsuccsesspic"
+            <el-form-item label="图片：" label-width="120px" prop="picurl">
+              <el-input
+                v-model="newdata.picurl"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button size="small" type="primary" @click="uploading('uppic')"
+                >点击上传</el-button
               >
-                <i slot="default" class="el-icon-plus"></i>
-                <div slot="file" slot-scope="{ file }">
-                  <img
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url"
-                    alt=""
-                  />
-                  <span class="el-upload-list__item-actions">
-                    <span
-                      class="el-upload-list__item-preview"
-                      @click="handlePictureCardPreview(file)"
-                    >
-                      <i class="el-icon-zoom-in"></i>
-                    </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleDownload(file)"
-                    >
-                      <i class="el-icon-download"></i>
-                    </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleRemove(file)"
-                    >
-                      <i class="el-icon-delete"></i>
-                    </span>
-                  </span>
-                </div>
+              <el-upload
+                :disabled="detailBol"
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                :on-success="onsuccsesspic"
+                accept="image/jpeg,image/jpg,image/png"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                :limit="newdata.upName || 3"
+                multiple
+                list-type="picture-card"
+              >
+                <el-button size="small" type="primary" id="uppic"
+                  >点击上传</el-button
+                >
               </el-upload>
+              <div style="margin-top: 20px">
+                <div
+                  class="pic"
+                  v-for="(n, i) in fileList"
+                  :key="n"
+                  v-if="fileList.length"
+                >
+                  <img :src="$store.state.resip + n" alt="" class="pic" />
+                  <img
+                    :disabled="detailBol"
+                    src="../../../../static/img/close.png"
+                    alt=""
+                    class="close"
+                    @click="close(i)"
+                  />
+                </div>
+              </div>
             </el-form-item>
-            <el-form-item label="价格" prop="caption">
+            <el-form-item label="价格" prop="price">
               <el-input
-                v-model="newdata.caption"
+                v-model="newdata.price"
                 placeholder="请填写价格"
+                :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="描述" prop="caption">
+            <el-form-item label="描述" prop="typeName">
               <el-input
-                v-model="newdata.caption"
+                v-model="newdata.typeName"
                 placeholder="请填写描述"
+                :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="批量限制" prop="caption">
+            <el-form-item label="批量限制" prop="banNum">
               <el-input
-                v-model="newdata.caption"
+                v-model="newdata.banNum"
                 placeholder="请填写格式为：10-20"
+                :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="分类" prop="type">
-              <el-select v-model="newdata.type">
+            <el-form-item label="商品分类" prop="productClass">
+              <el-select v-model="newdata.productClass" :disabled="detailBol">
                 <el-option
-                  v-for="item in list"
-                  :label="item.typeName"
-                  :value="item.id"
-                  :key="item.id"
+                  v-for="item in typeNamelist"
+                  :label="item"
+                  :value="item"
+                  :key="item"
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="绑定" prop="detailType">
-              <el-radio
-                v-model="newdata.detailType"
-                :label="1"
+
+            <el-form-item label="绑定" prop="bind">
+              <el-radio v-model="newdata.bind" label="有" :disabled="detailBol"
                 >有</el-radio
               >
-              <el-radio
-                v-model="newdata.detailType"
-                :label="2"
+              <el-radio v-model="newdata.bind" label="无" :disabled="detailBol"
                 >无</el-radio
               >
             </el-form-item>
-            <el-form-item label="绑定方法" prop="opentime" v-if="newdata.detailType == 1">
+            <el-form-item
+              label="绑定方法"
+              prop="bindMethod"
+              v-if="newdata.bind == '有'"
+            >
               <el-input
-                v-model="newdata.opentime"
+                v-model="newdata.bindMethod"
                 placeholder="请输入绑定方法"
+                :disabled="detailBol"
               ></el-input>
             </el-form-item>
             <el-form-item
               label="商品使用手册"
-              prop="details"
-              v-model="newdata.details"
-              v-if="newdata.detailType == 2"
+              prop="manual"
+              v-model="newdata.manual"
             >
               <div style="height: 500px">
                 <tinymce-editor
@@ -236,8 +287,7 @@
               </div>
             </el-form-item>
           </el-form>
-          </el-form>
-          <div class="el-dialog__footer">
+          <div class="el-dialog__footer" v-if="!detailBol">
             <div class="dialog-footer">
               <el-button @click="cancel('newdata')">取 消</el-button>
               <el-button type="primary" @click="add('newdata')"
@@ -254,6 +304,7 @@
 <script>
 import TinymceEditor from "@/components/editor";
 export default {
+  name: "list",
   components: {
     TinymceEditor,
   },
@@ -270,6 +321,10 @@ export default {
       }
     };
     return {
+      detailBol: false,
+      typeNamelist: [], //商品分类名称
+      typelist: ["实物商品", "虚拟商品"], //商品类型
+      fileList: [],
       h5: {
         content: "",
       },
@@ -279,42 +334,46 @@ export default {
       total: 0,
       list: [],
       query: {
-        parkid: sessionStorage.getItem("parkid"),
-        page: 1,
-        count: 10,
-        condition: "",
-        typelist: [],
-        isar: "",
-        level: "",
+        caption: "",
+        productClass: "",
+        type: "",
       },
       Addshow: false,
       newdata: {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
+        //parkid: sessionStorage.getItem("parkid"),
+        banNum: "", //批量限制
+        bind: "", //绑定
+        bindMethod: "", //绑定方法
+        caption: "", //商品名称
+        manual: "", //商品使用手册
+        picurl: "", //图片路径
+        price: "", //价格
+        productClass: "", //商品分类
+        status: "1", //启用禁用
+        type: "", //商品类型
+        typeName: "", //描述
+      },
+      //图片上传时附带的额外参数
+      uploaddata: {
+        type: "",
+        uKey: JSON.parse(sessionStorage.getItem("user")).uKey,
       },
       rules: {
         caption: [
           { required: true, message: "请输入商品名称", trigger: "blur" },
-          { max: 20, message: "最多20个字符", trigger: "blur" },
-        ],
-        opentime: [{ max: 20, message: "最多20个字符", trigger: "blur" }],
-        remark: [{ max: 200, message: "最多200个字符", trigger: "blur" }],
-        phonenumber: [{ validator: checkPhone, trigger: "blur" }],
-        lowlevel: [
-          { required: true, message: "请选择最低显示层级", trigger: "change" },
-        ],
-        highlevel: [
-          { required: true, message: "请选择最高显示层级", trigger: "change" },
         ],
         type: [
           { required: true, message: "请选择商品类型", trigger: "change" },
+        ],
+        picurl: [
+          { required: true, message: "请添加商品图", trigger: "change" },
+        ],
+        price: [{ required: true, message: "请输入价格", trigger: "change" }],
+        typeName: [
+          { required: true, message: "请输入描述", trigger: "change" },
+        ],
+        productClass: [
+          { required: true, message: "请选择商品分类", trigger: "change" },
         ],
       },
     };
@@ -326,13 +385,58 @@ export default {
     }
     this.get();
     this.getlist();
+    this.queryTypeList();
   },
   methods: {
+    //按照类型查询
+    changelevel(item) {
+      if (item == "all") {
+        this.query.type = "";
+      } else {
+        this.query.type = item;
+      }
+      this.query.page = 1;
+      this.get();
+    },
+    //按照分类查询
+    changetype(item) {
+      if (item == "all") {
+        this.query.productClass = "";
+      } else {
+        this.query.productClass = item;
+      }
+      this.query.page = 1;
+      this.get();
+    },
+    //获取商品分类名称
+    queryTypeList() {
+      this.$ajax.queryTypeList({ groupId: 5 }, (res) => {
+        for (let i = 0; i < res.data.length; i++) {
+          this.typeNamelist.push(res.data[i].typeName);
+        }
+      });
+    },
+    //删除上传图片
+    close(i) {
+      this.fileList.splice(i, 1);
+      this.newdata.picurl = this.fileList.join();
+    },
+    uploading(id) {
+      document.getElementById(id).click();
+    },
+    onerror() {
+      this.fullscreenLoading = false;
+    },
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
-      // console.log();
-      this.newdata.picurl = response.url;
-      console.log("this.newdata.picurl", this.newdata.picurl);
+      if (response.resb == 200) {
+        this.fileList.push(response.data.shortUrl);
+        this.newdata.picurl = this.fileList.join();
+        this.fullscreenLoading = false;
+      }
+    },
+    handleLoading() {
+      this.fullscreenLoading = true;
     },
     beforeUploadpic(file) {
       const isLt5M = file.size / 1024 / 1024 < 5;
@@ -346,85 +450,101 @@ export default {
       if (!limit) this.$message.error("最多上传5张图片！");
       return accept && isLt5M && limit;
     },
-    beginshow() {
+    //详情
+    detail(item) {
+      this.detailBol = true;
       this.Addshow = true;
-      this.newdata = {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
-      };
+      this.newdata = { ...item };
+      this.fileList = item.picurl.length ? item.picurl.split(",") : [];
+      this.h5.content = item.manual;
+    },
+    beginshow(data) {
+      (this.detailBol = false), (this.Addshow = true);
+      if (data) {
+        this.newdata = { ...data };
+        this.h5.content = data.manual;
+        this.fileList = data.picurl.length ? data.picurl.split(",") : [];
+        console.log("data", data);
+      } else {
+        this.fileList = [];
+        this.newdata = {};
+        this.h5 = { content: "" };
+      }
     },
     cancel(formName) {
       this.Addshow = false;
       this.newdata = {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
+        //parkid: sessionStorage.getItem("parkid"),
+        // banNum: "", //批量限制
+        // bind: "", //绑定
+        // bindMethod: "", //绑定方法
+        // caption: "", //商品名称
+        // manual: "", //商品使用手册
+        // picurl: "", //图片路径
+        // price: "", //价格
+        // productClass: "", //商品分类
+        // status: "", //启用禁用
+        // type: "", //商品类型
+        // typeName: "", //描述
       };
     },
     add(formName) {
-      console.log("this.newdata", this.newdata);
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$ajax.addMallGoods(this.newdata, (res) => {
-            this.Addshow = false;
-            this.$message({
-              type: "success",
-              message: "提交成功!",
+          if (this.newdata.id) {
+            console.log("进入修改");
+            this.$ajax.updateMallGoods(
+              {
+                id: this.newdata.id,
+                parameters: {
+                  banNum: this.newdata.banNum,
+                  bind: this.newdata.bind,
+                  bindMethod: this.newdata.bindMethod,
+                  caption: this.newdata.caption,
+                  manual: this.h5.content,
+                  picurl: this.newdata.picurl,
+                  price: this.newdata.price,
+                  productClass: this.newdata.productClass,
+                  type: this.newdata.type,
+                  typeName: this.newdata.typeName,
+                },
+              },
+              (res) => {
+                this.$message({
+                  type: "success",
+                  message: "修改成功!",
+                });
+                console.log("data", res.data);
+                this.Addshow = false;
+                this.get();
+              }
+            );
+          } else {
+            ((this.newdata.manual = this.h5.content),
+            (this.newdata.status = "1")),
+              (this.newdata.bindMethod = this.newdata.bindMethod
+                ? this.newdata.bindMethod
+                : "");
+            this.$ajax.addMallGoods(this.newdata, (res) => {
+              this.$message({
+                type: "success",
+                message: "提交成功!",
+              });
+              console.log("res", res);
+              this.Addshow = false;
+              this.get();
             });
-            console.log("res", res);
-            this.get();
-          });
+          }
         } else {
           return false;
         }
       });
     },
-    changetype(val) {
-      if (val) {
-        let num = this.query.typelist.indexOf(val);
-        ~num
-          ? this.query.typelist.splice(num, 1)
-          : this.query.typelist.push(val);
-      } else {
-        this.query.typelist = [];
-      }
-      this.query.page = 1;
-      this.get();
-    },
-    changelevel(val) {
-      if (val == "all") {
-        this.query.level = "";
-      } else {
-        this.query.level = val;
-      }
-      this.query.page = 1;
-      this.get();
-    },
-    changeisar(val) {
-      if (val == "all") {
-        this.query.isar = "";
-      } else {
-        this.query.isar = val;
-      }
-      this.query.page = 1;
-      this.get();
-    },
+
     getlist() {
-      this.$ajax.getSiteTypeList({}, (res) => {
+      this.$ajax.getSiteTypeList({ groupId: 5 }, (res) => {
         this.list = res.data;
+        console.log("list", this.list);
       });
     },
     search() {
@@ -438,7 +558,7 @@ export default {
         for (let i = 0; i < this.multipleSelection.length; i++) {
           idlst.push(this.multipleSelection[i].id);
         }
-        this.$ajax.setSiteEnableState(
+        this.$ajax.setProductEnableState(
           { idlst: idlst, isenable: val },
           (res) => {
             this.$message({
@@ -456,13 +576,13 @@ export default {
         for (let i = 0; i < this.multipleSelection.length; i++) {
           idlst.push(this.multipleSelection[i].id);
         }
-        this.$confirm("您确定要删除选中景点吗?", "提示", {
+        this.$confirm("您确定要删除选中商品吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         })
           .then(() => {
-            this.$ajax.deleteSite({ idlst: idlst }, (res) => {
+            this.$ajax.deleteMallGoods({ idlst: idlst }, (res) => {
               this.$message({
                 type: "success",
                 message: "删除成功!",
@@ -473,17 +593,16 @@ export default {
           .catch(() => {});
       }
     },
+    //获取商品信息列表
     get() {
       this.$ajax.queryMallGoodsList(this.query, (res) => {
-        console.log("this.tableData", this.tableData);
         this.tableData = res.data;
         this.total = res.total;
+        console.log("res", res);
+        console.log("this.tableData", this.tableData);
       });
     },
-    update(row) {
-      sessionStorage.setItem("siteid", row.id);
-      this.$router.push({ path: "/scenicdetail", query: { id: row.id } });
-    },
+    update(row) {},
     del(id) {
       this.$confirm("您确定要删除选中景点吗?", "提示", {
         confirmButtonText: "确定",
@@ -491,7 +610,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$ajax.deleteSite({ idlst: [id] }, (res) => {
+          this.$ajax.deleteMallGoods({ idlst: [id] }, (res) => {
             this.$message({
               type: "success",
               message: "删除成功!",
@@ -550,6 +669,20 @@ export default {
   .el-dialog {
     width: 1200px;
     margin-top: 15vh;
+  }
+}
+.pic {
+  position: relative;
+  display: inline-block;
+  height: 100px;
+  width: 100px;
+  margin-right: 10px;
+
+  .close {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    width: 20px;
   }
 }
 </style>

@@ -2,56 +2,59 @@
   <div class="classificationPage">
     <el-input
       placeholder="请输入手机号"
-      v-model="query.phone"
+      v-model="query.condition"
       clearable
       style="width: 300px"
     ></el-input>
-    <!--        <el-button icon="el-icon-search" class="btn" @click="search"></el-button>-->
-    <el-button class="addBtn" type="primary" @click="addBtn">租借</el-button>
     <div class="filter">
-      <strong>物品：</strong>
+      <strong>分类：</strong>
       <span
-        @click="query.leaseresid = ''"
-        :class="query.leaseresid == '' ? 'active' : ''"
+        @click="query.productClass = ''"
+        :class="query.productClass == '' ? 'active' : ''"
         >不限</span
       >
       <span
-        v-for="item in leaseResIdList"
-        :key="item.id"
-        :class="query.leaseresid == item.id ? 'active' : ''"
-        @click="query.leaseresid = item.id"
-        >{{ item.caption }}</span
+        v-for="item in typeNamelist"
+        :key="item"
+        :class="query.productClass == item ? 'active' : ''"
+        @click="query.productClass = item"
+        >{{ item }}</span
       >
     </div>
     <div class="filter">
       <strong>时间：</strong>
       <el-date-picker
-        v-model="query.time"
+        v-model="query.createtime"
         type="daterange"
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         value-format="yyyy-MM-dd"
-        @change="clearNullTime(query.time)"
+        @change="clearNullTime(query.createtime)"
       >
       </el-date-picker>
     </div>
     <div class="filter">
       <strong>状态：</strong>
       <span
-        @click="query.status = ''"
-        :class="query.status == '' ? 'active' : ''"
+        @click="query.completeStatus = ''"
+        :class="query.completeStatus == '' ? 'active' : ''"
         >不限</span
       >
       <span
-        @click="query.status = '1'"
-        :class="query.status == '1' ? 'active' : ''"
-        >已归还</span
+        @click="query.completeStatus = '0'"
+        :class="query.completeStatus == '0' ? 'active' : ''"
+        >待核销</span
       >
       <span
-        @click="query.status = '0'"
-        :class="query.status == '0' ? 'active' : ''"
-        >未归还</span
+        @click="query.completeStatus = '1'"
+        :class="query.completeStatus == '1' ? 'active' : ''"
+        >已核销</span
+      >
+      <span
+        @click="query.completeStatus = '2'"
+        :class="query.completeStatus == '2' ? 'active' : ''"
+        >已退款</span
       >
     </div>
     <!--表格内容-->
@@ -62,46 +65,75 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column prop="name" label="姓名" width="100"> </el-table-column>
-      <el-table-column prop="phone" label="手机号" width="150">
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="orderno" label="订单号" align="center">
       </el-table-column>
-      <el-table-column prop="caption" label="物品" width="100">
+      <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
-      <el-table-column prop="num" label="数量"> </el-table-column>
-      <el-table-column label="状态">
+      <el-table-column prop="productClass" label="分类" align="center">
+      </el-table-column>
+      <el-table-column prop="userid" label="用户名" align="center">
+      </el-table-column>
+      <el-table-column prop="mobile" label="手机号" align="center">
+      </el-table-column>
+      <el-table-column
+        prop="createtime"
+        label="下单时间"
+        width="150"
+        align="center"
+      >
+      </el-table-column>
+      <el-table-column prop="amount" label="金额" align="center">
+      </el-table-column>
+      <el-table-column prop="num" label="数量" align="center">
+      </el-table-column>
+      <el-table-column prop="system" label="注册平台" align="center">
+      </el-table-column>
+      <el-table-column prop="QRcode" label="提货码" align="center">
+      </el-table-column>
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.status === "0" ? "未归还" : "已归还"
+          scope.row.completeStatus == "0"
+            ? "待核销"
+            : scope.row.completeStatus == "1"
+            ? "已核销"
+            : "已退款"
         }}</template>
       </el-table-column>
-      <el-table-column prop="createtime" label="创建时间"> </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            @click="GiveBackBtn(scope.row)"
-            v-if="scope.row.status === '0'"
+            :disabled="scope.row.completeStatus == 2 ? disabled : !disabled"
+            >{{ scope.row.completeStatus == 2 ? "已退款" : "退款" }}</el-button
           >
-            归还
-          </el-button>
           <el-button
             type="text"
             size="small"
-            @click="edit(scope.row, 'disabled')"
-            >详情</el-button
-          >
-          <el-button type="text" size="small" @click="edit(scope.row, 'detail')"
-            >修改</el-button
+            @click="enableState(scope.row.id)"
+            :disabled="
+              scope.row.completeStatus == 2
+                ? disabled
+                : scope.row.completeStatus == 1
+                ? disabled
+                : !disabled
+            "
+            >{{ scope.row.completeStatus == 1 ? "已核销" : "核销" }}</el-button
           >
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-col :span="24" class="toolbar">
-      <!--            <div class="allControl">-->
-      <!--                <el-button size="small" @click="enableState(1)">启用</el-button>-->
-      <!--                <el-button size="small" @click="enableState(0)">禁用</el-button>-->
-      <!--            </div>-->
+      <div class="allControl">
+        <el-button size="small">退款</el-button>
+        <el-button size="small" @click="setenableState">核销</el-button>
+      </div>
       <el-pagination
         background
         layout="total,sizes, prev, pager, next, jumper"
@@ -115,134 +147,6 @@
       </el-pagination>
       <el-button size="small">确定</el-button>
     </el-col>
-    <!--弹窗内容-->
-    <el-dialog
-      :title="disabled ? '详情' : '租借'"
-      :visible.sync="addBol"
-      :close-on-click-modal="false"
-      @close="cancel"
-    >
-      <el-form :model="addData" :rules="rules" ref="addData">
-        <el-form-item label="物品：" label-width="120px" prop="leaseresid">
-          <el-select
-            v-model="addData.leaseresid"
-            placeholder="请选择分类"
-            @change="change"
-            :disabled="disabled || detail"
-          >
-            <el-option
-              :label="item.caption"
-              :value="item.id"
-              v-for="(item, index) in leaseResIdList"
-              :key="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="借出地点："
-          label-width="120px"
-          prop="servicecenterid"
-        >
-          <el-select
-            v-model="addData.servicecenterid"
-            placeholder="请选择分类"
-            @change="change"
-            :disabled="disabled || detail"
-          >
-            <el-option
-              :label="item.caption"
-              :value="item.id"
-              v-for="(item, index) in serviceCenterIdList"
-              :key="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="数量：" label-width="120px" prop="num">
-          <el-input-number
-            v-model.number="addData.num"
-            :min="0"
-            :max="unused"
-            :disabled="disabled || detail"
-          ></el-input-number>
-          <strong style="float: right; margin-right: 50px"
-            >剩余数量：{{ unused }}</strong
-          >
-        </el-form-item>
-        <span class="el-dialog__title">租借人信息</span>
-        <el-form-item label="姓名：" label-width="120px" prop="name">
-          <el-input
-            v-model="addData.name"
-            placeholder="请输入姓名"
-            style="width: 200px"
-            :disabled="disabled"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="手机号：" label-width="120px" prop="phone">
-          <el-input
-            v-model="addData.phone"
-            placeholder="请输入手机号"
-            style="width: 200px"
-            :disabled="disabled"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="证件号：" label-width="120px" prop="number">
-          <el-input
-            v-model="addData.number"
-            placeholder="请输入证件号"
-            style="width: 200px"
-            :disabled="disabled"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="押金：" label-width="120px" prop="cash">
-          <el-input
-            v-model.number="addData.cash"
-            placeholder="请输入押金"
-            style="width: 200px"
-            :disabled="disabled"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submit('addData')" v-if="!disabled"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
-    <!--归还-->
-    <el-dialog
-      title="归还"
-      :visible.sync="GiveBackBol"
-      :close-on-click-modal="false"
-    >
-      <el-form :model="GiveBackData" :rules="rules" ref="GiveBackData">
-        <span class="el-dialog__title">请确认好归还的物品和归还数量</span>
-        <el-form-item
-          label="归还地点："
-          label-width="120px"
-          prop="servicecenterid"
-        >
-          <el-select
-            v-model="GiveBackData.servicecenterid"
-            placeholder="请选择分类"
-            @change="change"
-          >
-            <el-option
-              :label="item.caption"
-              :value="item.id"
-              v-for="(item, index) in serviceCenterIdList"
-              :key="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="GiveBackBol = false">取 消</el-button>
-        <el-button type="primary" @click="GiveBack('GiveBackData')"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -269,6 +173,7 @@ export default {
       }, 100);
     };
     return {
+      typeNamelist: [], //商品分类名称
       list: [],
       total: 0,
       addBol: false,
@@ -276,17 +181,17 @@ export default {
       leaseResIdList: [],
       serviceCenterIdList: [],
       unused: 0,
-      disabled: false,
+      disabled: true,
       detail: false,
       query: {
         page: 1,
-        phone: "",
         count: 10,
-        status: "",
-        endDate: "",
-        startDate: "",
-        leaseresid: "",
         parkid: sessionStorage.getItem("parkid"),
+        completeStatus: "",
+        condition: "",
+        endDate: "",
+        productClass: "",
+        startDate: "",
       },
       rules: {
         leaseresid: [
@@ -322,16 +227,26 @@ export default {
     };
   },
   mounted() {
-    this.queryLeaseRecords();
+    this.queryOrderList();
     this.getLeaseResNames();
     this.getServiceCenterList();
+    this.queryTypeList();
   },
   methods: {
+    //获取商品分类名称
+    queryTypeList() {
+      this.$ajax.queryTypeList({ groupId: 5 }, (res) => {
+        for (let i = 0; i < res.data.length; i++) {
+          this.typeNamelist.push(res.data[i].typeName);
+        }
+      });
+    },
     //查询
-    queryLeaseRecords() {
-      this.$ajax.queryLeaseRecords(this.query, (res) => {
+    queryOrderList() {
+      this.$ajax.queryOrderList(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
+        console.log("this.tableData", this.tableData);
       });
     },
     //获取物品
@@ -372,154 +287,61 @@ export default {
     clearNullTime(time) {
       this.query.startDate = time ? time[0] : "";
       this.query.endDate = time ? time[1] : "";
-      this.queryLeaseRecords();
+      this.queryOrderList();
     },
-
-    GiveBackBtn(item) {
-      this.GiveBackBol = true;
-      this.GiveBackData.recordid = item.id;
-    },
-    edit(data, item) {
-      this[item] = true;
-      this.addBol = true;
-      this.addData = { ...data };
-      this.change(() => {
-        this.addData = { ...data };
-      });
-    },
-    cancel() {
-      this.addBol = false;
-      this.disabled = false;
-      this.detail = false;
-    },
-    GiveBack(form) {
-      this.$refs[form].validate((valid) => {
-        if (valid) {
-          this.$ajax.leaseGiveBack({ ...this.GiveBackData }, (res) => {
+    //核销操作单行
+    enableState(id) {
+      this.$confirm("您确定要核销选中商品订单吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$ajax.completeOrder({ idlst: [id] }, (res) => {
             this.$message({
               type: "success",
-              message: "归还成功!",
+              message: "设置成功!",
             });
-            this.GiveBackBol = false;
-            this.queryLeaseRecords();
+            this.queryOrderList();
           });
+        })
+        .catch(() => {});
+    },
+    //核销操作单行多行
+    setenableState(id, val) {
+      if (this.multipleSelection.length > 0) {
+        let idlst = [];
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          idlst.push(this.multipleSelection[i].id);
         }
-      });
-    },
-    submit(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          if (this.addData.id) {
-            this.$ajax.updateVisitorLease(this.addData, (res) => {
-              this.$message({
-                type: "success",
-                message: "修改成功!",
-              });
-              this.addBol = false;
-              this.queryLeaseRecords();
-            });
-          } else {
-            this.addData.parkid = sessionStorage.getItem("parkid");
-            this.$ajax.visitorLease(this.addData, (res) => {
-              this.$message({
-                type: "success",
-                message: "添加成功!",
-              });
-              this.addBol = false;
-              this.queryLeaseRecords();
-            });
-          }
-        } else {
-          return false;
-        }
-      });
-    },
-    search() {
-      this.queryLeaseRecords();
-    },
-    addBtn() {
-      this.addBol = true;
-      this.addData = { num: 0 };
-      this.unused = 0;
+        this.$ajax.completeOrder({ idlst: idlst }, (res) => {
+          this.$message({
+            type: "success",
+            message: "设置成功!",
+          });
+          this.queryOrderList();
+        });
+      }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    // enableState(val) {
-    //     if (this.multipleSelection.length == 0) {
-    //         this.$message({
-    //             type: 'warning',
-    //             message: '尚未选择任何内容!'
-    //         });
-    //     } else {
-    //         let idlst = []
-    //         for (let i = 0; i < this.multipleSelection.length; i++) {
-    //             idlst.push(this.multipleSelection[i].id)
-    //         }
-    //         this.$ajax.setTypeEnableState({idlst: idlst, isenable: val}, res => {
-    //             this.$message({
-    //                 type: 'success',
-    //                 message: '设置成功!'
-    //             });
-    //             this.queryLeaseRecords()
-    //         })
-    //     }
-    // },
-    // UpDown(id) {
-    //     this.$ajax.detailDeleteType({id: id}, res => {
-    //         if (res.resb = 200) {
-    //             this.$confirm('您确定要删除该类型吗?', '提示', {
-    //                 confirmButtonText: '确定',
-    //                 cancelButtonText: '取消',
-    //                 type: 'warning'
-    //             }).then(() => {
-    //                 this.$ajax.deleteType({id: id}, res => {
-    //                     this.$message({
-    //                         type: 'success',
-    //                         message: '删除成功!'
-    //                     });
-    //                     this.queryLeaseRecords()
-    //                 })
-    //             }).catch(() => {
-    //             });
-    //         }
-    //
-    //     }, err => {
-    //         if (err.resb = 996) {
-    //             this.$confirm('该类型已被使用您确定要删除该类型吗?', '提示', {
-    //                 confirmButtonText: '确定',
-    //                 cancelButtonText: '取消',
-    //                 type: 'warning'
-    //             }).then(() => {
-    //                 this.$ajax.deleteType({id: id}, res => {
-    //                     this.$message({
-    //                         type: 'success',
-    //                         message: '删除成功!'
-    //                     });
-    //                     this.queryLeaseRecords()
-    //                 })
-    //             }).catch(() => {
-    //             });
-    //         }
-    //
-    //     })
-    // },
     //分页
     handleSizeChange(val) {
       this.query.count = val;
-      this.queryLeaseRecords();
+      this.queryOrderList();
     },
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val; //.toString()
       this.resLoading = true;
-      this.queryLeaseRecords();
+      this.queryOrderList();
     },
   },
   watch: {
     query: {
       handler(newVal, oldVal) {
-        this.queryLeaseRecords();
+        this.queryOrderList();
       },
       deep: true,
     },

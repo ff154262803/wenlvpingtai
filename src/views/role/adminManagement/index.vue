@@ -118,7 +118,7 @@
     <!--角色新增-->
     <el-dialog
       :title="
-        detailBol ? '元素详情' : newdata.uid ? '修改管理员' : '添加管理员'
+        detailBol ? '管理员详情' : forminfo.uid ? '修改管理员' : '添加管理员'
       "
       :visible.sync="Addshow"
       v-if="Addshow"
@@ -179,43 +179,48 @@
           prop="ParkRoles"
           v-if="forminfo.isadmin == false"
         >
-        <div 
-        style="margin-bottom: 20px"
-        v-for="(key, val) in forminfo.parkRoles"
-          :key="val">
-          <el-select
-            v-model="key.parkid"
-            style="width: 180px"
-            :disabled="detailBol"
-            @change="changeSelect"
+          <div
+            style="margin-bottom: 20px"
+            v-for="(key, val) in forminfo.parkRoles"
+            :key="val"
           >
-            <el-option
-              v-for="item in ParkTypeList"
-              :value="item.parkid"
-              :key="item.id"
-              :label="item.caption"
-            ></el-option>
-          </el-select>
-          <el-select
-            v-model="key.roleid"
-            style="width: 180px"
-            :disabled="detailBol"
-          >
-            <el-option
-              v-for="item in roleList"
-              :value="item.id"
-              :key="item.id"
-              :label="item.name"
-            ></el-option>
-          </el-select>
-          <el-button type="primary" @click="addSelect()"> 添加</el-button>
-          <el-button  @click="delSelect(key)" v-if="forminfo.parkRoles.length!=1">删除</el-button>
+            <el-select
+              v-model="key.parkid"
+              style="width: 180px"
+              :disabled="detailBol"
+              @change="changeSelect"
+            >
+              <el-option
+                v-for="item in ParkTypeList"
+                :value="item.parkid"
+                :key="item.id"
+                :label="item.caption"
+              ></el-option>
+            </el-select>
+            <el-select
+              v-model="key.roleid"
+              style="width: 180px"
+              :disabled="detailBol"
+            >
+              <el-option
+                v-for="item in roleList"
+                :value="item.id"
+                :key="item.id"
+                :label="item.name"
+              ></el-option>
+            </el-select>
+            <el-button type="primary" @click="addSelect()"> 添加</el-button>
+            <el-button
+              @click="delSelect(key)"
+              v-if="forminfo.parkRoles.length != 1"
+              >删除</el-button
+            >
           </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="!detailBol">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="add()" >确 定</el-button>
+        <el-button type="primary" @click="add()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -451,17 +456,17 @@ export default {
     //   });
     // },
     //添加弹框中园区和角色的下拉框
-    addSelect(){
+    addSelect() {
       if (5 > this.forminfo.parkRoles.length) {
-        this.forminfo.parkRoles.push({city: "",roleid: ""});
+        this.forminfo.parkRoles.push({ city: "", roleid: "" });
       }
     },
     //删除弹框中园区和角色的下拉框
-    delSelect(item){
-      var index = this.forminfo.parkRoles.indexOf(item)
-        if (index !== -1) {
-          this.forminfo.parkRoles.splice(index, 1)
-        }
+    delSelect(item) {
+      var index = this.forminfo.parkRoles.indexOf(item);
+      if (index !== -1) {
+        this.forminfo.parkRoles.splice(index, 1);
+      }
     },
     add() {
       //console.log(this.$refs.form);

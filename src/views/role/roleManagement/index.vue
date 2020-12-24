@@ -105,7 +105,7 @@
     </el-col>
     <!--角色新增-->
     <el-dialog
-      :title="newdata.parkid ? '修改角色' : '添加角色'"
+      :title="newdata.id ? '修改角色' : '添加角色'"
       :visible.sync="Addshow"
       v-if="Addshow"
       class="demo-box"
@@ -364,7 +364,6 @@ export default {
           return false;
         }
       });
-      console.log(formName);
     },
     //禁用启用
     UpDown(item) {
