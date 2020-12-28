@@ -185,14 +185,12 @@ export default {
         status: "1",
       },
       rules: {
-        mallName: [
-          { required: true, message: "请选择商品", trigger: "change" },
-        ],
+        mallName: [{ required: true, message: "请选择商品", trigger: "burl" }],
         siteType: [
-          { required: true, message: "请选择景点类型", trigger: "change" },
+          { required: true, message: "请选择景点类型", trigger: "burl" },
         ],
         siteName: [
-          { required: true, message: "请选择景点名称", trigger: "change" },
+          { required: true, message: "请选择景点名称", trigger: "burl" },
         ],
       },
     };
@@ -251,7 +249,7 @@ export default {
     },
     //一二级联动
     getSiteType(val) {
-      // this.NameList = [];
+      this.NameList = [];
       this.query.typelist = [val];
       this.$ajax.querySiteList(this.query, (res) => {
         for (let i = 0; i < res.data.length; i++) {
@@ -263,7 +261,7 @@ export default {
         //这里的就是上面遍历的数据源
         return item.id === val; //筛选出匹配数据
       });
-      // this.newdata.siteName = null;
+      this.newdata.siteName = null;
     },
     getSiteTypeName(val) {},
     beginshow(data) {

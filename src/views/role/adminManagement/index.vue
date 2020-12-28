@@ -188,7 +188,7 @@
               v-model="key.parkid"
               style="width: 180px"
               :disabled="detailBol"
-              @change="changeSelect"
+              @change="changeSelect($event)"
             >
               <el-option
                 v-for="item in ParkTypeList"
@@ -306,22 +306,25 @@ export default {
   methods: {
     beginshow() {
       this.Addshow = true;
-      this.newdata = {
-        city: "",
-        roleid: "",
-      };
+      this.forminfo.parkRoles = [];
+      this.forminfo = { ...resetItem };
     },
     //添加弹框中下拉框上下级联动
-    changeSelect() {
-      //清空角色类型
-      this.forminfo.parkRoles[0].roleid = "";
-      //遍历园区的下拉选项数组
-      for (let k in this.ParkTypeList) {
-        //园区下拉后的parkid 是否等于 角色列表中的 id
-        if (this.ParkTypeList.id === this.roleList.id) {
+    changeSelect(item) {
+      console.log("item", item);
+      this.query.parkid = item;
+      this.$ajax.queryRole(this.query, (res) => {
+        this.roleList = res.data;
+        console.log(this.roleList, "roleList");
+      });
+      if (this.forminfo.parkRoles.length) {
+        console.log("存在");
+        for (let i = 1; i < this.forminfo.parkRoles.length; i++) {
+          console.log("roleid", this.forminfo.parkRoles[i]);
+          // this.forminfo.parkRoles[i].roleid = null;
         }
-        console.log("this.ParkTypeList.id", this.ParkTypeList[k].parkid);
       }
+      // this.roleList = [];
     },
     //角色查询
     queryRole() {

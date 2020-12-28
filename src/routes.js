@@ -139,7 +139,7 @@ const router = new VueRouter({
                         { path: '/touristAdmin', component: touristAdmin, name: '游客列表', meta: { requireAuth: true, parent: '/base' } },
                     ]
                 },
-                { path: '/homeConfiguration', component: homeConfiguration, name: '首页配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
+                { path: '/homeConfiguration', component: homeConfiguration, name: '页面配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
                 { path: '/landscapeAdmin', component: landscapeAdmin, name: '景观设备管理', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
         },

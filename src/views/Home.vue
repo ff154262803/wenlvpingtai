@@ -52,7 +52,7 @@
               :key="item.children[0].path"
               v-if="item.children && !$store.state.child.length"
               align="center"
-              @click="clickOne(item, showItem)"
+              @click="clickOne(item)"
             >
               {{ item.children[0].meta.title }}
             </el-menu-item>
@@ -67,7 +67,7 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="!item.hidden && item.name != '首页配置'"
+              v-if="!item.hidden && item.name != '页面配置'"
               align="center"
             >
               {{ item.name }}
@@ -76,7 +76,7 @@
               @click="clickTWOS()"
               :index="item.path"
               :key="item.path"
-              v-if="item.name == '首页配置' && (parkid || $route.query.id) == 3"
+              v-if="item.name == '页面配置' && (parkid || $route.query.id) == 3"
               align="center"
             >
               {{ item.name }}
@@ -110,12 +110,13 @@ export default {
       showList: [],
       child: [],
       parkid: sessionStorage.getItem("parkid"),
+      showItem: [],
     };
   },
   methods: {
-    clickTWOS() {
+    clickTWOS(item) {
+      console.log("item", item);
       this.parkid = sessionStorage.getItem("parkid");
-      //console.log(this.parkid);
     },
     clickOne(item) {
       if (item.unfold) {
@@ -166,9 +167,10 @@ export default {
   mounted() {
     //权限设置
     let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
+    let permissions = JSON.parse(sessionStorage.getItem("permissions"));
+    console.log("permissions", permissions);
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
-    if (isadmin) {
-    } else {
+    if (!isadmin) {
       showItem = showItem.filter((ele) => {
         return ele.name == "parklist";
       });
