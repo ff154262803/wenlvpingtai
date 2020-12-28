@@ -80,7 +80,9 @@ export default {
           },
         ],
         imgUrl: [{ required: true, message: "请选择图片" }],
-        themeImgUrl: [{ required: true, message: "请输入头图链接" }],
+        themeImgUrl: [
+          { required: true, message: "请输入头图链接", trigger: "blur" },
+        ],
       },
       headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
       formLabelWidth: "120px",
@@ -157,6 +159,7 @@ export default {
       this.getTheme();
     },
     beginshow() {
+      this.form = {};
       this.dialogFormVisible = true;
     },
   },

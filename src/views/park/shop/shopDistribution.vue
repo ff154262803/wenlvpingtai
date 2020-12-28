@@ -49,6 +49,9 @@
           <el-button type="text" size="small" @click="beginshow(scope.row)"
             >编辑</el-button
           >
+          <el-button type="text" size="small" @click="del(scope.row.id)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -59,6 +62,7 @@
       style="display: flex; justify-content: flex-end; position: relative"
     >
       <div style="position: absolute; left: 10px; top: 5px">
+        <el-button @click="delAll()">删除</el-button>
         <el-button @click="enableState(1)">启用</el-button>
         <el-button @click="enableState(0)">禁用</el-button>
       </div>
@@ -203,6 +207,48 @@ export default {
     this.queryMallGoodsList();
   },
   methods: {
+    //删除多条数据
+    delAll() {
+      if (this.multipleSelection.length != 0) {
+        let idlst = [];
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          idlst.push(this.multipleSelection[i].id);
+        }
+        this.$confirm("您确定要删除选中商品吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            this.$ajax.deleteSiteDistributed({ idlst: idlst }, (res) => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+              this.get();
+            });
+          })
+          .catch(() => {});
+      }
+    },
+    //删除一行数据
+    del(id) {
+      this.$confirm("您确定要删除选中景点吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$ajax.deleteSiteDistributed({ idlst: [id] }, (res) => {
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            this.get();
+          });
+        })
+        .catch(() => {});
+    },
     //一二级联动
     getSiteType(val) {
       // this.NameList = [];

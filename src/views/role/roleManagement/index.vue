@@ -112,12 +112,16 @@
         label-width="100px"
       >
         <el-form-item label="园区" prop="garden">
-          <el-select v-model="newdata.parkid" placeholder="请选择园区">
+          <el-select
+            v-model="newdata.parkid"
+            @change="getSiteType($event)"
+            placeholder="请选择园区"
+          >
             <el-option
               v-for="item in ParkTypeList"
               :value="item.parkid"
               :label="item.caption"
-              :key="item.id"
+              :key="item.parkid"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -131,6 +135,7 @@
 
         <el-form-item label="账号" prop="name">
           <el-tree
+            :default-expand-all="true"
             :data="roleTree"
             show-checkbox
             node-key="id"
@@ -182,16 +187,27 @@ export default {
         children: "children",
         label: "name",
       },
+      parkId: "",
     };
   },
 
   mounted() {
     this.queryRole();
     this.queryParkList();
-    this.getParkDetails();
+    //this.getParkDetails();
     //this.queryManageUserList();
   },
   methods: {
+    //实现选择园区以后，对应的权限就会发生改变
+    getSiteType(val) {
+      //园区的parkId = 选择的 parkid
+      this.parkId = val;
+      //权限选择树 设为空
+      this.roleTree[0].children = [];
+      //重新调用接口 获取权限上树
+      this.getParkDetails();
+      console.log("val", val);
+    },
     beginshow() {
       this.Addshow = true;
       this.newdata = {
@@ -209,7 +225,8 @@ export default {
     },
     //获取园区权限树形
     getParkDetails() {
-      this.$ajax.getParkDetails({ id: 5 }, (res) => {
+      this.$ajax.getParkDetails({ id: this.parkId * 1 }, (res) => {
+        console.log("res", res);
         for (let i = 0; i < res.data.menu.length; i++) {
           let obj = {};
           obj.id = res.data.menu[i].menuid;
@@ -224,7 +241,7 @@ export default {
       this.$ajax.queryRole(this.query, (res) => {
         this.dataList = res.data;
         this.total = res.total;
-        console.log(this.dataList, "333333");
+        console.log("查询角色", this.dataList);
       });
     },
     //获取平台用户列表（查询列表）
@@ -235,17 +252,11 @@ export default {
         console.log(this.dataList, ".....");
       });
     },
-    //获取园区类型
-    // getParkTypeList() {
-    //   this.$ajax.getParkTypeList(this.query, (res) => {
-    //     this.ParkTypeList = res.data;
-    //   });
-    // },
     //查询园区列表
     queryParkList() {
       this.$ajax.queryParkList(this.query, (res) => {
         this.ParkTypeList = res.data;
-        console.log(this.ParkTypeList, "查询园区列表");
+        console.log("查询园区列表", this.ParkTypeList);
       });
     },
     //批量删除
@@ -336,8 +347,14 @@ export default {
         }
       );
     },
+    //修改
     Edit(item) {
+      console.log("item", item);
+      //权限选择树 设为空
+      this.roleTree[0].children = [];
       this.Addshow = true;
+      this.parkId = item.parkid;
+      this.getParkDetails();
       this.newdata = item;
       setTimeout(() => {
         this.$refs.tree.setCheckedKeys(item.permissions.map((n) => n.id));

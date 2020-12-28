@@ -93,9 +93,6 @@
         width="150px"
       ></el-table-column>
       <el-table-column prop="bind" label="绑定" align="center">
-        <template slot-scope="scope">{{
-          scope.row.bind == 0 ? "无" : "有"
-        }}</template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="150px">
@@ -342,7 +339,7 @@ export default {
       newdata: {
         //parkid: sessionStorage.getItem("parkid"),
         banNum: "", //批量限制
-        bind: "", //绑定
+        bind: "有", //绑定
         bindMethod: "", //绑定方法
         caption: "", //商品名称
         manual: "", //商品使用手册
@@ -362,18 +359,12 @@ export default {
         caption: [
           { required: true, message: "请输入商品名称", trigger: "blur" },
         ],
-        type: [
-          { required: true, message: "请选择商品类型", trigger: "change" },
-        ],
-        picurl: [
-          { required: true, message: "请添加商品图", trigger: "change" },
-        ],
-        price: [{ required: true, message: "请输入价格", trigger: "change" }],
-        typeName: [
-          { required: true, message: "请输入描述", trigger: "change" },
-        ],
+        type: [{ required: true, message: "请选择商品类型", trigger: "blur" }],
+        picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
+        price: [{ required: true, message: "请输入价格", trigger: "blur" }],
+        typeName: [{ required: true, message: "请输入描述", trigger: "blur" }],
         productClass: [
-          { required: true, message: "请选择商品分类", trigger: "change" },
+          { required: true, message: "请选择商品分类", trigger: "blur" },
         ],
       },
     };

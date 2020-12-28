@@ -135,45 +135,52 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="介绍图" prop="picurl">
-              <el-upload
-                :action="$store.state.ip + '/resources/uploadResource'"
-                list-type="picture-card"
-                :before-upload="beforeUploadpic"
-                :on-success="onsuccsesspic"
-                :disabled="detailBol"
+            <el-form-item label="介绍图" label-width="120px" prop="picurl">
+              <el-input
+                v-model="newdata.picurl"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button size="small" type="primary" @click="uploading('uppic')"
+                >点击上传</el-button
               >
-                <i slot="default" class="el-icon-plus"></i>
-                <div slot="file" slot-scope="{ file }">
-                  <img
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url"
-                    alt=""
-                  />
-                  <span class="el-upload-list__item-actions">
-                    <span
-                      class="el-upload-list__item-preview"
-                      @click="handlePictureCardPreview(file)"
-                    >
-                      <i class="el-icon-zoom-in"></i>
-                    </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleDownload(file)"
-                    >
-                      <i class="el-icon-download"></i>
-                    </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleRemove(file)"
-                    >
-                      <i class="el-icon-delete"></i>
-                    </span>
-                  </span>
-                </div>
+              <el-upload
+                :disabled="detailBol"
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                :on-success="onsuccsesspic"
+                accept="image/jpeg,image/jpg,image/png"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                :limit="newdata.upName || 3"
+                multiple
+                list-type="picture-card"
+              >
+                <el-button size="small" type="primary" id="uppic"
+                  >点击上传</el-button
+                >
               </el-upload>
+              <div style="margin-top: 20px">
+                <div
+                  class="pic"
+                  v-for="(n, i) in fileList"
+                  :key="n"
+                  v-if="fileList.length"
+                >
+                  <img :src="$store.state.resip + n" alt="" class="pic" />
+                  <img
+                    :disabled="detailBol"
+                    src="../../../static/img/close.png"
+                    alt=""
+                    class="close"
+                    @click="close(i)"
+                  />
+                </div>
+              </div>
             </el-form-item>
 
             <el-form-item label="语音讲解" prop="voiceUrl">
@@ -339,9 +346,11 @@ export default {
     },
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
-      // console.log();
-      this.newdata.picurl = response.url;
-      console.log("this.newdata.picurl", this.newdata.picurl);
+      if (response.resb == 200) {
+        this.fileList.push(response.data.shortUrl);
+        this.newdata.picurl = this.fileList.join();
+        this.fullscreenLoading = false;
+      }
     },
     //上传mp4文件之前的钩子函数
     beforeUploadmp4(file) {
@@ -443,8 +452,10 @@ export default {
     },
     //详情
     detail(item) {
+      console.log("item", item);
       this.detailBol = true;
       this.Addshow = true;
+      this.newdata.picurl = item.picurl;
       this.newdata = { ...item };
       this.h5.content = item.details;
     },
@@ -571,8 +582,10 @@ export default {
       this.query.page = val;
       this.getlist();
     },
+    //启用禁用单行
     enableState(id, val) {
-      this.$ajax.openOrClose({ id, status: val }, (res) => {
+      console.log(id, val);
+      this.$ajax.openOrClose({ idlst: [id], isenable: val }, (res) => {
         this.$message({
           type: "success",
           message: "设置成功!",
@@ -580,22 +593,20 @@ export default {
         this.getlist();
       });
     },
-    setenableState(id, val) {
+    //多行启用禁用
+    setenableState(val) {
       if (this.multipleSelection.length > 0) {
         let idlst = [];
         for (let i = 0; i < this.multipleSelection.length; i++) {
           idlst.push(this.multipleSelection[i].id);
         }
-        this.$ajax.setEventsEnableState(
-          { idlst: idlst, status: val },
-          (res) => {
-            this.$message({
-              type: "success",
-              message: "设置成功!",
-            });
-            this.getlist();
-          }
-        );
+        this.$ajax.openOrClose({ idlst: idlst, isenable: val }, (res) => {
+          this.$message({
+            type: "success",
+            message: "设置成功!",
+          });
+          this.getlist();
+        });
       }
     },
     delAll() {

@@ -158,14 +158,15 @@ export default {
               }
             );
           } else {
-            this.$ajax.addPageLink(this.newdata, (res) => {
-              this.$message({
-                type: "success",
-                message: "提交成功!",
+            (this.newdata.parkId = sessionStorage.getItem("parkid") * 1),
+              this.$ajax.addParkPageLink(this.newdata, (res) => {
+                this.$message({
+                  type: "success",
+                  message: "提交成功!",
+                });
+                this.Addshow = false;
+                this.get();
               });
-              this.Addshow = false;
-              this.get();
-            });
           }
         } else {
           return false;

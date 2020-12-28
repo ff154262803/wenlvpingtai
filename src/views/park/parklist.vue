@@ -149,6 +149,7 @@
     </el-col>
     <!--园区新增-->
     <el-dialog
+      :before-close="closeDialog"
       title="添加园区"
       :visible.sync="Addshow"
       class="demo-box"
@@ -161,7 +162,7 @@
         ref="newdata"
         label-width="100px"
       >
-        <el-form-item label="ID" prop="id">
+        <el-form-item label="parkID" prop="id">
           <el-input v-model="newdata.id" placeholder="请输入id"></el-input>
         </el-form-item>
         <el-form-item label="园区名" prop="caption">
@@ -260,23 +261,33 @@ export default {
       },
       Addshow: false,
       newdata: {
+        caption: "",
         city: "",
+        opentime: "",
+        packnumber: "",
+        price: "",
         province: "",
       },
       rules: {
         caption: [
-          { required: true, message: "请输入园区名", trigger: "blur" },
-          { max: 20, message: "最多20个字符", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入园区名",
+            trigger: "blur",
+          },
         ],
         city: [
-          { required: true, message: "请选择完整省市", trigger: "change" },
+          {
+            required: true,
+            message: "请选择完整省市",
+            trigger: "blur",
+          },
         ],
         // opentime: [{required: true, message: '请输入开放时间', trigger: 'blur'},{ max: 20, message: '最多20个字符', trigger: 'blur' }],
         packnumber: [{ validator: checkPhone, trigger: "blur" }],
         price: [{ required: true, validator: checkPrice, trigger: "blur" }],
-        type: [
-          { required: true, message: "请选择园区类型", trigger: "change" },
-        ],
+        type: [{ required: true, message: "请选择园区类型", trigger: "blur" }],
+        id: [{ required: true, message: "请选择园区id", trigger: "blur" }],
       },
       area: [],
       areacity: [],
@@ -291,15 +302,39 @@ export default {
     this.getarea();
   },
   methods: {
-    beginshow() {
+    beginshow(formName) {
       this.Addshow = true;
       this.newdata = {
+        caption: "",
         city: "",
+        opentime: "",
+        packnumber: "",
+        price: "",
+        province: "",
+      };
+    },
+    //关闭弹框的回调
+    closeDialog() {
+      this.Addshow = false;
+      this.newdata = {
+        caption: "",
+        city: "",
+        opentime: "",
+        packnumber: "",
+        price: "",
         province: "",
       };
     },
     cancel(formName) {
       this.Addshow = false;
+      this.newdata = {
+        caption: "",
+        city: "",
+        opentime: "",
+        packnumber: "",
+        price: "",
+        province: "",
+      };
     },
     add(formName) {
       this.$refs[formName].validate((valid) => {
@@ -310,6 +345,7 @@ export default {
               type: "success",
               message: "提交成功!",
             });
+            this.$refs[formName].resetFields();
             this.get();
             this.Addshow = false;
           });

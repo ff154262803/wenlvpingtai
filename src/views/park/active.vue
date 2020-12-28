@@ -128,8 +128,7 @@
                   :value="n.id"
                   :key="n.id"
                   v-for="n in sitelist"
-                >
-                </el-option>
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="具体地址" prop="address">
@@ -180,7 +179,7 @@
                 <div class="pic" v-for="(n, i) in fileList" :key="n">
                   <img :src="$store.state.resip + n" alt="" class="pic" />
                   <img
-                    src="@/static/img/close.png"
+                    src="../../../static/img/close.png"
                     alt=""
                     class="close"
                     @click="close(i)"
@@ -264,7 +263,7 @@
   </div>
 </template>
 <script>
-import TinymceEditor from "@/components/editor";
+import TinymceEditor from "../../components/editor";
 export default {
   name: "list",
   components: {
@@ -629,13 +628,11 @@ export default {
   width: 80px;
   height: 80px;
 }
-
 .el-upload--picture-card {
   width: 80px;
   height: 80px;
   line-height: 80px;
 }
-
 #uppic {
   padding: 2px;
 }
@@ -645,34 +642,28 @@ export default {
   position: relative;
   height: 50px;
 }
-
 .addBtn {
   float: right;
   margin-right: 100px;
 }
-
 .el-dialog__wrapper {
   z-index: 999;
   background: rgba(0, 0, 0, 0.8);
-
   .el-dialogadd {
     width: 500px;
     margin-top: 15vh;
   }
-
   .el-dialogedit {
     width: 1000px;
     margin-top: 15vh;
   }
 }
-
 .pic {
   position: relative;
   display: inline-block;
   height: 60px;
   width: 80px;
   margin-right: 10px;
-
   .close {
     position: absolute;
     right: -10px;

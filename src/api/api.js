@@ -434,11 +434,14 @@ export default {
     queryParkNoticeList(data, callback, errback) {
         this.POST(`${base}/manage/queryParkNoticeList`, data, callback, errback);
     },
+    //公告开启与关闭
+    openOrCloseParkNotice(data, callback, errback) {
+        this.POST(`${base}/manage/openOrCloseParkNotice`, data, callback, errback);
+    },
     //园区中后台微信小程序消息推送
     pushNoticeForWeChat(data, callback, errback) {
         this.POST(`${base}/manage/pushNoticeForWeChat`, data, callback, errback);
     },
-    //公告开启与关闭
 
     //查询失物列表信息
     queryLostPropertyList(data, callback, errback) {
@@ -581,6 +584,10 @@ export default {
     getParkMenuList(data, callback, errback) {
         this.GET(`${base}/manage/getParkMenuList`, data, callback, errback);
     },
+    //园区管理模块范围列表查询
+    getParkPermissionList(data, callback, errback) {
+        this.GET(`${base}/manage/permission/getParkPermissionList`, data, callback, errback);
+    },
     //修改二级菜单列表
     editParkMenu(data, callback, errback) {
         this.POST(`${base}/manage/editParkMenu`, data, callback, errback);
@@ -588,6 +595,10 @@ export default {
     //开启园区公告
     openNotice(data, callback, errback) {
         this.POST(`${base}/manage/openNotice`, data, callback, errback);
+    },
+    //禁用园区公告
+    forbidNotice(data, callback, errback) {
+        this.POST(`${base}/manage/forbidNotice`, data, callback, errback);
     },
     //查询新闻分页列表
     queryNewManagePage(data, callback, errback) {
@@ -708,8 +719,20 @@ export default {
     updateSiteDistributed(data, callback, errback) {
         this.POST(`${base}/manage/siteDistributed/updateSiteDistributed`, data, callback, errback);
     },
+    //删除商品分布信息
+    deleteSiteDistributed(data, callback, errback) {
+        this.POST(`${base}/manage/siteDistributed/deleteSiteDistributed`, data, callback, errback);
+    },
     //商品分布信息启用禁用状态
     setSiteDistributedEnableState(data, callback, errback) {
         this.POST(`${base}/manage/siteDistributed/setSiteDistributedEnableState`, data, callback, errback);
+    },
+    //小程序园区公告启用禁用
+    //园区管理
+    //-基础配置
+    //--页面链接管理
+    //--页面链接管理新增接口
+    addParkPageLink(data, callback, errback) {
+        this.POST(`${base}/manage/addParkPageLink`, data, callback, errback);
     },
 }

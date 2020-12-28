@@ -2,13 +2,7 @@
   <div>
     <el-card class="box-card">
       <div class="titles">头图信息</div>
-      <el-form
-        ref="form"
-        :rules="rules"
-        :model="form"
-        label-width="80px"
-        class="form"
-      >
+      <el-form ref="form" :model="form" label-width="80px" class="form">
         <el-form-item label="头图标题" prop="themeName">
           <el-input :disabled="disabled" v-model="form.themeName"></el-input>
         </el-form-item>
@@ -16,7 +10,10 @@
           <el-input :disabled="disabled" v-model="form.themeImgUrl"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :disabled="disabled" @click="onSubmit('form')"
+          <el-button
+            type="primary"
+            :disabled="disabled"
+            @click="onSubmit('form')"
             >确认添加</el-button
           >
           <el-button :disabled="!disabled" @click="updatafn">修改</el-button>
@@ -37,20 +34,20 @@ export default {
         themeImgUrl: "",
         type: "1",
       },
-      rules: {
-        themeName: [
-          { required: true, message: "请输入头图标题", trigger: "blur" },
-          {
-            min: 1,
-            max: 10,
-            message: "长度在 1 到 10 个字符",
-            trigger: "blur",
-          },
-        ],
-        themeImgUrl: [
-          { required: true, message: "请输入头图链接", trigger: "blur" },
-        ],
-      },
+      // rules: {
+      //   themeName: [
+      //     { required: true, message: "请输入头图标题", trigger: "blur" },
+      //     {
+      //       min: 1,
+      //       max: 10,
+      //       message: "长度在 1 到 10 个字符",
+      //       trigger: "blur",
+      //     },
+      //   ],
+      //   themeImgUrl: [
+      //     { required: true, message: "请输入头图链接", trigger: "blur" },
+      //   ],
+      // },
     };
   },
   mounted() {
@@ -64,20 +61,24 @@ export default {
     },
     //获取头图信息
     getheadPic() {
-      let pkid = sessionStorage.getItem("parkid");
-      this.$ajax.getHeadPic({ parkId: pkid }, (res) => {
-        this.form = res.data;
-        // console.log(this.form);
-        if (this.form.themeName != "") {
-          this.disabled = true;
+      //let pkid = sessionStorage.getItem("parkid");
+      this.$ajax.getHeadPic(
+        { parkId: sessionStorage.getItem("parkid") * 1 },
+        (res) => {
+          console.log("res", res);
+          this.form = res.data;
+          // console.log(this.form);
+          if (res.data.themeName !== "") {
+            this.disabled = true;
+          }
+          // sessionStorage.getItem("parkid");
         }
-        // sessionStorage.getItem("parkid");
-      });
+      );
     },
 
     // 新增
-    onSubmit(formName) {
-      this.$refs[formName].validate((valid) => {
+    onSubmit(form) {
+      this.$refs[form].validate((valid) => {
         if (valid) {
           this.$ajax.addheadPic(this.form, (res) => {
             this.$message({

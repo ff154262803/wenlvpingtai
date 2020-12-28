@@ -158,6 +158,7 @@ export default {
               }
             );
           } else {
+            this.newdata.parkId = 0;
             this.$ajax.addPageLink(this.newdata, (res) => {
               this.$message({
                 type: "success",

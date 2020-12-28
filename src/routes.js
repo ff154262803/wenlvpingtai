@@ -40,8 +40,7 @@ import shopDistribution from './views/park/shop/shopDistribution';//商品分布
 // import shoplist from './views/park/shop/list'//商品管理 
 // import product from './views/park/shop/product'//商品列表
 //活动管理
-import schedule from './views/park/shop/active.vue'//活动管理
-import partdetail from './views/park/partdetail'//活动管理
+import schedule from './views/park/active'//活动管理
 import schedunum from './views/park/schedunum'//预约统计
 //游客服务
 import lostManage from './views/park/lostManage'//失物管理
@@ -122,7 +121,7 @@ const router = new VueRouter({
                 {
                     path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: 'parklist' },
                     children: [
-                        { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: '/base' } },
+                        { path: '/schedule', component: schedule, name: '活动列表', meta: { requireAuth: true, parent: '/base' } },
                     ]
                 },
                 {
@@ -180,12 +179,12 @@ const router = new VueRouter({
                 { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: { requireAuth: true, parent: 'sencelist' } },
             ]
         },
-        {
-            path: '/', component: Home, name: 'partdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
-            children: [
-                { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
-            ]
-        },
+        // {
+        //     path: '/', component: Home, name: 'partdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+        //     children: [
+        //         { path: '/partdetail', component: partdetail, name: '时段列表', meta: { requireAuth: true, parent: 'schedule' } },
+        //     ]
+        // },
         //基础配置
         {
             path: '/', component: Home, name: 'underlying', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
@@ -222,7 +221,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'activityAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
-                { path: '/schedule', component: schedule, name: '活动管理', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/schedule', component: schedule, name: '活动列表', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: '/base' } },
             ]
         },
