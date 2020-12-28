@@ -38,11 +38,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column
-        prop="id"
-        label="角色id"
-        align="center"
-      ></el-table-column>
+
       <el-table-column
         prop="name"
         label="角色名"
@@ -58,11 +54,7 @@
           scope.row.permissions.map((n) => n.name).join("、")
         }}</template>
       </el-table-column>
-      <el-table-column
-        prop="parkid"
-        label="园区parkid"
-        align="center"
-      ></el-table-column>
+
       <el-table-column prop="parkName" label="所属园区" align="center">
       </el-table-column>
       <el-table-column
@@ -183,40 +175,7 @@ export default {
         {
           id: "1",
           name: "园区管理",
-          children: [
-            {
-              id: "16",
-              name: "基础信息",
-            },
-            {
-              id: "17",
-              name: "基础配置",
-            },
-            {
-              id: "19",
-              name: "失物管理",
-            },
-            {
-              id: "20",
-              name: "页面链接管理",
-            },
-            {
-              id: "21",
-              name: "全景图管理",
-            },
-            {
-              id: "22",
-              name: "公告管理",
-            },
-            {
-              id: "23",
-              name: "商品管理",
-            },
-            {
-              id: "24",
-              name: "活动管理",
-            },
-          ],
+          children: [],
         },
       ],
       defaultProps: {
@@ -229,6 +188,7 @@ export default {
   mounted() {
     this.queryRole();
     this.queryParkList();
+    this.getParkDetails();
     //this.queryManageUserList();
   },
   methods: {
@@ -242,25 +202,22 @@ export default {
       };
       this.$refs.tree && this.$refs.tree.setCheckedKeys([]);
     },
-    // enableState(val) {
-    //     if (this.multipleSelection.length > 0) {
-    //         let idlst = []
-    //         for (let i = 0; i < this.multipleSelection.length; i++) {
-    //             idlst.push(this.multipleSelection[i].id)
-    //         }
-    //         this.$ajax.setAppUserEnableState({idlst: idlst, isenable: val}, res => {
-    //             this.$message({
-    //                 type: 'success',
-    //                 message: '设置成功!'
-    //             });
-    //             this.queryRole()
-    //         })
-    //     }
-    // },
     search() {
       this.query.page = 1;
       //this.queryManageUserList();
       this.queryRole();
+    },
+    //获取园区权限树形
+    getParkDetails() {
+      this.$ajax.getParkDetails({ id: 5 }, (res) => {
+        for (let i = 0; i < res.data.menu.length; i++) {
+          let obj = {};
+          obj.id = res.data.menu[i].menuid;
+          obj.name = res.data.menu[i].caption;
+          this.roleTree[0].children.push(obj);
+        }
+        console.log("this.dataList", this.roleTree[0].children);
+      });
     },
     //查询角色
     queryRole() {

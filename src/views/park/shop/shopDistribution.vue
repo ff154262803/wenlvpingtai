@@ -7,67 +7,20 @@
       style="width: 300px"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-    <el-button class="addBtn" type="primary" @click="beginshow">添加</el-button>
+    <el-button class="addBtn" type="primary" @click="beginshow()"
+      >添加</el-button
+    >
     <div class="filter">
-      <strong>分类：</strong>
-      <span
-        @click="changetype('')"
-        :class="query.typelist.length == 0 ? 'active' : ''"
+      <strong>景点类型：</strong>
+      <span @click="changelevel('all')" :class="num == 999 ? 'active' : ''"
         >不限</span
       >
       <span
         v-for="(item, index) in list"
         :key="index"
-        :class="query.typelist.indexOf(item.id) > -1 ? 'active' : ''"
-        @click="changetype(item.id)"
+        :class="num == index ? 'active' : ''"
+        @click="changelevel(item.typeName, index)"
         >{{ item.typeName }}</span
-      >
-    </div>
-    <div class="filter">
-      <strong>显示等级：</strong>
-      <span
-        @click="changelevel('all')"
-        :class="query.level == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span :class="query.level == 13 ? 'active' : ''" @click="changelevel(13)"
-        >13</span
-      >
-      <span :class="query.level == 14 ? 'active' : ''" @click="changelevel(14)"
-        >14</span
-      >
-      <span :class="query.level == 15 ? 'active' : ''" @click="changelevel(15)"
-        >15</span
-      >
-      <span :class="query.level == 16 ? 'active' : ''" @click="changelevel(16)"
-        >16</span
-      >
-      <span :class="query.level == 17 ? 'active' : ''" @click="changelevel(17)"
-        >17</span
-      >
-      <span :class="query.level == 18 ? 'active' : ''" @click="changelevel(18)"
-        >18</span
-      >
-      <span :class="query.level == 19 ? 'active' : ''" @click="changelevel(19)"
-        >19</span
-      >
-      <span :class="query.level == 20 ? 'active' : ''" @click="changelevel(20)"
-        >20</span
-      >
-      <span :class="query.level == 21 ? 'active' : ''" @click="changelevel(21)"
-        >21</span
-      >
-    </div>
-    <div class="filter" style="border-bottom: 1px solid #ddd">
-      <strong>AR：</strong>
-      <span @click="changeisar('all')" :class="query.isar == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span :class="query.isar == '0' ? 'active' : ''" @click="changeisar('0')"
-        >否</span
-      >
-      <span :class="query.isar == '1' ? 'active' : ''" @click="changeisar('1')"
-        >是</span
       >
     </div>
     <!-- 表格区 -->
@@ -83,30 +36,18 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="景点名"></el-table-column>
-      <el-table-column prop="typeName" label="分类"></el-table-column>
+      <el-table-column prop="mallName" label="商品名"></el-table-column>
+      <el-table-column prop="siteType" label="景点类型"></el-table-column>
+      <el-table-column prop="siteName" label="景点名"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">{{
-          scope.row.isenable == 0 ? "禁用" : "启用"
+          scope.row.status == 0 ? "禁用" : "启用"
         }}</template>
-      </el-table-column>
-      <el-table-column label="是否AR">
-        <template slot-scope="scope">{{
-          scope.row.isar == 0 ? "否" : "是"
-        }}</template>
-      </el-table-column>
-      <el-table-column label="显示范围">
-        <template slot-scope="scope"
-          >{{ scope.row.lowlevel }}-{{ scope.row.highlevel }}</template
-        >
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="update(scope.row)"
+          <el-button type="text" size="small" @click="beginshow(scope.row)"
             >编辑</el-button
-          >
-          <el-button type="text" size="small" @click="del(scope.row.id)"
-            >删除</el-button
           >
         </template>
       </el-table-column>
@@ -118,7 +59,6 @@
       style="display: flex; justify-content: flex-end; position: relative"
     >
       <div style="position: absolute; left: 10px; top: 5px">
-        <el-button @click="delAll()">删除</el-button>
         <el-button @click="enableState(1)">启用</el-button>
         <el-button @click="enableState(0)">禁用</el-button>
       </div>
@@ -139,7 +79,9 @@
     <div class="el-dialog__wrapper" v-show="Addshow">
       <div class="el-dialog">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">添加景点</span>
+          <span class="el-dialog__title">{{
+            newdata.id ? "修改商品分布信息" : "添加商品分布信息"
+          }}</span>
           <button
             class="el-dialog__headerbtn"
             aria-label="Close"
@@ -156,14 +98,21 @@
             ref="newdata"
             label-width="120px"
           >
-            <el-form-item label="景点名" prop="caption">
-              <el-input
-                v-model="newdata.caption"
-                placeholder="请填写景点名字"
-              ></el-input>
+            <el-form-item label="商品" prop="mallName">
+              <el-select v-model="newdata.mallName">
+                <el-option
+                  v-for="(item, index) in GoodsList"
+                  :label="item"
+                  :value="item"
+                  :key="index"
+                ></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="分类" prop="type">
-              <el-select v-model="newdata.type">
+            <el-form-item label="景点类型" prop="siteType">
+              <el-select
+                v-model="newdata.siteType"
+                @change="getSiteType($event)"
+              >
                 <el-option
                   v-for="item in list"
                   :label="item.typeName"
@@ -172,62 +121,18 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="最低显示层级" prop="lowlevel">
-              <el-select v-model="newdata.lowlevel">
-                <!--12~21-->
+            <el-form-item label="景点名称" prop="siteName">
+              <el-select
+                v-model="newdata.siteName"
+                @change="getSiteTypeName($event)"
+              >
                 <el-option
-                  :label="item + 11"
-                  :value="item + 11"
-                  v-for="item in 10"
-                  :key="item"
+                  v-for="(item, index) in NameList"
+                  :label="item"
+                  :value="item"
+                  :key="index"
                 ></el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item label="最高显示层级" prop="highlevel">
-              <el-select v-model="newdata.highlevel">
-                <!--13~22-->
-                <el-option
-                  :label="item + 12"
-                  :value="item + 12"
-                  v-for="item in 10"
-                  :key="item"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="开放时间" prop="opentime">
-              <el-input
-                v-model="newdata.opentime"
-                placeholder="例：每年11月至次年3月"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="咨询电话" prop="phonenumber">
-              <el-input
-                v-model="newdata.phonenumber"
-                placeholder="请填写电话号码"
-              ></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="路线信息">
-							<div style="height:400px" id="mymap">
-							</div>
-							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
-						</el-form-item>
-						<el-form-item label="路线信息">
-							<div style="height:80px" id="mypic">
-								<img src="../../../static/img/close.png" alt="" class="close">
-								<img src="../../../static/img/close.png" alt="" class="close">
-								<img src="../../../static/img/close.png" alt="" class="close">
-								<img src="../../../static/img/close.png" alt="" class="close">
-								<img src="../../../static/img/close.png" alt="" class="close">
-							</div>
-							<el-input type="text" id="tipinput"  v-model="tipinput" placeholder="请输入您想查询的位置" style="width:200px"></el-input>
-						</el-form-item> -->
-            <el-form-item label="概述" prop="remark">
-              <el-input
-                type="textarea"
-                :rows="4"
-                v-model="newdata.remark"
-                placeholder="可以描述下景点特点"
-              ></el-input>
             </el-form-item>
           </el-form>
           <div class="el-dialog__footer">
@@ -247,60 +152,43 @@
 <script>
 export default {
   data() {
-    var checkPhone = (rule, value, callback) => {
-      if (value === "") {
-        callback();
-      } else {
-        if (!/0?(13|14|15|17|18|19)[0-9]{9}/.test(value)) {
-          callback(new Error("请输入正确的号码"));
-        } else {
-          callback();
-        }
-      }
-    };
     return {
+      num: 999,
+      obj: {},
       parkid: sessionStorage.getItem("parkid"),
       tableData: [],
       multipleSelection: [],
       total: 0,
-      list: [],
+      GoodsList: [], //获取商品名称
+      list: [], //获取景点信息
+      NameList: [], //景点下景点名称
+      //查询商品分布管理列表
       query: {
         parkid: sessionStorage.getItem("parkid"),
         page: 1,
         count: 10,
         condition: "",
+        productClass: "",
+        type: "",
         typelist: [],
-        isar: "",
-        level: "",
       },
       Addshow: false,
       newdata: {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
+        parkId: sessionStorage.getItem("parkid"),
+        mallName: "",
+        siteName: "",
+        siteType: "",
+        status: "1",
       },
       rules: {
-        caption: [
-          { required: true, message: "请输入景点名", trigger: "blur" },
-          { max: 20, message: "最多20个字符", trigger: "blur" },
+        mallName: [
+          { required: true, message: "请选择商品", trigger: "change" },
         ],
-        opentime: [{ max: 20, message: "最多20个字符", trigger: "blur" }],
-        remark: [{ max: 200, message: "最多200个字符", trigger: "blur" }],
-        phonenumber: [{ validator: checkPhone, trigger: "blur" }],
-        lowlevel: [
-          { required: true, message: "请选择最低显示层级", trigger: "change" },
-        ],
-        highlevel: [
-          { required: true, message: "请选择最高显示层级", trigger: "change" },
-        ],
-        type: [
+        siteType: [
           { required: true, message: "请选择景点类型", trigger: "change" },
+        ],
+        siteName: [
+          { required: true, message: "请选择景点名称", trigger: "change" },
         ],
       },
     };
@@ -312,79 +200,101 @@ export default {
     }
     this.get();
     this.getlist();
+    this.queryMallGoodsList();
   },
   methods: {
-    beginshow() {
+    //一二级联动
+    getSiteType(val) {
+      // this.NameList = [];
+      this.query.typelist = [val];
+      this.$ajax.querySiteList(this.query, (res) => {
+        for (let i = 0; i < res.data.length; i++) {
+          console.log("res", res.data[i].caption);
+          this.NameList.push(res.data[i].caption);
+        }
+      });
+      this.obj = this.list.find((item) => {
+        //这里的就是上面遍历的数据源
+        return item.id === val; //筛选出匹配数据
+      });
+      // this.newdata.siteName = null;
+    },
+    getSiteTypeName(val) {},
+    beginshow(data) {
       this.Addshow = true;
-      this.newdata = {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
-      };
+      if (data) {
+        this.newdata = { ...data };
+        this.NameList = this.NameList;
+      } else {
+        this.NameList = [];
+        this.newdata = {
+          parkId: sessionStorage.getItem("parkid"),
+          mallName: "",
+          siteName: "",
+          siteType: "",
+          status: "1",
+        };
+      }
     },
     cancel(formName) {
       this.Addshow = false;
       this.newdata = {
-        parkid: sessionStorage.getItem("parkid"),
-        electronicfencelist: "",
-        lat: "",
-        lon: "",
-        lowlevel: "14",
-        highlevel: "21",
-        phonenumber: "",
-        remark: "",
-        picurl: "",
+        parkId: sessionStorage.getItem("parkid"),
+        mallName: "",
+        siteName: "",
+        siteType: "",
+        status: "1",
       };
     },
     add(formName) {
-      console.log(this.newdata);
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$ajax.addSite(this.newdata, (res) => {
-            this.Addshow = false;
-            this.$message({
-              type: "success",
-              message: "提交成功!",
+          if (this.newdata.id) {
+            this.newdata.siteType = this.obj.typeName;
+            this.$ajax.updateSiteDistributed(
+              {
+                id: this.newdata.id,
+                parameters: {
+                  mallName: this.newdata.mallName,
+                  siteName: this.newdata.siteName,
+                  siteType: this.newdata.siteType,
+                  status: this.newdata.status,
+                },
+              },
+              (res) => {
+                this.$message({
+                  type: "success",
+                  message: "修改成功!",
+                });
+                this.Addshow = false;
+                this.query.typelist = [];
+                this.get();
+              }
+            );
+          } else {
+            this.newdata.siteType = this.obj.typeName;
+            this.$ajax.addSiteDistributed(this.newdata, (res) => {
+              this.Addshow = false;
+              this.$message({
+                type: "success",
+                message: "提交成功!",
+              });
+              this.query.typelist = [];
+              this.get();
             });
-            this.get();
-          });
+          }
         } else {
           return false;
         }
       });
     },
-    changetype(val) {
-      if (val) {
-        let num = this.query.typelist.indexOf(val);
-        ~num
-          ? this.query.typelist.splice(num, 1)
-          : this.query.typelist.push(val);
-      } else {
+    changelevel(item, ind) {
+      if (item == "all") {
+        this.num = 999;
         this.query.typelist = [];
-      }
-      this.query.page = 1;
-      this.get();
-    },
-    changelevel(val) {
-      if (val == "all") {
-        this.query.level = "";
       } else {
-        this.query.level = val;
-      }
-      this.query.page = 1;
-      this.get();
-    },
-    changeisar(val) {
-      if (val == "all") {
-        this.query.isar = "";
-      } else {
-        this.query.isar = val;
+        this.num = ind;
+        this.query.typelist = [item];
       }
       this.query.page = 1;
       this.get();
@@ -405,7 +315,7 @@ export default {
         for (let i = 0; i < this.multipleSelection.length; i++) {
           idlst.push(this.multipleSelection[i].id);
         }
-        this.$ajax.setSiteEnableState(
+        this.$ajax.setSiteDistributedEnableState(
           { idlst: idlst, isenable: val },
           (res) => {
             this.$message({
@@ -417,55 +327,20 @@ export default {
         );
       }
     },
-    delAll() {
-      if (this.multipleSelection.length != 0) {
-        let idlst = [];
-        for (let i = 0; i < this.multipleSelection.length; i++) {
-          idlst.push(this.multipleSelection[i].id);
+    //获取商品名称
+    queryMallGoodsList() {
+      this.$ajax.queryMallGoodsList(this.query, (res) => {
+        for (let i = 0; i < res.data.length; i++) {
+          this.GoodsList.push(res.data[i].caption);
         }
-        this.$confirm("您确定要删除选中景点吗?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
-            this.$ajax.deleteSite({ idlst: idlst }, (res) => {
-              this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-              this.get();
-            });
-          })
-          .catch(() => {});
-      }
+      });
     },
+    //获取景点列表
     get() {
-      this.$ajax.querySiteList(this.query, (res) => {
+      this.$ajax.querySiteDistributedList(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
       });
-    },
-    update(row) {
-      sessionStorage.setItem("siteid", row.id);
-      this.$router.push({ path: "/scenicdetail", query: { id: row.id } });
-    },
-    del(id) {
-      this.$confirm("您确定要删除选中景点吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$ajax.deleteSite({ idlst: [id] }, (res) => {
-            this.$message({
-              type: "success",
-              message: "删除成功!",
-            });
-            this.get();
-          });
-        })
-        .catch(() => {});
     },
     handleCurrentChange(val) {
       // 切换元页

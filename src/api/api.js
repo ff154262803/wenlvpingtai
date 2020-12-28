@@ -704,4 +704,12 @@ export default {
     addSiteDistributed(data, callback, errback) {
         this.POST(`${base}/manage/siteDistributed/addSiteDistributed`, data, callback, errback);
     },
+    //修改商品分布信息
+    updateSiteDistributed(data, callback, errback) {
+        this.POST(`${base}/manage/siteDistributed/updateSiteDistributed`, data, callback, errback);
+    },
+    //商品分布信息启用禁用状态
+    setSiteDistributedEnableState(data, callback, errback) {
+        this.POST(`${base}/manage/siteDistributed/setSiteDistributedEnableState`, data, callback, errback);
+    },
 }

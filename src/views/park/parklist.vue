@@ -450,6 +450,7 @@ export default {
       this.$ajax.queryParkList(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
+        console.log("this.tableData", this.tableData);
       });
     },
     update(row) {

@@ -84,7 +84,7 @@ export default {
                 var storage = {
                   uKey: res.data.ukey,
                   uid: res.data.uid,
-                  name: res.data.account,
+                  name: res.data.managename,
                   isadmin: res.data.isadmin,
                 };
 
