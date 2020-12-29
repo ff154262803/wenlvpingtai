@@ -97,7 +97,7 @@
     </el-col>
     <!--商品新增-->
     <div class="el-dialog__wrapper" v-show="Addshow">
-      <div class="el-dialog el-dialogadd">
+      <div class="el-dialog el-dialogadd" style="width: 600px">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
             newdata.id ? "修改活动" : "新增活动"
@@ -137,7 +137,7 @@
             <el-form-item label="开始结束时间" prop="time">
               <el-date-picker
                 v-model="newdata.time"
-                type="daterange"
+                type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
@@ -486,13 +486,13 @@ export default {
         if (valid) {
           if (this.newdata.time[0]) {
             this.newdata.starttime = this.timeform(
-              "yyyy-MM-dd",
+              "yyyy-MM-ddThh:mm:ss",
               this.newdata.time[0]
             );
           }
           if (this.newdata.time[1]) {
             this.newdata.endtime = this.timeform(
-              "yyyy-MM-dd",
+              "yyyy-MM-ddThh:mm:ss",
               this.newdata.time[1]
             );
           }
@@ -535,6 +535,7 @@ export default {
                 siteid: this.newdata.siteid,
               },
               (res) => {
+                console.log("newdata", this.newdata);
                 this.$message({
                   type: "success",
                   message: "提交成功!",
