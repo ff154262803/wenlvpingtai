@@ -173,7 +173,7 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="图片：" label-width="120px" prop="picurl">
+            <el-form-item label="图片" label-width="120px" prop="picurl">
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"

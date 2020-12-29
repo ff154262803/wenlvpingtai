@@ -1,12 +1,5 @@
 <template>
   <div>
-    <!-- 过滤区 -->
-    <el-input
-      placeholder="请输入名称"
-      v-model="query.condition"
-      style="width: 300px"
-    ></el-input>
-    <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
     <div class="filter">
       <el-button class="addBtn" type="primary" @click="beginshow()"
         >添加</el-button
@@ -25,31 +18,47 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="活动标题"></el-table-column>
-      <el-table-column label="类型" prop="typeName"></el-table-column>
+      <el-table-column prop="starttimepart" label="开始时间"></el-table-column>
+      <el-table-column label="结束时间" prop="endtimepart"></el-table-column>
+      <el-table-column label="预约开启时间">
+        <template slot-scope="scope"
+          >提前{{ scope.row.subscribetime }}小时</template
+        >
+      </el-table-column>
+      <el-table-column label="检票开启时间">
+        <template slot-scope="scope"
+          >提前{{ scope.row.checkedtime }}分钟</template
+        >
+      </el-table-column>
+      <el-table-column label="已预约/总人数">
+        <template slot-scope="scope"
+          >{{ scope.row.usedcount }}/{{ scope.row.count }}</template
+        >
+      </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">{{
           scope.row.isenable == 1 ? "已启用" : "已禁用"
         }}</template>
       </el-table-column>
-      <el-table-column prop="starttime" label="开始时间"></el-table-column>
-      <el-table-column prop="endtime" label="结束时间"></el-table-column>
-      <el-table-column label="操作" width="155">
+      <el-table-column prop="startdate" label="生效日期"></el-table-column>
+      <el-table-column prop="enddate" label="截至日期"></el-table-column>
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
+          <!-- <el-button type="text" size="small" @click="beginshow(scope.row)">详情</el-button> -->
           <el-button type="text" size="small" @click="beginshow(scope.row)"
             >修改</el-button
           >
           <el-button
             type="text"
             size="small"
-            @click="enableState(scope.row.id, 1)"
+            @click="setenableState(scope.row.id, 1)"
             v-show="scope.row.isenable == 0"
             >启用</el-button
           >
           <el-button
             type="text"
             size="small"
-            @click="enableState(scope.row.id, 0)"
+            @click="setenableState(scope.row.id, 0)"
             v-show="scope.row.isenable == 1"
             >禁用</el-button
           >
@@ -63,7 +72,8 @@
       style="display: flex; justify-content: flex-end; position: relative"
     >
       <div style="position: absolute; left: 10px; top: 5px">
-        <el-button @click="delAll()">删除</el-button>
+        <el-button @click="enableState(1)">启用</el-button>
+        <el-button @click="enableState(0)">禁用</el-button>
       </div>
       <el-pagination
         background
@@ -83,7 +93,7 @@
       <div class="el-dialog el-dialogadd">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
-            newdata.id ? "修改活动" : "添加活动"
+            newdata.id ? "修改时段" : "新增时段"
           }}</span>
           <button
             class="el-dialog__headerbtn"
@@ -99,73 +109,52 @@
             :model="newdata"
             :rules="rules"
             ref="newdata"
-            label-width="80px"
+            label-width="120px"
           >
-            <el-form-item label="活动标题" prop="caption">
-              <el-input v-model="newdata.caption"></el-input>
+            <el-form-item label="开始时间" prop="time">
+              <el-time-picker
+                is-range
+                v-model="newdata.time"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                placeholder="选择时间范围"
+              ></el-time-picker>
             </el-form-item>
-            <el-form-item label="分类" prop="type">
-              <el-select v-model="newdata.type">
-                <el-option
-                  :label="n.typeName"
-                  :value="n.id"
-                  :key="n.id"
-                  v-for="n in typelist"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="图片" prop="picurl">
+            <el-form-item label="预约提前时间" prop="subscribetime">
               <el-input
-                v-model="newdata.picurl"
-                style="width: 200px; display: none"
+                v-model="newdata.subscribetime"
+                placeholder="小时"
               ></el-input>
-              <el-button size="small" type="primary" @click="uploading('uppic')"
-                >点击上传</el-button
-              >
-              <el-upload
-                class="upload-demo"
-                style="display: none"
-                accept="image/jpeg,image/jpg,image/png"
-                :data="uploaddata"
-                :action="
-                  $store.state.ip + '/manage/ferriswheel/resources/upload'
-                "
-                :on-progress="handleLoading"
-                :on-success="onsuccsesspic"
-                :before-upload="beforeUploadpic"
-                :on-error="onerror"
-                list-type="picture"
-              >
-                <el-button size="small" type="primary" id="uppic"
-                  >点击上传</el-button
-                >
-              </el-upload>
-              <div style="margin-top: 20px">
-                <img
-                  :src="$store.state.resip + newdata.picurl"
-                  alt=""
-                  class="pic"
-                  style="width: 200px; height: 200px"
-                  v-if="newdata.picurl"
-                />
-              </div>
             </el-form-item>
-            <el-form-item label="活动地址" prop="linkh5url">
-              <el-input v-model="newdata.linkh5url"></el-input>
+            <el-form-item label="检票提前时间" prop="checkedtime">
+              <el-input
+                v-model="newdata.checkedtime"
+                placeholder="分钟"
+              ></el-input>
             </el-form-item>
-            <el-form-item label="开始时间" prop="starttime">
+            <el-form-item label="可预约人数" prop="count">
+              <el-input v-model="newdata.count"></el-input>
+            </el-form-item>
+            <el-form-item label="生效日期" prop="date">
               <el-date-picker
-                v-model="newdata.starttime"
-                type="date"
-                placeholder="选择日期时间"
+                v-model="newdata.date"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
               ></el-date-picker>
             </el-form-item>
-            <el-form-item label="结束时间" prop="endtime">
-              <el-date-picker
-                v-model="newdata.endtime"
-                type="date"
-                placeholder="选择日期时间"
-              ></el-date-picker>
+            <el-form-item label="重复">
+              <el-checkbox-group v-model="week">
+                <el-checkbox label="0">周日</el-checkbox>
+                <el-checkbox label="1">周一</el-checkbox>
+                <el-checkbox label="2">周二</el-checkbox>
+                <el-checkbox label="3">周三</el-checkbox>
+                <el-checkbox label="4">周四</el-checkbox>
+                <el-checkbox label="5">周五</el-checkbox>
+                <el-checkbox label="6">周六</el-checkbox>
+              </el-checkbox-group>
             </el-form-item>
           </el-form>
         </div>
@@ -183,16 +172,34 @@
 export default {
   name: "list",
   data() {
+    var checkSubscribetime = (rule, value, callback) => {
+      if (!/^\d+$/.test(value) || value > 24) {
+        callback(new Error("请输入最大24的整数"));
+      } else {
+        callback();
+      }
+    };
+    var checkTime = (rule, value, callback) => {
+      if (!/^\d+$/.test(value) || value > 24 * 60) {
+        callback(new Error("请输入最大" + 24 * 60 + "的整数"));
+      } else {
+        callback();
+      }
+    };
+    var checkCount = (rule, value, callback) => {
+      if (!/^\d+$/.test(value) || value > 100000) {
+        callback(new Error("请输入最大100000的整数"));
+      } else {
+        callback();
+      }
+    };
     return {
-      uploaddata: {
-        type: "",
-        uKey: JSON.parse(sessionStorage.getItem("user")).uKey,
-      },
+      week: ["0", "1", "2", "3", "4", "5", "6"],
       tableData: [],
       multipleSelection: [],
       total: 0,
       query: {
-        condition: "",
+        eventid: this.$route.query.id ? this.$route.query.id : "",
         page: 1,
         count: 10,
       },
@@ -200,25 +207,20 @@ export default {
       Detailshow: false,
       newdata: {},
       rules: {
-        caption: [
-          { required: true, message: "标题不能为空" },
-          { max: 20, message: "最多20个字符", trigger: "blur" },
-        ],
-        linkh5url: [
-          { required: true, message: "活动地址不能为空" },
-          { max: 20, message: "最多100个字符", trigger: "blur" },
-        ],
-        type: [{ required: true, message: "类型不能为空" }],
-        picurl: [{ required: true, message: "必填项" }],
-        starttime: [{ required: true, message: "开始时间不能为空" }],
-        endtime: [{ required: true, message: "结束时间不能为空" }],
+        time: [{ required: true, message: "起始时间不能为空" }],
+        subscribetime: [{ required: true, validator: checkSubscribetime }],
+        checkedtime: [{ required: true, validator: checkTime }],
+        count: [{ required: true, validator: checkCount }],
+        date: [{ required: true, message: "起始日期不能为空" }],
       },
-      typelist: [],
     };
   },
   mounted() {
-    this.getlist();
-    this.gettypelist();
+    //this.getlist();
+    if (!this.$route.query.id) {
+      this.$router.push({ path: "/schedule" });
+      return false;
+    }
   },
   methods: {
     handleSizeChange(val) {
@@ -227,7 +229,7 @@ export default {
     },
     timeform: function (format, time) {
       //转化时间格式传输给后台
-      // 初始化时间对象d，并使用d转化一个date object
+      // 初始化时间对象d,并使用d转化一个date object
       var d = new Date(time);
       var date = {
         "M+": d.getMonth() + 1,
@@ -257,43 +259,46 @@ export default {
       }
       return format;
     },
-    uploading(id) {
-      document.getElementById(id).click();
-    },
-    handleLoading() {
-      this.fullscreenLoading = true;
-    },
-    beforeUploadpic(file) {
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      const accept =
-        file.type.indexOf("jpeg") > -1 ||
-        file.type.indexOf("png") > -1 ||
-        file.type.indexOf("jpg") > -1;
-      if (!accept) {
-        this.$message.error("上传文件只能是图片格式!");
-      }
-      if (!isLt5M) {
-        this.$message.error("上传文件大小不能超过 5MB!");
-      }
-      return accept && isLt5M;
-    },
-    onsuccsesspic(response, file, fileList) {
-      if (response.resb == 200) {
-        this.$set(this.newdata, "picurl", response.shortUrl);
-        this.fullscreenLoading = false;
-      }
-    },
-    onerror() {
-      this.fullscreenLoading = false;
-    },
-    search() {
-      this.getlist();
-    },
     beginshow(data) {
       this.Addshow = true;
       this.Detailshow = false;
       if (data) {
-        this.newdata = { ...data };
+        this.newdata = {
+          id: data.id,
+          time: [
+            new Date(
+              2019,
+              1,
+              1,
+              data.starttimepart.split(":")[0],
+              data.starttimepart.split(":")[1]
+            ),
+            new Date(
+              2019,
+              1,
+              1,
+              data.endtimepart.split(":")[0],
+              data.endtimepart.split(":")[1]
+            ),
+          ],
+          checkedtime: data.checkedtime,
+          count: data.count,
+          eventid: data.id,
+          date: [
+            new Date(
+              data.startdate.split("-")[0],
+              data.startdate.split("-")[1],
+              data.startdate.split("-")[2]
+            ),
+            new Date(
+              data.enddate.split("-")[0],
+              data.enddate.split("-")[1],
+              data.enddate.split("-")[2]
+            ),
+          ],
+          subscribetime: data.subscribetime,
+        };
+        this.week = data.weeks.split(",");
       } else {
         this.newdata = {};
       }
@@ -306,31 +311,44 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.newdata.starttime) {
-            this.newdata.starttime = this.timeform(
+          if (this.newdata.date[0]) {
+            this.newdata.startdate = this.timeform(
               "yyyy-MM-dd",
-              this.newdata.starttime
+              this.newdata.date[0]
             );
           }
-          if (this.newdata.endtime) {
-            this.newdata.endtime = this.timeform(
+          if (this.newdata.date[1]) {
+            this.newdata.enddate = this.timeform(
               "yyyy-MM-dd",
-              this.newdata.endtime
+              this.newdata.date[1]
+            );
+          }
+          if (this.newdata.time[0]) {
+            this.newdata.starttimepart = this.timeform(
+              "hh:mm",
+              this.newdata.time[0]
+            );
+          }
+          if (this.newdata.time[1]) {
+            this.newdata.endtimepart = this.timeform(
+              "hh:mm",
+              this.newdata.time[1]
             );
           }
           if (this.newdata.id) {
-            this.$ajax.updateMallActivity(
-              {
-                id: this.newdata.id,
-                parameters: {
-                  caption: this.newdata.caption,
-                  endtime: this.newdata.endtime,
-                  linkh5url: this.newdata.linkh5url,
-                  picurl: this.newdata.picurl,
-                  starttime: this.newdata.starttime,
-                  type: this.newdata.type,
-                },
-              },
+            let data = {
+              checkedtime: this.newdata.checkedtime,
+              count: this.newdata.count,
+              enddate: this.newdata.enddate,
+              endtimepart: this.newdata.endtimepart,
+              eventid: this.$route.query.id,
+              startdate: this.newdata.startdate,
+              starttimepart: this.newdata.starttimepart,
+              subscribetime: this.newdata.subscribetime,
+              weeks: this.week.join(),
+            };
+            this.$ajax.updateTimePart(
+              { id: this.newdata.id, parameters: data },
               (res) => {
                 this.$message({
                   type: "success",
@@ -341,7 +359,18 @@ export default {
               }
             );
           } else {
-            this.$ajax.addMallActivity(this.newdata, (res) => {
+            let data = {
+              checkedtime: this.newdata.checkedtime,
+              count: this.newdata.count,
+              enddate: this.newdata.enddate,
+              endtimepart: this.newdata.endtimepart,
+              eventid: this.$route.query.id,
+              startdate: this.newdata.startdate,
+              starttimepart: this.newdata.starttimepart,
+              subscribetime: this.newdata.subscribetime,
+              weeks: this.week.join(),
+            };
+            this.$ajax.addTimePart(data, (res) => {
               this.$message({
                 type: "success",
                 message: "提交成功!",
@@ -355,13 +384,8 @@ export default {
         }
       });
     },
-    handleCurrentChange(val) {
-      // 切换元页
-      this.query.page = val;
-      this.getlist();
-    },
-    enableState(id, val) {
-      this.$ajax.setMallActivityEnableState(
+    setenableState(id, val) {
+      this.$ajax.setTimePartEnableState(
         { idlst: [id], isenable: val },
         (res) => {
           this.$message({
@@ -372,39 +396,35 @@ export default {
         }
       );
     },
-    delAll() {
-      if (this.multipleSelection.length != 0) {
+    enableState(val) {
+      if (this.multipleSelection.length > 0) {
         let idlst = [];
         for (let i = 0; i < this.multipleSelection.length; i++) {
           idlst.push(this.multipleSelection[i].id);
         }
-        this.$confirm("您确定要删除选中商品吗?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
-            this.$ajax.deleteMallActivity({ idlst: idlst }, (res) => {
-              this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-              this.getlist();
+        this.$ajax.setTimePartEnableState(
+          { idlst: idlst, isenable: val },
+          (res) => {
+            this.$message({
+              type: "success",
+              message: "设置成功!",
             });
-          })
-          .catch(() => {});
+            this.getlist();
+          }
+        );
       }
     },
     getlist() {
-      this.$ajax.queryMallActivityList(this.query, (res) => {
+      this.$ajax.queryTimePartList(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
       });
     },
-    gettypelist() {
-      this.$ajax.queryTypeList({ count: 999, page: 1, groupId: 6 }, (res) => {
-        this.typelist = res.data;
-      });
+    // 分页相关
+    handleCurrentChange(val) {
+      // 切换元页
+      this.query.page = val;
+      this.getlist();
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -425,7 +445,7 @@ export default {
   z-index: 999;
   background: rgba(0, 0, 0, 0.8);
   .el-dialogadd {
-    width: 400px;
+    width: 520px;
     margin-top: 15vh;
   }
   .el-dialogedit {

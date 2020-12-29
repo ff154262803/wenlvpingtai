@@ -194,7 +194,7 @@ export default {
   mounted() {
     this.queryRole();
     this.queryParkList();
-    //this.getParkDetails();
+    //this.getParkPermissionList();
     //this.queryManageUserList();
   },
   methods: {
@@ -205,7 +205,7 @@ export default {
       //权限选择树 设为空
       this.roleTree[0].children = [];
       //重新调用接口 获取权限上树
-      this.getParkDetails();
+      this.getParkPermissionList();
       console.log("val", val);
     },
     beginshow() {
@@ -224,13 +224,13 @@ export default {
       this.queryRole();
     },
     //获取园区权限树形
-    getParkDetails() {
-      this.$ajax.getParkDetails({ id: this.parkId * 1 }, (res) => {
+    getParkPermissionList() {
+      this.$ajax.getParkPermissionList({ id: this.parkId * 1 }, (res) => {
         console.log("res", res);
-        for (let i = 0; i < res.data.menu.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
           let obj = {};
-          obj.id = res.data.menu[i].menuid;
-          obj.name = res.data.menu[i].caption;
+          obj.id = res.data[i].id;
+          obj.name = res.data[i].name;
           this.roleTree[0].children.push(obj);
         }
         console.log("this.dataList", this.roleTree[0].children);
@@ -354,7 +354,7 @@ export default {
       this.roleTree[0].children = [];
       this.Addshow = true;
       this.parkId = item.parkid;
-      this.getParkDetails();
+      this.getParkPermissionList();
       this.newdata = item;
       setTimeout(() => {
         this.$refs.tree.setCheckedKeys(item.permissions.map((n) => n.id));

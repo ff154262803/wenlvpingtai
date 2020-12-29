@@ -40,7 +40,7 @@
         prop="summary"
         align="center"
       ></el-table-column>
-      <el-table-column label="详情类型">
+      <el-table-column label="详情类型" align="center">
         <template slot-scope="scope">{{
           scope.row.detailType == 1 ? "链接" : "编辑器"
         }}</template>
@@ -135,7 +135,7 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="介绍图" label-width="120px" prop="picurl">
+            <el-form-item label="图片" label-width="120px" prop="picurl">
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -171,7 +171,7 @@
                   :key="n"
                   v-if="fileList.length"
                 >
-                  <img :src="$store.state.resip + n" alt="" class="pic" />
+                  <img :src="n" alt="" class="pic" />
                   <img
                     :disabled="detailBol"
                     src="../../../static/img/close.png"
@@ -182,14 +182,16 @@
                 </div>
               </div>
             </el-form-item>
-
             <el-form-item label="语音讲解" prop="voiceUrl">
               <el-upload
-                :action="$store.state.ip + '/resources/uploadResource'"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
                 accept=".mp3"
                 :on-success="onsuccsessmp3"
                 :before-upload="beforeUploadmp3"
                 :disabled="detailBol"
+                :file-list="mp3List"
               >
                 <el-button size="small" type="primary" icon="el-icon-upload"
                   >点击上传</el-button
@@ -198,7 +200,9 @@
             </el-form-item>
             <el-form-item label="视频讲解" prop="videoUrl">
               <el-upload
-                :action="$store.state.ip + '/resources/uploadResource'"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
                 accept="video/mp4"
                 :on-success="onsuccsessmp4"
                 :before-upload="beforeUploadmp4"
@@ -274,6 +278,7 @@ export default {
   },
   data() {
     return {
+      mp3List: [],
       detailBol: false,
       //详情类型
       linktype: [],
@@ -306,10 +311,14 @@ export default {
         voiceUrl: "",
       },
       rules: {
-        title: [{ required: true, message: "活动标题不能为空" }],
-        summary: [{ required: true, message: "简介不能为空" }],
-        detailType: [{ required: true, message: "请选择详情类型" }],
-        details: [{ required: true, message: "详情不能为空" }],
+        title: [
+          { required: true, message: "活动标题不能为空", trigger: "blur" },
+        ],
+        summary: [{ required: true, message: "简介不能为空", trigger: "blur" }],
+        detailType: [
+          { required: true, message: "请选择详情类型", trigger: "blur" },
+        ],
+        // details: [{ required: true, message: "详情不能为空", trigger: "blur" }],
       },
       headers: { Authorization: JSON.parse(sessionStorage.user).uKey },
       sitelist: [],
@@ -341,15 +350,30 @@ export default {
     },
     //上传mp3文件成功的钩子函数
     onsuccsessmp3(response, file, fileList) {
-      this.newdata.voiceUrl = response.url;
-      console.log("this.newdata.voiceUrl", this.newdata.voiceUrl);
+      // this.$refs.upload.clearFiles();
+      console.log("fileList", file);
+      console.log("mp3", this.mp3List);
+      if (this.mp3List.length < 5 && response.resb == 200) {
+        this.mp3List.push({ name: file.name, url: response.data.url });
+        this.mp3List = this.mp3List.map((item) => item.url).join();
+        this.newdata.voiceUrl = this.mp3List;
+        this.fullscreenLoading = false;
+      } else {
+        this.$message.error("最多上传5个");
+      }
+      // console.log("fileList", fileList);
+      // this.newdata.voiceUrl = response.data.url;
+      // console.log("this.newdata.voiceUrl", this.newdata.voiceUrl);
     },
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
-      if (response.resb == 200) {
-        this.fileList.push(response.data.shortUrl);
+      console.log("pic", this.fileList);
+      if (this.fileList.length < 5 && response.resb == 200) {
+        this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
+      } else {
+        this.$message.error("最多上传5个");
       }
     },
     //上传mp4文件之前的钩子函数
@@ -366,7 +390,7 @@ export default {
     },
     //上传mp4文件成功的钩子函数
     onsuccsessmp4(response, file, fileList) {
-      this.newdata.videoUrl = response.url;
+      this.newdata.videoUrl = response.data.url;
       console.log("this.newdata.videoUrl", this.newdata.videoUrl);
     },
     close(i) {
@@ -455,8 +479,10 @@ export default {
       console.log("item", item);
       this.detailBol = true;
       this.Addshow = true;
-      this.newdata.picurl = item.picurl;
       this.newdata = { ...item };
+      this.fileList = item.picurl.length ? item.picurl.split(",") : [];
+      this.mp3List = data.picurl.voiceUrl ? data.voiceUrl.split(",") : [];
+      console.log("mp3List", this.mp3List);
       this.h5.content = item.details;
     },
     //修改表单
@@ -472,22 +498,15 @@ export default {
 
         // }
         this.h5.content = data.details;
-        this.fileList = data.picurl;
+        this.mp3List = data.voiceUrl.length ? data.voiceUrl.split(",") : [];
+        this.fileList = data.picurl.length ? data.picurl.split(",") : [];
         this.detailBol = false;
       } else {
+        this.newdata = {};
+        this.mp3List = [];
         this.fileList = [];
-        (this.newdata = {
-          detailType: "1",
-          details: "",
-          picurl: "",
-          status: 1,
-          summary: "",
-          title: "",
-          videoUrl: "",
-          voiceUrl: "",
-        }),
-          (this.h5 = { content: "" }),
-          (this.detailBol = false);
+        this.h5 = { content: "" };
+        this.detailBol = false;
       }
     },
     cancel(formName) {
@@ -524,7 +543,9 @@ export default {
                 id: this.newdata.id,
                 parameters: {
                   picurl: this.newdata.picurl,
-                  details: this.newdata.details,
+                  details: this.h5.content
+                    ? this.h5.content
+                    : this.newdata.details,
                   detailType: this.newdata.detailType,
                   summary: this.newdata.summary,
                   title: this.newdata.title,
@@ -538,7 +559,7 @@ export default {
                   type: "success",
                   message: "修改成功!",
                 });
-                console.log("data", res.data);
+                console.log("data", this.newdata);
                 this.Addshow = false;
                 this.getlist();
               }

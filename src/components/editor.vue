@@ -23,6 +23,7 @@ export default {
   props: {
     baseUrl: {
       type: String,
+      // default: "https://qlv.test.zkshiwei.com/web/manager",
       default: "https://qlv.test.zkshiwei.com/web/manager",
       //default: 'http://192.192.0.241:5005/api',
     },
@@ -65,7 +66,7 @@ export default {
           };
           axios
             .post(
-              this.$store.state.ip + "/resources/uploadResource",
+              this.$store.state.ip + "/manage/ferriswheel/resources/upload",
               param,
               config
             )

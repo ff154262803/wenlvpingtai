@@ -162,7 +162,9 @@
                 style="display: none"
                 :on-remove="onremove"
                 :data="uploaddata"
-                :action="$store.state.ip + '/resources/uploadResource'"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
                 :on-progress="handleLoading"
                 :on-success="onsuccsesspic"
                 accept="image/jpeg,image/jpg,image/png"
@@ -202,7 +204,9 @@
                 class="upload-demo"
                 style="display: none"
                 :data="uploaddata"
-                :action="$store.state.ip + '/resources/uploadResource'"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
                 :on-progress="handleLoading"
                 accept="image/jpeg,image/jpg,image/png"
                 :on-success="onsuccsess"
@@ -422,7 +426,7 @@ export default {
     },
     onsuccsesspic(response, file, fileList) {
       if (this.fileList.length < 5 && response.resb == 200) {
-        this.fileList.push(response.shortUrl);
+        this.fileList.push(response.data.shortUrl);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       } else {
@@ -438,7 +442,7 @@ export default {
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
       if (response.resb == 200) {
-        this.$set(this.newdata, "thumbnail", response.shortUrl);
+        this.$set(this.newdata, "thumbnail", response.data.shortUrl);
       }
     },
     onerror() {
@@ -519,6 +523,8 @@ export default {
           } else {
             this.$ajax.addEvents(
               {
+                parkid: sessionStorage.getItem("parkid"),
+                isenable: "1",
                 caption: this.newdata.caption,
                 endtime: this.newdata.endtime,
                 picurl: this.newdata.picurl,

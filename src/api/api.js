@@ -580,13 +580,13 @@ export default {
     queryPermission(data, callback, errback) {
         this.GET(`${base}/manage/permission/queryPermission`, data, callback, errback);
     },
+    //获取园区中的权限
+    getParkPermissionList(data, callback, errback) {
+        this.POST(`${base}/manage/permission/getParkPermissionList`, data, callback, errback);
+    },
     //园区二级菜单列表查询
     getParkMenuList(data, callback, errback) {
         this.GET(`${base}/manage/getParkMenuList`, data, callback, errback);
-    },
-    //园区管理模块范围列表查询
-    getParkPermissionList(data, callback, errback) {
-        this.GET(`${base}/manage/permission/getParkPermissionList`, data, callback, errback);
     },
     //修改二级菜单列表
     editParkMenu(data, callback, errback) {
