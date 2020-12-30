@@ -101,7 +101,7 @@
       :visible.sync="Addshow"
       v-if="Addshow"
       class="demo-box"
-      width="590px"
+      width="500px"
       :close-on-click-modal="false"
       @close="cancel"
     >
@@ -111,11 +111,12 @@
         ref="newdata"
         label-width="100px"
       >
-        <el-form-item label="园区" prop="garden">
+        <el-form-item label="园区" prop="parkid">
           <el-select
             v-model="newdata.parkid"
             @change="getSiteType($event)"
             placeholder="请选择园区"
+            style="width: 220px"
           >
             <el-option
               v-for="item in ParkTypeList"
@@ -130,10 +131,11 @@
             v-model="newdata.name"
             placeholder="请输入角色名"
             maxlength="20"
+            style="width: 220px"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="账号" prop="name">
+        <el-form-item label="账号权限" prop="pemissions">
           <el-tree
             :default-expand-all="true"
             :data="roleTree"
@@ -175,6 +177,10 @@ export default {
       newdata: {},
       rules: {
         name: [{ required: true, message: "请输入角色名", trigger: "blur" }],
+        parkid: [{ required: true, message: "请选择园区", trigger: "blur" }],
+        pemissions: [
+          { required: true, message: "请选择账号权限", trigger: "blur" },
+        ],
       },
       roleTree: [
         {

@@ -130,6 +130,7 @@
       <el-form :model="forminfo" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="类型" prop="isadmin">
           <el-select
+            style="width: 220px"
             v-model="forminfo.isadmin"
             placeholder="请选择类型"
             :disabled="detailBol"
@@ -143,6 +144,7 @@
             v-model="forminfo.companyid"
             placeholder="请选择企业"
             :disabled="detailBol"
+            style="width: 220px"
           >
             <el-option label="中科视维" :value="1"></el-option>
             <el-option label="融创" :value="2"></el-option>
@@ -150,6 +152,7 @@
         </el-form-item>
         <el-form-item label="用户名" prop="managename">
           <el-input
+            style="width: 220px"
             v-model="forminfo.managename"
             placeholder="请输入用户名"
             maxlength="20"
@@ -159,6 +162,7 @@
         </el-form-item>
         <el-form-item label="账号" prop="account">
           <el-input
+            style="width: 220px"
             v-model="forminfo.account"
             placeholder="请输入账号"
             maxlength="20"
@@ -167,6 +171,7 @@
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
+            style="width: 220px"
             v-model="forminfo.password"
             placeholder="请输入密码"
             maxlength="20"

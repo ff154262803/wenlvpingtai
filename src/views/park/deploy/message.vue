@@ -12,7 +12,7 @@
       <el-form-item label="通知标题" prop="title">
         <el-input
           v-model="newdata.title"
-          placeholder="不填写时默认app名称"
+          placeholder="不填写时默认软件名称"
         ></el-input>
       </el-form-item>
       <el-form-item label="通知内容" prop="content">

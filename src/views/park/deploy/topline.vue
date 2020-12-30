@@ -41,9 +41,7 @@
       </el-table-column>
       <el-table-column label="内容" width="300" align="center">
         <template slot-scope="scope">
-          <p style="cursor: pointer" @click="Detail(scope.row)">
-            {{ scope.row.content }}
-          </p>
+          {{ scope.row.content }}
         </template>
       </el-table-column>
       <el-table-column
@@ -112,7 +110,7 @@
     <div class="el-dialog__wrapper" v-show="addBol">
       <div class="el-dialog el-dialogedit">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">发布公告</span>
+          <span class="el-dialog__title">公告详情</span>
           <button
             class="el-dialog__headerbtn"
             aria-label="Close"

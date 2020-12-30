@@ -64,14 +64,23 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="园区名"></el-table-column>
-      <el-table-column prop="typeName" label="分类"></el-table-column>
-      <el-table-column label="省市" width="120">
+      <el-table-column
+        prop="caption"
+        label="园区名"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="typeName"
+        label="分类"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="省市" align="center">
         <template slot-scope="scope"
           >{{ scope.row.province }} - {{ scope.row.city }}</template
         >
       </el-table-column>
-      <el-table-column label="状态" width="80">
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.isenable == 0 ? "禁用" : "启用"
         }}</template>
@@ -79,40 +88,32 @@
       <el-table-column
         prop="arcount"
         label="AR景点总数"
-        width="80"
-        show-overflow-tooltip
+        align="center"
       ></el-table-column>
       <el-table-column
+        align="center"
         prop="arprice"
         label="AR收费"
-        width="80"
-        show-overflow-tooltip
       ></el-table-column>
-      <el-table-column
-        prop="ardiscount"
-        label="折扣"
-        width="80"
-        show-overflow-tooltip
-      >
+      <el-table-column align="center" prop="ardiscount" label="折扣">
       </el-table-column>
       <el-table-column
+        align="center"
         prop="spotcount"
         label="其他景点总数"
-        width="80"
-        show-overflow-tooltip
       ></el-table-column>
       <el-table-column
+        align="center"
         prop="price"
         label="门票"
-        width="80"
-        show-overflow-tooltip
       ></el-table-column>
       <el-table-column
+        align="center"
         prop="createtime"
         label="创建时间"
-        show-overflow-tooltip
+        width="160"
       ></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="update(scope.row)"
             >进入</el-button

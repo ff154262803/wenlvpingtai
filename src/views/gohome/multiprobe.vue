@@ -7,11 +7,15 @@
     </div>
     <template>
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="themeName" label="名称"> </el-table-column>
-        <el-table-column prop="summary" label="展园简介"> </el-table-column>
-        <el-table-column prop="schedule" label="开放时间"> </el-table-column>
-        <el-table-column prop="themeImgUrl" label="链接"> </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column prop="themeName" label="名称" align="center">
+        </el-table-column>
+        <el-table-column prop="summary" label="展园简介" align="center">
+        </el-table-column>
+        <el-table-column prop="schedule" label="开放时间" align="center">
+        </el-table-column>
+        <el-table-column prop="themeImgUrl" label="链接" align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small"
               >修改</el-button
@@ -51,7 +55,7 @@
         <el-form-item label="缩略图" prop="imgUrl" class="imgurl">
           <el-upload
             class="avatar-uploader"
-            action="http://192.192.0.241:5005/api/manage/ferriswheel/resources/upload"
+            :action="$store.state.ip + '/manage/ferriswheel/resources/upload'"
             :headers="headers"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -137,6 +141,7 @@ export default {
     },
     //查询
     getTheme() {
+      this.form.type = 3;
       this.$ajax.getTheme(this.form, (res) => {
         //  console.log(res);
         this.tableData = res.data;

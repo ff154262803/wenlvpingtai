@@ -138,7 +138,7 @@
       <div class="el-dialog">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
-            detailBol ? "商品详情" : newdata.id ? "修改商品" : "新增商品"
+            detailBol ? "商品详情" : newdata.id ? "修改商品" : "添加商品"
           }}</span>
           <button
             class="el-dialog__headerbtn"
@@ -168,12 +168,14 @@
             </el-form-item>
             <el-form-item label="商品名称" prop="caption">
               <el-input
+                maxlength="20"
                 v-model="newdata.caption"
                 placeholder="请填写商品名称"
                 :disabled="detailBol"
+                style="width: 400px"
               ></el-input>
             </el-form-item>
-            <el-form-item label="图片" label-width="120px" prop="picurl">
+            <el-form-item label="图片" prop="picurl">
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -209,7 +211,7 @@
                   :key="n"
                   v-if="fileList.length"
                 >
-                  <img :src="$store.state.resip + n" alt="" class="pic" />
+                  <img :src="n" alt="" class="pic" />
                   <img
                     :disabled="detailBol"
                     src="../../../../static/img/close.png"
@@ -220,11 +222,53 @@
                 </div>
               </div>
             </el-form-item>
+            <el-form-item label="缩略图" prop="thumbnail">
+              <el-input
+                v-model="newdata.thumbnail"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button
+                size="small"
+                type="primary"
+                @click="uploading('uppict')"
+                >点击上传</el-button
+              >
+              <el-upload
+                :disabled="detailBol"
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                accept="image/jpeg,image/jpg,image/png"
+                :on-success="onsuccsess"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                list-type="picture"
+              >
+                <el-button size="small" type="primary" id="uppict"
+                  >点击上传</el-button
+                >
+              </el-upload>
+              <div style="margin-top: 20px">
+                <img
+                  :src="newdata.thumbnail"
+                  alt=""
+                  class="pic"
+                  v-if="newdata.thumbnail"
+                  style="width: 80px"
+                  ref="pic"
+                />
+              </div>
+            </el-form-item>
             <el-form-item label="价格" prop="price">
               <el-input
                 v-model="newdata.price"
                 placeholder="请填写价格"
                 :disabled="detailBol"
+                style="width: 400px"
               ></el-input>
             </el-form-item>
             <el-form-item label="描述" prop="typeName">
@@ -232,6 +276,7 @@
                 v-model="newdata.typeName"
                 placeholder="请填写描述"
                 :disabled="detailBol"
+                style="width: 400px"
               ></el-input>
             </el-form-item>
             <el-form-item label="批量限制" prop="banNum">
@@ -239,6 +284,7 @@
                 v-model="newdata.banNum"
                 placeholder="请填写格式为：10-20"
                 :disabled="detailBol"
+                style="width: 400px"
               ></el-input>
             </el-form-item>
             <el-form-item label="商品分类" prop="productClass">
@@ -266,6 +312,7 @@
               v-if="newdata.bind == '有'"
             >
               <el-input
+                style="width: 400px"
                 v-model="newdata.bindMethod"
                 placeholder="请输入绑定方法"
                 :disabled="detailBol"
@@ -317,6 +364,13 @@ export default {
         }
       }
     };
+    var validateAcquaintance = (rule, value, callback) => {
+      if (value < 0 || value > 10000) {
+        callback(new Error("价格必须在0-10000之间"));
+      } else {
+        callback();
+      }
+    };
     return {
       detailBol: false,
       typeNamelist: [], //商品分类名称
@@ -349,6 +403,7 @@ export default {
         status: "1", //启用禁用
         type: "", //商品类型
         typeName: "", //描述
+        thumbnail: "", //缩略图
       },
       //图片上传时附带的额外参数
       uploaddata: {
@@ -361,7 +416,13 @@ export default {
         ],
         type: [{ required: true, message: "请选择商品类型", trigger: "blur" }],
         picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
-        price: [{ required: true, message: "请输入价格", trigger: "blur" }],
+        price: [
+          { required: true, message: "请输入价格", trigger: "blur" },
+          {
+            validator: validateAcquaintance, // 自定义验证
+            trigger: "blur",
+          },
+        ],
         typeName: [{ required: true, message: "请输入描述", trigger: "blur" }],
         productClass: [
           { required: true, message: "请选择商品分类", trigger: "blur" },
@@ -379,6 +440,13 @@ export default {
     this.queryTypeList();
   },
   methods: {
+    //缩略图上传成功
+    onsuccsess(response, file, fileList) {
+      this.fullscreenLoading = false;
+      if (response.resb == 200) {
+        this.$set(this.newdata, "thumbnail", response.data.url);
+      }
+    },
     //按照类型查询
     changelevel(item) {
       if (item == "all") {
@@ -421,7 +489,7 @@ export default {
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
       if (response.resb == 200) {
-        this.fileList.push(response.data.shortUrl);
+        this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       }
@@ -498,6 +566,7 @@ export default {
                   productClass: this.newdata.productClass,
                   type: this.newdata.type,
                   typeName: this.newdata.typeName,
+                  thumbnail: this.newdata.thumbnail,
                 },
               },
               (res) => {

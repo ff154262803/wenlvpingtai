@@ -192,6 +192,7 @@
                 :before-upload="beforeUploadmp3"
                 :disabled="detailBol"
                 :file-list="mp3List"
+                :show-file-list="false"
               >
                 <el-button size="small" type="primary" icon="el-icon-upload"
                   >点击上传</el-button

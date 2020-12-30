@@ -25,21 +25,39 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="活动标题"></el-table-column>
-      <el-table-column label="地点" prop="siteName"></el-table-column>
-      <el-table-column label="状态">
+      <el-table-column
+        prop="caption"
+        label="活动标题"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="地点"
+        prop="siteName"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.isenable == 1 ? "启用" : "禁用"
         }}</template>
       </el-table-column>
-      <el-table-column label="是否需要预约">
+      <el-table-column label="是否需要预约" align="center" width="120">
         <template slot-scope="scope">{{
           scope.row.issubscribe == 1 ? "需要预约" : "不需要预约"
         }}</template>
       </el-table-column>
-      <el-table-column prop="starttime" label="开始时间"></el-table-column>
-      <el-table-column prop="endtime" label="结束时间"></el-table-column>
-      <el-table-column label="操作" width="250">
+      <el-table-column
+        prop="starttime"
+        label="开始时间"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="endtime"
+        label="结束时间"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column label="操作" width="250" align="center">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -149,7 +167,17 @@
                 <el-radio label="0">不可预约</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="轮播图" prop="picurl">
+            <el-form-item label="请选择类型" prop="banner">
+              <el-radio-group v-model="newdata.banner">
+                <el-radio label="1" checked="checked">轮播图</el-radio>
+                <el-radio label="0">视频</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              label="轮播图"
+              prop="picurl"
+              v-if="newdata.banner == 1"
+            >
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -179,7 +207,7 @@
               </el-upload>
               <div style="margin-top: 20px">
                 <div class="pic" v-for="(n, i) in fileList" :key="n">
-                  <img :src="$store.state.resip + n" alt="" class="pic" />
+                  <img :src="n" alt="" class="pic" />
                   <img
                     src="../../../static/img/close.png"
                     alt=""
@@ -188,6 +216,22 @@
                   />
                 </div>
               </div>
+            </el-form-item>
+            <el-form-item
+              label="视频"
+              prop="videoUrl"
+              v-if="newdata.banner == 0"
+            >
+              <el-upload
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                accept="video/mp4"
+                :on-success="onsuccsessmp4"
+                :before-upload="beforeUploadmp4"
+              >
+                <el-button size="small" type="primary">点击上传</el-button>
+              </el-upload>
             </el-form-item>
             <el-form-item label="缩略图" prop="thumbnail">
               <el-input
@@ -220,7 +264,7 @@
               </el-upload>
               <div style="margin-top: 20px">
                 <img
-                  :src="$store.state.resip + newdata.thumbnail"
+                  :src="newdata.thumbnail"
                   alt=""
                   class="pic"
                   v-if="newdata.thumbnail"
@@ -293,24 +337,28 @@ export default {
       },
       Addshow: false,
       Detailshow: false,
+
       newdata: {
+        banner: "1",
         issubscribe: "1",
         picurl: "",
       },
       rules: {
         caption: [
-          { required: true, message: "名称不能为空" },
+          { required: true, message: "名称不能为空", trigger: "blur" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         address: [
           { required: true, message: "地址不能为空" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
-        type: [{ required: true, message: "类型不能为空" }],
-        issubscribe: [{ required: true, message: "必选" }],
-        picurl: [{ required: true, message: "必填项" }],
-        thumbnail: [{ required: true, message: "必填项" }],
-        time: [{ required: true, message: "起始日期不能为空" }],
+        type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
+        issubscribe: [{ required: true, message: "必选", trigger: "blur" }],
+        picurl: [{ required: true, message: "必填项", trigger: "blur" }],
+        thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
+        time: [
+          { required: true, message: "起始日期不能为空", trigger: "blur" },
+        ],
       },
       sitelist: [],
       h5: {
@@ -324,6 +372,23 @@ export default {
     this.getsitelist();
   },
   methods: {
+    //上传mp4文件成功的钩子函数
+    onsuccsessmp4(response, file, fileList) {
+      this.newdata.videoUrl = response.data.url;
+      console.log("this.newdata.videoUrl", this.newdata.videoUrl);
+    },
+    //上传mp4文件之前的钩子函数
+    beforeUploadmp4(file) {
+      const isLt50M = file.size / 1024 / 1024 < 500;
+      const accept = file.type.indexOf("mp4") > -1;
+      if (!accept) {
+        this.$message.error("上传文件只能是mp4格式!");
+      }
+      if (!isLt50M) {
+        this.$message.error("上传文件大小不能超过 500MB!");
+      }
+      return accept && isLt50M;
+    },
     close(i) {
       this.fileList.splice(i, 1);
       this.newdata.picurl = this.fileList.join();
@@ -426,7 +491,7 @@ export default {
     },
     onsuccsesspic(response, file, fileList) {
       if (this.fileList.length < 5 && response.resb == 200) {
-        this.fileList.push(response.data.shortUrl);
+        this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       } else {
@@ -442,7 +507,7 @@ export default {
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
       if (response.resb == 200) {
-        this.$set(this.newdata, "thumbnail", response.data.shortUrl);
+        this.$set(this.newdata, "thumbnail", response.data.url);
       }
     },
     onerror() {
@@ -456,8 +521,15 @@ export default {
       this.Detailshow = false;
       if (data) {
         this.newdata = { ...data };
+        console.log("this.newdata", this.newdata);
+        if (this.newdata.picurl != "") {
+          this.newdata.banner = "1";
+        }
+        if (this.newdata.videoUrl != "") {
+          this.newdata.banner = "0";
+        }
         this.fileList = data.picurl.split(",");
-        this.newdata.time = [
+        this.newdata.time = this.$set(this.newdata, this.newdata.time, [
           new Date(
             data.starttime.split("-")[0],
             data.starttime.split("-")[1],
@@ -468,10 +540,23 @@ export default {
             data.endtime.split("-")[1],
             data.endtime.split("-")[2]
           ),
-        ];
+        ]);
+        // this.newdata.time = [
+        //   new Date(
+        //     data.starttime.split("-")[0],
+        //     data.starttime.split("-")[1],
+        //     data.starttime.split("-")[2]
+        //   ),
+        //   new Date(
+        //     data.endtime.split("-")[0],
+        //     data.endtime.split("-")[1],
+        //     data.endtime.split("-")[2]
+        //   ),
+        // ];
       } else {
         this.fileList = [];
         this.newdata = {
+          banner: "1",
           issubscribe: "1",
           picurl: "",
         };
@@ -486,30 +571,31 @@ export default {
         if (valid) {
           if (this.newdata.time[0]) {
             this.newdata.starttime = this.timeform(
-              "yyyy-MM-ddThh:mm:ss",
+              "yyyy-MM-dd hh:mm:ss",
               this.newdata.time[0]
             );
           }
           if (this.newdata.time[1]) {
             this.newdata.endtime = this.timeform(
-              "yyyy-MM-ddThh:mm:ss",
+              "yyyy-MM-dd hh:mm:ss",
               this.newdata.time[1]
             );
           }
           if (this.newdata.id) {
             this.$ajax.updateEvents(
               {
+                parkid: sessionStorage.getItem("parkid"),
                 id: this.newdata.id,
-                parameters: {
-                  caption: this.newdata.caption,
-                  endtime: this.newdata.endtime,
-                  picurl: this.newdata.picurl,
-                  address: this.newdata.address,
-                  thumbnail: this.newdata.thumbnail,
-                  issubscribe: this.newdata.issubscribe,
-                  starttime: this.newdata.starttime,
-                  siteid: this.newdata.siteid,
-                },
+                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
+                caption: this.newdata.caption,
+                endtime: this.newdata.endtime,
+                picurl: this.newdata.picurl ? this.newdata.picurl : "",
+                address: this.newdata.address,
+                thumbnail: this.newdata.thumbnail,
+                issubscribe: this.newdata.issubscribe,
+                starttime: this.newdata.starttime,
+                siteid: this.newdata.siteid,
+                isenable: "1",
               },
               (res) => {
                 this.$message({
@@ -525,9 +611,10 @@ export default {
               {
                 parkid: sessionStorage.getItem("parkid"),
                 isenable: "1",
+                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
                 caption: this.newdata.caption,
                 endtime: this.newdata.endtime,
-                picurl: this.newdata.picurl,
+                picurl: this.newdata.picurl ? this.newdata.picurl : "",
                 address: this.newdata.address,
                 thumbnail: this.newdata.thumbnail,
                 issubscribe: this.newdata.issubscribe,

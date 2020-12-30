@@ -439,12 +439,22 @@
             </div>
           </el-col>
         </el-row>
-        <el-row class="list" v-show="detail.detailstype">
+        <el-row class="list" v-show="detail.detailstype == 11">
           <el-col :span="22">
             <div><span>详情链接：</span>{{ detail.linkh5url }}</div>
           </el-col>
           <el-col :span="2">
             <div class="icon" @click="edit('linkh5url')">
+              <img src="../../../static/img/edit.png" alt="" />
+            </div>
+          </el-col>
+        </el-row>
+        <el-row class="list" v-show="detail.detailstype == 12">
+          <el-col :span="22">
+            <div><span>富文本编辑器：</span>{{ detail.linkh5url }}</div>
+          </el-col>
+          <el-col :span="2">
+            <div class="icon" @click="edit('H5')">
               <img src="../../../static/img/edit.png" alt="" />
             </div>
           </el-col>
@@ -848,10 +858,39 @@
         <el-button type="primary" @click="add('detailstype')">确 定</el-button>
       </div>
     </el-dialog>
+    <!--详情查看-->
+    <div class="el-dialog__wrapper" v-show="H5Show">
+      <div class="el-dialog el-dialogedit" style="width: 1000px">
+        <div class="el-dialog__header">
+          <span class="el-dialog__title">编辑详情</span>
+          <button
+            class="el-dialog__headerbtn"
+            aria-label="Close"
+            type="button"
+            @click="cancel('H5')"
+          >
+            <i class="el-dialog__close el-icon el-icon-close"></i>
+          </button>
+        </div>
+        <div class="el-dialog__body">
+          <tinymce-editor ref="editor" v-model="h5.content"> </tinymce-editor>
+        </div>
+        <div class="el-dialog__footer">
+          <div class="dialog-footer">
+            <el-button @click="cancel('H5')">取 消</el-button>
+            <el-button type="primary" @click="add('H5')">确 定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import TinymceEditor from "../../components/editor";
 export default {
+  components: {
+    TinymceEditor,
+  },
   data() {
     var checkScore = (rule, value, callback) => {
       if (!/^(([1-9]+\d*)|([1-9]+\d*\.\d{1,2}))$/.test(value) || value > 10) {
@@ -872,6 +911,9 @@ export default {
       }
     };
     return {
+      h5: {
+        content: "",
+      },
       uploaddata: {
         type: "",
         uKey: JSON.parse(sessionStorage.getItem("user")).uKey,
@@ -948,8 +990,10 @@ export default {
       linkh5urlShow: false,
       detailstypeShow: false,
       ispanoramaShow: false,
+      H5Show: false,
     };
   },
+
   mounted() {
     // 高德地图对象
     this.GDMap = new AMap.Map("GDMAP", {
@@ -1175,6 +1219,7 @@ export default {
       if (this.siteid) {
         this.$ajax.getSiteDetails({ id: this.siteid }, (res) => {
           this.detail = res.data;
+          console.log("this.detail", this.detail);
           this.electronicfencelist = res.data.electronicfencelist
             ? JSON.parse(res.data.electronicfencelist)
             : [];
@@ -1453,7 +1498,20 @@ export default {
 }
 
 .mapbox {
-  top: 350px;
+  top: 600px;
+  left: 0px;
   height: 500px;
+}
+.el-dialog__wrapper {
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.8);
+  .el-dialogadd {
+    width: 500px;
+    margin-top: 15vh;
+  }
+  .el-dialogedit {
+    width: 1000px;
+    margin-top: 15vh;
+  }
 }
 </style>
