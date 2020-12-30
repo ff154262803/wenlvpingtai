@@ -48,7 +48,9 @@ export default {
         language_url: `${this.baseUrl}/static/tiny/zh_CN.js`,
         language: "zh_CN",
         skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`,
-        content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`,
+        // content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`,
+        // skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`, // 暗色系
+        content_css: `${this.baseUrl}/static/tiny/skins/content/dark/content.css`, // 暗色系
         height: 500,
         plugins: this.plugins,
         toolbar: this.toolbar,
