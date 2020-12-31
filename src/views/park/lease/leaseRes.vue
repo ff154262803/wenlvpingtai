@@ -255,6 +255,7 @@ export default {
     },
     //条款
     DetailBolChange(data) {
+      console.log("data", data);
       this.DetailBol = true;
       this.addData = data;
       this.h5.content = "";

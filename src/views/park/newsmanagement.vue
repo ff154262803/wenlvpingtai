@@ -183,6 +183,10 @@
               </div>
             </el-form-item>
             <el-form-item label="语音讲解" prop="voiceUrl">
+              <el-input
+                v-model="newdata.voiceUrl"
+                style="width: 200px; display: none"
+              ></el-input>
               <el-upload
                 :action="
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
@@ -192,7 +196,7 @@
                 :before-upload="beforeUploadmp3"
                 :disabled="detailBol"
                 :file-list="mp3List"
-                :show-file-list="false"
+                style="display: none"
               >
                 <el-button size="small" type="primary" icon="el-icon-upload"
                   >点击上传</el-button
@@ -356,8 +360,8 @@ export default {
       console.log("mp3", this.mp3List);
       if (this.mp3List.length < 5 && response.resb == 200) {
         this.mp3List.push({ name: file.name, url: response.data.url });
-        this.mp3List = this.mp3List.map((item) => item.url).join();
-        this.newdata.voiceUrl = this.mp3List;
+        // this.mp3List = this.mp3List.map((item) => item.url).join();
+        this.newdata.voiceUrl = this.mp3List.join();
         this.fullscreenLoading = false;
       } else {
         this.$message.error("最多上传5个");

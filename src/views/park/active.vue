@@ -155,6 +155,7 @@
             <el-form-item label="开始结束时间" prop="time">
               <el-date-picker
                 v-model="newdata.time"
+                value-format="yyyy-MM-dd hh:mm:ss"
                 type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -232,6 +233,50 @@
               >
                 <el-button size="small" type="primary">点击上传</el-button>
               </el-upload>
+            </el-form-item>
+            <el-form-item
+              label="视频封面"
+              prop="videoPicture"
+              v-if="newdata.banner == 0"
+            >
+              <el-input
+                v-model="newdata.videoPicture"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button
+                size="small"
+                type="primary"
+                @click="uploading('uppict1')"
+                >点击上传</el-button
+              >
+              <el-upload
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                accept="image/jpeg,image/jpg,image/png"
+                :on-success="onsuccsess1"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                list-type="picture"
+              >
+                <el-button size="small" type="primary" id="uppict1"
+                  >点击上传</el-button
+                >
+              </el-upload>
+              <div style="margin-top: 20px">
+                <img
+                  :src="newdata.videoPicture"
+                  alt=""
+                  class="pic"
+                  v-if="newdata.videoPicture"
+                  style="width: 80px"
+                  ref="pic"
+                />
+              </div>
             </el-form-item>
             <el-form-item label="缩略图" prop="thumbnail">
               <el-input
@@ -356,6 +401,12 @@ export default {
         issubscribe: [{ required: true, message: "必选", trigger: "blur" }],
         picurl: [{ required: true, message: "必填项", trigger: "blur" }],
         thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
+        videoUrl: [
+          { required: true, message: "视频不能为空", trigger: "blur" },
+        ],
+        videoPicture: [
+          { required: true, message: "视频封面不能为空", trigger: "blur" },
+        ],
         time: [
           { required: true, message: "起始日期不能为空", trigger: "blur" },
         ],
@@ -409,31 +460,37 @@ export default {
         this.$ajax.addH5(this.h5, (res) => {
           if (res.resb == 200) {
             let linkh5url = res.data.id;
-            this.$ajax.updateEvents(
-              { id: this.newdata.id, parameters: { h5id: linkh5url } },
-              (res) => {
-                this.$message({
-                  type: "success",
-                  message: "修改成功!",
-                });
-                this.Detailshow = false;
-                this.getlist();
-              }
-            );
+            this.newdata.intro = this.h5.content;
+            this.$ajax.updateEvents(this.newdata, (res) => {
+              this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+              this.Detailshow = false;
+              this.getlist();
+            });
           }
         });
       }
     },
     detail(res) {
+      console.log(res);
       this.Detailshow = true;
+
       if (res.h5id) {
         this.h5.id = res.h5id;
         this.$ajax.getH5Details({ id: res.h5id }, (res) => {
           this.h5 = res.data;
         });
       } else {
-        this.h5 = { caption: "", content: "" };
-        this.newdata = res;
+        this.newdata = { ...res };
+        this.h5.content = this.newdata.intro;
+        this.h5.caption = "";
+
+        if (this.newdata.intro == null) {
+          this.h5 = { caption: "", content: "" };
+        }
+        console.log("newdata", this.newdata);
       }
     },
     gotodetail(row) {
@@ -478,24 +535,24 @@ export default {
       this.fullscreenLoading = true;
     },
     beforeUploadpic(file) {
-      const isLt5M = file.size / 1024 / 1024 < 5;
+      const isLt5M = file.size / 1024 / 1024 < 10;
       const accept =
         file.type.indexOf("jpeg") > -1 ||
         file.type.indexOf("png") > -1 ||
         file.type.indexOf("jpg") > -1;
-      const limit = this.fileList.length < 5;
+      const limit = this.fileList.length < 10;
       if (!accept) this.$message.error("上传文件只能是图片格式!");
       if (!isLt5M) this.$message.error("上传文件大小不能超过 5MB!");
-      if (!limit) this.$message.error("最多上传5张图片！");
+      if (!limit) this.$message.error("最多上传10张图片！");
       return accept && isLt5M && limit;
     },
     onsuccsesspic(response, file, fileList) {
-      if (this.fileList.length < 5 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resb == 200) {
         this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       } else {
-        this.$message.error("最多上传5个");
+        this.$message.error("最多上传10个");
       }
     },
     onremove(file, fileList) {
@@ -508,6 +565,12 @@ export default {
       this.fullscreenLoading = false;
       if (response.resb == 200) {
         this.$set(this.newdata, "thumbnail", response.data.url);
+      }
+    },
+    onsuccsess1(response, file, fileList) {
+      this.fullscreenLoading = false;
+      if (response.resb == 200) {
+        this.$set(this.newdata, "videoPicture", response.data.url);
       }
     },
     onerror() {
@@ -529,30 +592,42 @@ export default {
           this.newdata.banner = "0";
         }
         this.fileList = data.picurl.split(",");
-        this.newdata.time = this.$set(this.newdata, this.newdata.time, [
-          new Date(
-            data.starttime.split("-")[0],
-            data.starttime.split("-")[1],
-            data.starttime.split("-")[2]
-          ),
-          new Date(
-            data.endtime.split("-")[0],
-            data.endtime.split("-")[1],
-            data.endtime.split("-")[2]
-          ),
-        ]);
         // this.newdata.time = [
         //   new Date(
         //     data.starttime.split("-")[0],
         //     data.starttime.split("-")[1],
-        //     data.starttime.split("-")[2]
+        //     data.starttime.split("-")[2].split(" ")[0],
+        //     data.starttime.split(" ")[1].split(":")[0],
+        //     data.starttime.split(" ")[1].split(":")[1],
+        //     data.starttime.split(" ")[1].split(":")[2]
         //   ),
         //   new Date(
         //     data.endtime.split("-")[0],
         //     data.endtime.split("-")[1],
-        //     data.endtime.split("-")[2]
+        //     data.endtime.split("-")[2].split(" ")[0],
+        //     data.endtime.split(" ")[1].split(":")[0],
+        //     data.endtime.split(" ")[1].split(":")[1],
+        //     data.endtime.split(" ")[1].split(":")[2]
         //   ),
         // ];
+        this.$set(this.newdata, "time", [
+          new Date(
+            data.starttime.split("-")[0],
+            data.starttime.split("-")[1],
+            data.starttime.split("-")[2].split(" ")[0],
+            data.starttime.split(" ")[1].split(":")[0],
+            data.starttime.split(" ")[1].split(":")[1],
+            data.starttime.split(" ")[1].split(":")[2]
+          ),
+          new Date(
+            data.endtime.split("-")[0],
+            data.endtime.split("-")[1],
+            data.endtime.split("-")[2].split(" ")[0],
+            data.endtime.split(" ")[1].split(":")[0],
+            data.endtime.split(" ")[1].split(":")[1],
+            data.endtime.split(" ")[1].split(":")[2]
+          ),
+        ]);
       } else {
         this.fileList = [];
         this.newdata = {
@@ -584,8 +659,12 @@ export default {
           if (this.newdata.id) {
             this.$ajax.updateEvents(
               {
+                videoPicture: this.newdata.videoPicture
+                  ? this.newdata.videoPicture
+                  : "",
                 parkid: sessionStorage.getItem("parkid"),
                 id: this.newdata.id,
+                intro: this.newdata.intro ? this.newdata.intro : "",
                 videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
                 caption: this.newdata.caption,
                 endtime: this.newdata.endtime,
@@ -611,6 +690,11 @@ export default {
               {
                 parkid: sessionStorage.getItem("parkid"),
                 isenable: "1",
+
+                videoPicture: this.newdata.videoPicture
+                  ? this.newdata.videoPicture
+                  : "",
+                intro: this.newdata.intro ? this.newdata.intro : "",
                 videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
                 caption: this.newdata.caption,
                 endtime: this.newdata.endtime,
