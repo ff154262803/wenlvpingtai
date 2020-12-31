@@ -187,36 +187,69 @@
                 v-model="newdata.voiceUrl"
                 style="width: 200px; display: none"
               ></el-input>
+              <el-button size="small" type="primary" @click="uploading('upmp3')"
+                >点击上传</el-button
+              >
               <el-upload
                 :action="
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
                 "
                 accept=".mp3"
+                :data="uploaddata"
                 :on-success="onsuccsessmp3"
+                :on-progress="handleLoading"
                 :before-upload="beforeUploadmp3"
                 :disabled="detailBol"
-                :file-list="mp3List"
                 style="display: none"
               >
-                <el-button size="small" type="primary" icon="el-icon-upload"
+                <el-button size="small" type="primary" id="upmp3"
                   >点击上传</el-button
                 >
               </el-upload>
+              <div style="margin-top: 20px" v-if="newdata.voiceUrl != ''">
+                {{ newdata.voiceUrl }}
+                <img
+                  src="../../../static/img/del.png"
+                  alt=""
+                  style="width: 25px"
+                  @click="deling('voiceurl')"
+                  v-if="newdata.voiceUrl != ''"
+                />
+              </div>
             </el-form-item>
             <el-form-item label="视频讲解" prop="videoUrl">
+              <el-input
+                v-model="newdata.voiceUrl"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button size="small" type="primary" @click="uploading('upmp4')"
+                >点击上传</el-button
+              >
               <el-upload
                 :action="
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
                 "
+                :data="uploaddata"
                 accept="video/mp4"
                 :on-success="onsuccsessmp4"
                 :before-upload="beforeUploadmp4"
                 :disabled="detailBol"
+                style="display: none"
               >
-                <el-button size="small" type="primary" icon="el-icon-upload"
+                <el-button size="small" type="primary" id="upmp4"
                   >点击上传</el-button
                 >
               </el-upload>
+              <div style="margin-top: 20px" v-if="newdata.videoUrl != ''">
+                {{ newdata.videoUrl }}
+                <img
+                  src="../../../static/img/del.png"
+                  alt=""
+                  style="width: 25px"
+                  @click="deling('videoUrl')"
+                  v-if="newdata.videoUrl != ''"
+                />
+              </div>
             </el-form-item>
 
             <el-form-item
@@ -355,20 +388,15 @@ export default {
     },
     //上传mp3文件成功的钩子函数
     onsuccsessmp3(response, file, fileList) {
-      // this.$refs.upload.clearFiles();
-      console.log("fileList", file);
-      console.log("mp3", this.mp3List);
-      if (this.mp3List.length < 5 && response.resb == 200) {
-        this.mp3List.push({ name: file.name, url: response.data.url });
-        // this.mp3List = this.mp3List.map((item) => item.url).join();
-        this.newdata.voiceUrl = this.mp3List.join();
-        this.fullscreenLoading = false;
-      } else {
-        this.$message.error("最多上传5个");
+      this.newdata.voiceUrl = response.data.url;
+    },
+    deling(val) {
+      if (val == "voiceurl") {
+        this.newdata.voiceUrl = "";
       }
-      // console.log("fileList", fileList);
-      // this.newdata.voiceUrl = response.data.url;
-      // console.log("this.newdata.voiceUrl", this.newdata.voiceUrl);
+      if (val == "videoUrl") {
+        this.newdata.videoUrl = "";
+      }
     },
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
@@ -503,11 +531,22 @@ export default {
 
         // }
         this.h5.content = data.details;
-        this.mp3List = data.voiceUrl.length ? data.voiceUrl.split(",") : [];
         this.fileList = data.picurl.length ? data.picurl.split(",") : [];
         this.detailBol = false;
       } else {
-        this.newdata = {};
+        this.newdata = {
+          detailType: 1,
+          details: "",
+          picurl: "",
+          status: 1,
+          summary: "",
+          title: "",
+          videoUrl: "",
+          voiceUrl: "",
+        };
+
+        // this.newdata.title = "";
+        // this.newdata.voiceUrl = "";
         this.mp3List = [];
         this.fileList = [];
         this.h5 = { content: "" };

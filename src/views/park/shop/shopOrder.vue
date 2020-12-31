@@ -95,6 +95,8 @@
       </el-table-column>
       <el-table-column prop="QRcode" label="提货码" align="center">
       </el-table-column>
+      <el-table-column label="支付状态" prop="statusName" align="center">
+      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.completeStatus == "0"

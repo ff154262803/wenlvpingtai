@@ -115,7 +115,7 @@
     </el-col>
     <!--商品新增-->
     <div class="el-dialog__wrapper" v-show="Addshow">
-      <div class="el-dialog el-dialogadd" style="width: 600px">
+      <div class="el-dialog el-dialogadd" style="width: 1000px">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
             newdata.id ? "修改活动" : "新增活动"
@@ -219,20 +219,44 @@
               </div>
             </el-form-item>
             <el-form-item
-              label="视频"
+              label="视频讲解"
               prop="videoUrl"
               v-if="newdata.banner == 0"
             >
+              <el-input
+                v-model="newdata.voiceUrl"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button size="small" type="primary" @click="uploading('upmp4')"
+                >点击上传</el-button
+              >
               <el-upload
                 :action="
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
                 "
+                :data="uploaddata"
                 accept="video/mp4"
                 :on-success="onsuccsessmp4"
                 :before-upload="beforeUploadmp4"
               >
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button
+                  size="small"
+                  type="primary"
+                  style="display: none"
+                  id="upmp4"
+                  >点击上传</el-button
+                >
               </el-upload>
+              <div style="margin-top: 20px" v-if="newdata.videoUrl != ''">
+                {{ newdata.videoUrl }}
+                <img
+                  src="../../../static/img/del.png"
+                  alt=""
+                  style="width: 25px"
+                  @click="deling('videoUrl')"
+                  v-if="newdata.videoUrl != ''"
+                />
+              </div>
             </el-form-item>
             <el-form-item
               label="视频封面"
@@ -387,6 +411,17 @@ export default {
         banner: "1",
         issubscribe: "1",
         picurl: "",
+        address: "",
+        caption: "",
+        endtime: "",
+        intro: "",
+        issubscribe: "1",
+        parkid: "",
+        picurl: "",
+        starttime: "",
+        thumbnail: "",
+        videoPicture: "",
+        videoUrl: "",
       },
       rules: {
         caption: [
@@ -423,10 +458,14 @@ export default {
     this.getsitelist();
   },
   methods: {
+    deling(val) {
+      if (val == "videoUrl") {
+        this.newdata.videoUrl = "";
+      }
+    },
     //上传mp4文件成功的钩子函数
     onsuccsessmp4(response, file, fileList) {
       this.newdata.videoUrl = response.data.url;
-      console.log("this.newdata.videoUrl", this.newdata.videoUrl);
     },
     //上传mp4文件之前的钩子函数
     beforeUploadmp4(file) {
@@ -585,12 +624,12 @@ export default {
       if (data) {
         this.newdata = { ...data };
         console.log("this.newdata", this.newdata);
-        if (this.newdata.picurl != "") {
-          this.newdata.banner = "1";
-        }
-        if (this.newdata.videoUrl != "") {
-          this.newdata.banner = "0";
-        }
+        // if (this.newdata.picurl != "") {
+        //   this.newdata.banner = "1";
+        // }
+        // if (this.newdata.videoUrl != "") {
+        //   this.newdata.banner = "0";
+        // }
         this.fileList = data.picurl.split(",");
         // this.newdata.time = [
         //   new Date(
@@ -634,6 +673,17 @@ export default {
           banner: "1",
           issubscribe: "1",
           picurl: "",
+          address: "",
+          caption: "",
+          endtime: "",
+          intro: "",
+          issubscribe: "1",
+          parkid: "",
+          picurl: "",
+          starttime: "",
+          thumbnail: "",
+          videoPicture: "",
+          videoUrl: "",
         };
       }
     },
@@ -644,6 +694,13 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          if (this.newdata.banner == "1") {
+            this.newdata.videoUrl = "";
+            this.newdata.videoPicture = "";
+          } else {
+            this.newdata.picurl = "";
+            this.newdata.thumbnail = "";
+          }
           if (this.newdata.time[0]) {
             this.newdata.starttime = this.timeform(
               "yyyy-MM-dd hh:mm:ss",
@@ -674,6 +731,7 @@ export default {
                 issubscribe: this.newdata.issubscribe,
                 starttime: this.newdata.starttime,
                 siteid: this.newdata.siteid,
+                banner: this.newdata.banner,
                 isenable: "1",
               },
               (res) => {
@@ -704,6 +762,7 @@ export default {
                 issubscribe: this.newdata.issubscribe,
                 starttime: this.newdata.starttime,
                 siteid: this.newdata.siteid,
+                banner: this.newdata.banner,
               },
               (res) => {
                 console.log("newdata", this.newdata);

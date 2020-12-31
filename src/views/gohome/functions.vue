@@ -37,7 +37,7 @@
         <el-form-item label="缩略图" prop="imgUrl" class="imgurl">
           <el-upload
             class="avatar-uploader"
-            action="http://192.192.0.241:5005/api/manage/ferriswheel/resources/upload"
+            :action="$store.state.ip + '/manage/ferriswheel/resources/upload'"
             :headers="headers"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
