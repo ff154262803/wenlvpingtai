@@ -17,7 +17,10 @@ import Home from './views/Home.vue'
 import tongjihome from './views/tongji/home'//统计首页
 import user from './views/user/user'//用户管理
 import parklist from './views/park/parklist'//园区管理
-import msgsend from './views/msg/msgsend'//商品列表
+//积分商城
+import shopActivityList from './views/integralShop/shopActivityList'//商品活动列表
+import discountsAdmin from './views/integralShop/discountsAdmin'//优惠券管理
+import msgsend from './views/msg/msgsend'//消息推送
 import feedback from './views/feedback/feedback'//商品列表
 // import orderlist from './views/order/list'//订单列表
 // import shoplist from './components/editor'//订单列表
@@ -61,7 +64,9 @@ import ticketAdmin from './views/park/ticketAdmin';//票务管理
 //酒店管理
 import hotelAdmin from './views/park/hotelAdmin';//酒店管理
 //游客管理
-import touristAdmin from './views/park/touristAdmin';//游客管理
+import touristAdmin from './views/park/touristAdmin/touristAdmin';//游客管理
+import stoneDetail from './views/park/touristAdmin/stoneDetail';//五彩石明细记录
+import integralDetail from './views/park/touristAdmin/integralDetail';//积分明细记录
 //首页配置
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
 //景观设备管理
@@ -153,6 +158,13 @@ const router = new VueRouter({
             ]
         },
         {
+            path: '/', component: Home, name: 'integralShop', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            children: [
+                { path: '/shopActivityList', component: shopActivityList, name: '商品活动列表', meta: { title: "积分商城", requireAuth: true, parent: '/' } },
+                { path: '/discountsAdmin', component: discountsAdmin, name: '优惠券管理', meta: { requireAuth: true, parent: '/' } },
+            ]
+        },
+        {
             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
                 { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
@@ -227,12 +239,21 @@ const router = new VueRouter({
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: '/base' } },
             ]
         },
-        //游客管理
+        //游客服务
         {
             path: '/', component: Home, name: 'touristAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: '/lostManage' } }
+            ]
+        },
+        //游客管理
+        {
+            path: '/', component: Home, name: 'touristAdmin', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            children: [
+                { path: '/touristAdmin', component: stoneDetail, name: '游客列表', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/stoneDetail', component: stoneDetail, name: '五彩石明细记录', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/integralDetail', component: integralDetail, name: '积分明细记录', meta: { requireAuth: true, parent: '/base' } }
             ]
         },
         //租赁管理
@@ -269,6 +290,7 @@ router.beforeEach((to, from, next) => {
         sessionStorage.removeItem('user');
     }
     let user = sessionStorage.getItem('user');
+    let permissions = sessionStorage.getItem('permissions');
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({ path: '/login' })
@@ -282,7 +304,9 @@ router.beforeEach((to, from, next) => {
             // })
             // }
             router.options.routes.map(n => {
+                // console.log('n', n.name);
                 if (n.name != to.name) {
+                    // console.log('n.children', n.children);
                     if (n.children) n.children.map(m => {
                         if (m.name == to.name && n.meta.level - 1) {
                             store.state.child = n.children

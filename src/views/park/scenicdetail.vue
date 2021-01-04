@@ -802,29 +802,7 @@
         >
       </div>
     </el-dialog>
-    <!--修改详情链接-->
-    <el-dialog
-      title="修改详情链接"
-      :visible.sync="linkh5urlShow"
-      class="demo-box"
-      width="590px"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="editdata"
-        :rules="detailrules"
-        ref="linkh5url"
-        label-width="100px"
-      >
-        <el-form-item label="详情链接" prop="linkh5url">
-          <el-input v-model="editdata.linkh5url"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel('linkh5url')">取 消</el-button>
-        <el-button type="primary" @click="add('linkh5url')">确 定</el-button>
-      </div>
-    </el-dialog>
+
     <!--修改详情类型-->
     <el-dialog
       title="修改详情类型"
@@ -858,6 +836,29 @@
         <el-button type="primary" @click="add('detailstype')">确 定</el-button>
       </div>
     </el-dialog>
+    <!--修改详情链接-->
+    <el-dialog
+      title="修改详情链接"
+      :visible.sync="linkh5urlShow"
+      class="demo-box"
+      width="590px"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        :model="editdata"
+        :rules="detailrules"
+        ref="linkh5url"
+        label-width="100px"
+      >
+        <el-form-item label="详情链接" prop="linkh5url">
+          <el-input v-model="editdata.linkh5url"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel('linkh5url')">取 消</el-button>
+        <el-button type="primary" @click="add('linkh5url')">确 定</el-button>
+      </div>
+    </el-dialog>
     <!--详情查看-->
     <div class="el-dialog__wrapper" v-show="H5Show">
       <div class="el-dialog el-dialogedit" style="width: 1000px">
@@ -873,12 +874,22 @@
           </button>
         </div>
         <div class="el-dialog__body">
-          <tinymce-editor ref="editor" v-model="h5.content"> </tinymce-editor>
+          <el-form
+            :model="editdata"
+            :rules="detailrules"
+            ref="linkh5url"
+            label-width="100px"
+          >
+            <tinymce-editor ref="H5" v-model="editdata.linkh5url">
+            </tinymce-editor>
+          </el-form>
         </div>
         <div class="el-dialog__footer">
           <div class="dialog-footer">
             <el-button @click="cancel('H5')">取 消</el-button>
-            <el-button type="primary" @click="add('H5')">确 定</el-button>
+            <el-button type="primary" @click="add('linkh5url')"
+              >确 定</el-button
+            >
           </div>
         </div>
       </div>
@@ -1285,6 +1296,7 @@ export default {
               this.getdetail();
             }
           );
+          this.H5Show = false;
         } else {
           return false;
         }

@@ -31,7 +31,11 @@
       </el-table>
     </template>
     <!-- 新增界面 -->
-    <el-dialog title="新增" :visible.sync="dialogFormVisible">
+    <el-dialog
+      title="新增"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="活动名称" label-width="100px" prop="themeName">
           <el-input v-model="form.themeName" style="width: 300px"></el-input>

@@ -230,6 +230,7 @@
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
                 "
                 :data="uploaddata"
+                :show-file-list="true"
                 accept="video/mp4"
                 :on-success="onsuccsessmp4"
                 :before-upload="beforeUploadmp4"
@@ -240,6 +241,11 @@
                   >点击上传</el-button
                 >
               </el-upload>
+              <el-progress
+                v-if="!newdata.videoUrl"
+                :percentage="uploadRate"
+                style="width: 600px"
+              ></el-progress>
               <div style="margin-top: 20px" v-if="newdata.videoUrl != ''">
                 {{ newdata.videoUrl }}
                 <img
@@ -257,18 +263,13 @@
               prop="detailType"
               :disabled="detailBol"
             >
-              <el-radio
+              <el-radio-group
                 v-model="newdata.detailType"
-                :label="1"
-                :disabled="detailBol"
-                >链接</el-radio
+                @change="agreeChange"
               >
-              <el-radio
-                v-model="newdata.detailType"
-                :label="2"
-                :disabled="detailBol"
-                >编辑器</el-radio
-              >
+                <el-radio :label="1" :disabled="detailBol">链接</el-radio>
+                <el-radio :label="2" :disabled="detailBol">编辑器</el-radio>
+              </el-radio-group>
             </el-form-item>
             <el-form-item
               label="详情链接"
@@ -316,6 +317,7 @@ export default {
   },
   data() {
     return {
+      uploadRate: 0,
       mp3List: [],
       detailBol: false,
       //详情类型
@@ -370,6 +372,14 @@ export default {
     this.getlist();
   },
   methods: {
+    agreeChange() {
+      if (this.newdata.detailType == 1) {
+        this.newdata.details = "";
+      } else {
+        this.h5.content = "";
+      }
+      console.log("cccccc");
+    },
     //文件上传成功
     uploadResource() {
       this.$ajax.uploadResource({}, (res) => {
@@ -411,19 +421,25 @@ export default {
     },
     //上传mp4文件之前的钩子函数
     beforeUploadmp4(file) {
-      const isLt50M = file.size / 1024 / 1024 < 50;
+      const isLt50M = file.size / 1024 / 1024 < 500;
       const accept = file.type.indexOf("mp4") > -1;
       if (!accept) {
         this.$message.error("上传文件只能是mp4格式!");
       }
       if (!isLt50M) {
-        this.$message.error("上传文件大小不能超过 50MB!");
+        this.$message.error("上传文件大小不能超过 500MB!");
       }
       return accept && isLt50M;
     },
     //上传mp4文件成功的钩子函数
     onsuccsessmp4(response, file, fileList) {
-      this.newdata.videoUrl = response.data.url;
+      if (this.fileList.length < 5 && response.resb == 200) {
+        this.uploadRate = 100;
+        this.newdata.videoUrl = response.data.url;
+      } else {
+        this.$message.error("最多上传1个");
+      }
+
       console.log("this.newdata.videoUrl", this.newdata.videoUrl);
     },
     close(i) {
@@ -544,10 +560,10 @@ export default {
           videoUrl: "",
           voiceUrl: "",
         };
-
-        // this.newdata.title = "";
-        // this.newdata.voiceUrl = "";
-        this.mp3List = [];
+        (this.uploadRate = 0),
+          // this.newdata.title = "";
+          // this.newdata.voiceUrl = "";
+          (this.mp3List = []);
         this.fileList = [];
         this.h5 = { content: "" };
         this.detailBol = false;

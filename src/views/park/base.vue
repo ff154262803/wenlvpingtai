@@ -814,6 +814,7 @@ export default {
     getdetail() {
       if (this.parkid) {
         this.$ajax.getParkDetails({ id: this.parkid }, (res) => {
+          console.log("基础信息", res.data);
           this.detail = res.data;
           this.electronicfencelist = res.data.electronicfencelist
             ? JSON.parse(res.data.electronicfencelist)

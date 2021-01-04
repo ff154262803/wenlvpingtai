@@ -184,7 +184,7 @@ export default {
       },
       roleTree: [
         {
-          id: "1",
+          id: "",
           name: "园区管理",
           children: [],
         },

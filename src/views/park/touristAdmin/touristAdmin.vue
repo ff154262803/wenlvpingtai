@@ -144,6 +144,7 @@ export default {
     },
     queryWebUserList() {
       this.$ajax.queryWebUserList(this.query, (res) => {
+        console.log("res", res);
         this.dataList = res.data;
         this.total = res.total;
       });
