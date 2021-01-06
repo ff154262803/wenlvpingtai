@@ -147,7 +147,7 @@
             style="width: 220px"
           >
             <el-option label="中科视维" :value="1"></el-option>
-            <el-option label="融创" :value="2"></el-option>
+            <el-option label="青岛融创" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="用户名" prop="managename">
@@ -224,7 +224,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="!detailBol">
-        <el-button @click="cancel()">取 消</el-button>
+        <el-button @click="cancel('newdata')">取 消</el-button>
         <el-button type="primary" @click="add()">确 定</el-button>
       </div>
     </el-dialog>
@@ -284,6 +284,7 @@ export default {
         condition: "",
         page: 1,
         count: 10,
+        parkid: "",
       },
       ParkTypeList: [],
       multipleSelection: [],
@@ -407,7 +408,7 @@ export default {
       this.multipleSelection = val;
     },
 
-    cancel() {
+    cancel(item) {
       this.Addshow = false;
       this.newdata = {};
       setTimeout(() => {
@@ -483,17 +484,15 @@ export default {
     //修改
     Edit(item) {
       console.log(item, "修改");
-      this.$set(item, "roleid", item.authRole && item.authRole.id);
       this.Addshow = true;
-      //this.newdata = item;
-      this.forminfo = item;
+      this.forminfo = { ...item };
     },
     //详情
     detail(item) {
       console.log(item);
       this.detailBol = true;
       this.Addshow = true;
-      this.forminfo = item;
+      this.forminfo = { ...item };
     },
     handleSizeChange(val) {
       this.query.count = val;

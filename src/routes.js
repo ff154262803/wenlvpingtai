@@ -21,6 +21,7 @@ import parklist from './views/park/parklist'//园区管理
 import shopActivityList from './views/integralShop/shopActivityList'//商品活动列表
 import discountsAdmin from './views/integralShop/discountsAdmin'//优惠券管理
 import msgsend from './views/msg/msgsend'//消息推送
+import integralRule from './views/integralRule/integralRule'//积分规则
 import feedback from './views/feedback/feedback'//商品列表
 // import orderlist from './views/order/list'//订单列表
 // import shoplist from './components/editor'//订单列表
@@ -111,12 +112,12 @@ const router = new VueRouter({
                 { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
                 {
                     path: '/topline', component: topline, redirect: 'topline', name: '基础配置', meta: { requireAuth: true, parent: 'parklist' },
-                    children: [{ path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: 'base' } }]
+                    children: [{ path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: '/base' } }]
                 },
                 {
                     path: '/sencelist', component: sencelist, name: '景点管理', meta: { requireAuth: true, parent: 'parklist' },
                     children: [{
-                        path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: 'base' }
+                        path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: '/base' }
                     },]
                 },
                 {
@@ -152,9 +153,11 @@ const router = new VueRouter({
         },
 
         {
-            path: '/', component: Home, name: 'msgsend', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue, meta: { title: "消息推送" } },
+                { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
+                { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
+                { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
             ]
         },
         {
@@ -165,19 +168,25 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            path: '/', component: Home, name: 'msgsend', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
-                { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
-                { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
+                { path: '/msgsend', component: msgsend, name: '消息推送', ...metaTrue, meta: { title: "消息推送" } },
             ]
         },
         {
-            path: '/', component: Home, name: 'user', hidden: false, meta: { requireAuth: true, level: 1 },
+            path: '/', component: Home, name: 'integralRule', hidden: false, meta: { requireAuth: true, level: 1 },
             children: [
-                { path: '/user', component: user, name: '用户管理', ...metaTrue, meta: { title: "用户管理" } },
-            ],
+                { path: '/integralRule', component: integralRule, name: '积分规则', ...metaTrue, meta: { title: "积分规则" } },
+            ]
         },
+
+        //隐藏
+        // {
+        //     path: '/', component: Home, name: 'user', hidden: false, meta: { requireAuth: true, level: 1 },
+        //     children: [
+        //         { path: '/user', component: user, name: '用户管理', ...metaTrue, meta: { title: "用户管理" } },
+        //     ],
+        // },
         {
             path: '/', component: Home, name: 'basic', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
@@ -265,12 +274,13 @@ const router = new VueRouter({
                 { path: '/leaseDistribution', component: leaseDistribution, name: '物品分布管理', meta: { requireAuth: true, parent: 'lostManage' } }
             ]
         },
-        {
-            path: '/', component: Home, name: 'feedback', hidden: false, meta: { requireAuth: true, level: 1 },
-            children: [
-                { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue, meta: { title: "意见反馈" } },
-            ],
-        },
+        //隐藏
+        // {
+        //     path: '/', component: Home, name: 'feedback', hidden: false, meta: { requireAuth: true, level: 1 },
+        //     children: [
+        //         { path: '/feedback', component: feedback, name: '意见反馈', ...metaTrue, meta: { title: "意见反馈" } },
+        //     ],
+        // },
         // {
         //     path: '/heads', component: heads, name: '头图管理'
         // }, {
@@ -290,25 +300,29 @@ router.beforeEach((to, from, next) => {
         sessionStorage.removeItem('user');
     }
     let user = sessionStorage.getItem('user');
-    let permissions = sessionStorage.getItem('permissions');
+    let permissions = JSON.parse(sessionStorage.getItem('permissions'));
+    let permissionName = []
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({ path: '/login' })
         } else {
-            // let isadmin = JSON.parse(sessionStorage.getItem('user')).isadmin || false
-            // if(!isadmin){
-            // router.options.routes=router.options.routes.filter(n=>{
-            //     if(n.name=="parklist" || n.name=="base"){
-            //         return true
-            //     }
-            // })
-            // }
             router.options.routes.map(n => {
-                // console.log('n', n.name);
                 if (n.name != to.name) {
-                    // console.log('n.children', n.children);
                     if (n.children) n.children.map(m => {
-                        if (m.name == to.name && n.meta.level - 1) {
+                        if (permissions) {
+                            if (m.name == '基础配置') {
+                                for (let i = 0; i < n.children.length; i++) {
+                                    for (let j = 0; j < permissions.length; j++) {
+                                        if (n.children[i].name == permissions[j].name) {
+                                            permissionName.push(n.children[i])
+                                        }
+                                    }
+                                }
+                                console.log('permissionName', permissionName);
+                                store.state.child = permissionName
+                            }
+                        }
+                        else if (m.name == to.name && n.meta.level - 1) {
                             store.state.child = n.children
                         }
                     })

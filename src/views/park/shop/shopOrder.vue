@@ -29,7 +29,7 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        value-format="yyyy-MM-dd"
+        :default-time="['00:00:00', '23:59:59']"
         @change="clearNullTime(query.createtime)"
       >
       </el-date-picker>
@@ -74,9 +74,9 @@
       </el-table-column>
       <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="分类" align="center">
+      <el-table-column prop="ordertype" label="分类" align="center">
       </el-table-column>
-      <el-table-column prop="userid" label="用户名" align="center">
+      <el-table-column prop="username" label="用户名" align="center">
       </el-table-column>
       <el-table-column prop="mobile" label="手机号" align="center">
       </el-table-column>
@@ -95,15 +95,15 @@
       </el-table-column>
       <el-table-column prop="QRcode" label="提货码" align="center">
       </el-table-column>
-      <el-table-column label="支付状态" prop="statusName" align="center">
-      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.completeStatus == "0"
             ? "待核销"
             : scope.row.completeStatus == "1"
             ? "已核销"
-            : "已退款"
+            : scope.row.completeStatus == "2"
+            ? "已退款"
+            : ""
         }}</template>
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
@@ -176,12 +176,7 @@ export default {
     };
     return {
       typeNamelist: [], //商品分类名称
-      list: [],
       total: 0,
-      addBol: false,
-      GiveBackBol: false,
-      leaseResIdList: [],
-      serviceCenterIdList: [],
       unused: 0,
       disabled: true,
       detail: false,
@@ -195,33 +190,6 @@ export default {
         productClass: "",
         startDate: "",
       },
-      rules: {
-        leaseresid: [
-          { required: true, message: "请选择物品", trigger: "change" },
-        ],
-        servicecenterid: [
-          { required: true, message: "请选择地点", trigger: "change" },
-        ],
-        num: [
-          {
-            validator: (rule, val, callback) => {
-              val ? callback() : callback(new Error("数量必须大于0"));
-            },
-            trigger: "change",
-          },
-        ],
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
-        number: [{ required: true, message: "请输入证件号", trigger: "blur" }],
-        cash: [
-          {
-            type: "number",
-            required: true,
-            message: "请输入押金",
-            trigger: "blur",
-          },
-        ],
-      },
       addData: {},
       GiveBackData: {},
       tableData: [],
@@ -229,10 +197,8 @@ export default {
     };
   },
   mounted() {
-    this.queryOrderList();
-    this.getLeaseResNames();
-    this.getServiceCenterList();
     this.queryTypeList();
+    this.queryOrderList();
   },
   methods: {
     //获取商品分类名称
@@ -250,24 +216,6 @@ export default {
         this.total = res.total;
         console.log("this.tableData", this.tableData);
       });
-    },
-    //获取物品
-    getLeaseResNames() {
-      this.$ajax.getLeaseResNames(
-        { id: sessionStorage.getItem("parkid") },
-        (res) => {
-          this.leaseResIdList = res.data;
-        }
-      );
-    },
-    //获取服务中心
-    getServiceCenterList() {
-      this.$ajax.getServiceCenterList(
-        { id: sessionStorage.getItem("parkid") },
-        (res) => {
-          this.serviceCenterIdList = res.data;
-        }
-      );
     },
     //改变分类
     change(callback) {

@@ -1,7 +1,7 @@
 <template>
   <div class="classificationPage">
     <el-input
-      placeholder="请输入用户名"
+      placeholder="请输入手机号"
       v-model="query.condition"
       clearable
       style="width: 300px"
@@ -14,7 +14,7 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        value-format="yyyy-MM-dd"
+        :default-time="['00:00:00', '23:59:59']"
         @change="clearNullTime(query.time)"
       >
       </el-date-picker>

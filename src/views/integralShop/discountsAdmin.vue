@@ -7,11 +7,9 @@
       style="width: 300px"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-    <div class="filter">
-      <el-button class="addBtn" type="primary" @click="beginshow()"
-        >添加活动</el-button
-      >
-    </div>
+    <el-button class="addBtn" type="primary" @click="beginshow()"
+      >添加活动</el-button
+    >
     <!-- 表格区 -->
     <el-table
       ref="multipleTable"
@@ -27,64 +25,34 @@
       ></el-table-column>
       <el-table-column
         prop="caption"
-        label="活动标题"
+        label="园区"
         align="center"
       ></el-table-column>
       <el-table-column
-        label="地点"
+        label="商品名"
         prop="siteName"
         align="center"
       ></el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.isenable == 1 ? "启用" : "禁用"
+          scope.row.isenable == 1 ? "上架" : "下架"
         }}</template>
       </el-table-column>
-      <el-table-column label="是否需要预约" align="center" width="120">
-        <template slot-scope="scope">{{
-          scope.row.issubscribe == 1 ? "需要预约" : "不需要预约"
-        }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="starttime"
-        label="开始时间"
-        align="center"
-        width="150"
-      ></el-table-column>
-      <el-table-column
-        prop="endtime"
-        label="结束时间"
-        align="center"
-        width="150"
-      ></el-table-column>
       <el-table-column label="操作" width="250" align="center">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            @click="gotodetail(scope.row)"
-            v-show="scope.row.issubscribe == 1"
-            >预约管理</el-button
-          >
-          <el-button type="text" size="small" @click="detail(scope.row)"
-            >编辑详情</el-button
-          >
-          <el-button type="text" size="small" @click="beginshow(scope.row)"
-            >修改</el-button
-          >
-          <el-button
-            type="text"
-            size="small"
             @click="enableState(scope.row.id, 1)"
             v-show="scope.row.isenable == 0"
-            >启用</el-button
+            >上架</el-button
           >
           <el-button
             type="text"
             size="small"
             @click="enableState(scope.row.id, 0)"
             v-show="scope.row.isenable == 1"
-            >禁用</el-button
+            >下架</el-button
           >
         </template>
       </el-table-column>
@@ -97,8 +65,6 @@
     >
       <div style="position: absolute; left: 10px; top: 5px">
         <el-button @click="delAll()">删除</el-button>
-        <el-button @click="setenableState(1)">启用</el-button>
-        <el-button @click="setenableState(0)">禁用</el-button>
       </div>
       <el-pagination
         background
@@ -115,7 +81,7 @@
     </el-col>
     <!--商品新增-->
     <div class="el-dialog__wrapper" v-show="Addshow">
-      <div class="el-dialog el-dialogadd" style="width: 1000px">
+      <div class="el-dialog el-dialogadd" style="width: 600px">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
             newdata.id ? "修改活动" : "新增活动"
@@ -136,10 +102,16 @@
             ref="newdata"
             label-width="120px"
           >
-            <el-form-item label="活动名" prop="caption">
+            <el-form-item label="请选择所属平台" prop="banner">
+              <el-radio-group v-model="newdata.banner">
+                <el-radio label="1" checked="checked">平台通用</el-radio>
+                <el-radio label="0">园区所属</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="商品名" prop="caption">
               <el-input v-model="newdata.caption"></el-input>
             </el-form-item>
-            <el-form-item label="地点" prop="siteid">
+            <el-form-item label="分类" prop="siteid">
               <el-select v-model="newdata.siteid">
                 <el-option
                   :label="n.caption"
@@ -149,36 +121,27 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="具体地址" prop="address">
+            <el-form-item label="园区" prop="siteid">
+              <el-select v-model="newdata.siteid">
+                <el-option
+                  :label="n.caption"
+                  :value="n.id"
+                  :key="n.id"
+                  v-for="n in sitelist"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="积分" prop="address">
               <el-input v-model="newdata.address"></el-input>
             </el-form-item>
-            <el-form-item label="开始结束时间" prop="time">
-              <el-date-picker
-                v-model="newdata.time"
-                value-format="yyyy-MM-dd hh:mm:ss"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
+            <el-form-item label="总数量" prop="address">
+              <el-input v-model="newdata.address"></el-input>
             </el-form-item>
-            <el-form-item label="是否需要预约" prop="issubscribe">
-              <el-radio-group v-model="newdata.issubscribe">
-                <el-radio label="1" checked="checked">可预约</el-radio>
-                <el-radio label="0">不可预约</el-radio>
-              </el-radio-group>
+            <el-form-item label="限制数量" prop="address">
+              <el-input v-model="newdata.address"></el-input>
             </el-form-item>
-            <el-form-item label="请选择类型" prop="banner">
-              <el-radio-group v-model="newdata.banner">
-                <el-radio label="1" checked="checked">轮播图</el-radio>
-                <el-radio label="0">视频</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item
-              label="轮播图"
-              prop="picurl"
-              v-if="newdata.banner == 1"
-            >
+
+            <el-form-item label="图片" prop="picurl" v-if="newdata.banner == 1">
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -218,129 +181,37 @@
                 </div>
               </div>
             </el-form-item>
-            <el-form-item
-              label="视频讲解"
-              prop="videoUrl"
-              v-if="newdata.banner == 0"
-            >
-              <el-input
-                v-model="newdata.voiceUrl"
-                style="width: 200px; display: none"
-              ></el-input>
-              <el-button size="small" type="primary" @click="uploading('upmp4')"
-                >点击上传</el-button
+            <el-form-item label="景点类型" prop="siteType">
+              <el-select
+                v-model="newdata.siteType"
+                @change="getSiteType($event)"
               >
-              <el-upload
-                :action="
-                  $store.state.ip + '/manage/ferriswheel/resources/upload'
-                "
-                :data="uploaddata"
-                accept="video/mp4"
-                :on-success="onsuccsessmp4"
-                :before-upload="beforeUploadmp4"
-              >
-                <el-button
-                  size="small"
-                  type="primary"
-                  style="display: none"
-                  id="upmp4"
-                  >点击上传</el-button
-                >
-              </el-upload>
-              <div style="margin-top: 20px" v-if="newdata.videoUrl != ''">
-                {{ newdata.videoUrl }}
-                <img
-                  src="../../../static/img/del.png"
-                  alt=""
-                  style="width: 25px"
-                  @click="deling('videoUrl')"
-                  v-if="newdata.videoUrl != ''"
-                />
-              </div>
+                <el-option
+                  v-for="item in list"
+                  :label="item.typeName"
+                  :value="item.id"
+                  :key="item.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item
-              label="视频封面"
-              prop="videoPicture"
-              v-if="newdata.banner == 0"
-            >
-              <el-input
-                v-model="newdata.videoPicture"
-                style="width: 200px; display: none"
-              ></el-input>
-              <el-button
-                size="small"
-                type="primary"
-                @click="uploading('uppict1')"
-                >点击上传</el-button
+            <el-form-item label="景点名称" prop="siteName">
+              <el-select
+                v-model="newdata.siteName"
+                @change="getSiteTypeName($event)"
               >
-              <el-upload
-                class="upload-demo"
-                style="display: none"
-                :data="uploaddata"
-                :action="
-                  $store.state.ip + '/manage/ferriswheel/resources/upload'
-                "
-                :on-progress="handleLoading"
-                accept="image/jpeg,image/jpg,image/png"
-                :on-success="onsuccsess1"
-                :before-upload="beforeUploadpic"
-                :on-error="onerror"
-                list-type="picture"
-              >
-                <el-button size="small" type="primary" id="uppict1"
-                  >点击上传</el-button
-                >
-              </el-upload>
-              <div style="margin-top: 20px">
-                <img
-                  :src="newdata.videoPicture"
-                  alt=""
-                  class="pic"
-                  v-if="newdata.videoPicture"
-                  style="width: 80px"
-                  ref="pic"
-                />
-              </div>
+                <el-option
+                  v-for="(item, index) in NameList"
+                  :label="item"
+                  :value="item"
+                  :key="index"
+                ></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="缩略图" prop="thumbnail">
-              <el-input
-                v-model="newdata.thumbnail"
-                style="width: 200px; display: none"
-              ></el-input>
-              <el-button
-                size="small"
-                type="primary"
-                @click="uploading('uppict')"
-                >点击上传</el-button
-              >
-              <el-upload
-                class="upload-demo"
-                style="display: none"
-                :data="uploaddata"
-                :action="
-                  $store.state.ip + '/manage/ferriswheel/resources/upload'
-                "
-                :on-progress="handleLoading"
-                accept="image/jpeg,image/jpg,image/png"
-                :on-success="onsuccsess"
-                :before-upload="beforeUploadpic"
-                :on-error="onerror"
-                list-type="picture"
-              >
-                <el-button size="small" type="primary" id="uppict"
-                  >点击上传</el-button
-                >
-              </el-upload>
-              <div style="margin-top: 20px">
-                <img
-                  :src="newdata.thumbnail"
-                  alt=""
-                  class="pic"
-                  v-if="newdata.thumbnail"
-                  style="width: 80px"
-                  ref="pic"
-                />
-              </div>
+            <el-form-item label="上架/下架" prop="">
+              <el-radio-group v-model="newdata">
+                <el-radio label="1" checked="checked">上架</el-radio>
+                <el-radio label="0">下架</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-form>
         </div>
@@ -352,40 +223,11 @@
         </div>
       </div>
     </div>
-    <!--详情查看-->
-    <div class="el-dialog__wrapper" v-show="Detailshow">
-      <div class="el-dialog el-dialogedit">
-        <div class="el-dialog__header">
-          <span class="el-dialog__title">编辑详情</span>
-          <button
-            class="el-dialog__headerbtn"
-            aria-label="Close"
-            type="button"
-            @click="cancel('')"
-          >
-            <i class="el-dialog__close el-icon el-icon-close"></i>
-          </button>
-        </div>
-        <div class="el-dialog__body">
-          <tinymce-editor ref="editor" v-model="h5.content"> </tinymce-editor>
-        </div>
-        <div class="el-dialog__footer">
-          <div class="dialog-footer">
-            <el-button @click="cancel('')">取 消</el-button>
-            <el-button type="primary" @click="submith5('')">确 定</el-button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
-import TinymceEditor from "../../components/editor";
 export default {
   name: "list",
-  components: {
-    TinymceEditor,
-  },
   data() {
     return {
       fileList: [],
@@ -447,9 +289,8 @@ export default {
         ],
       },
       sitelist: [],
-      h5: {
-        content: "",
-      },
+      list: [], //获取景点信息
+      NameList: [], //景点下景点名称
     };
   },
   mounted() {
@@ -458,6 +299,23 @@ export default {
     this.getsitelist();
   },
   methods: {
+    getSiteTypeName(val) {},
+    //一二级联动
+    getSiteType(val) {
+      this.NameList = [];
+      this.query.typelist = [val];
+      this.$ajax.querySiteList(this.query, (res) => {
+        for (let i = 0; i < res.data.length; i++) {
+          console.log("res", res.data[i].caption);
+          this.NameList.push(res.data[i].caption);
+        }
+      });
+      this.obj = this.list.find((item) => {
+        //这里的就是上面遍历的数据源
+        return item.id === val; //筛选出匹配数据
+      });
+      this.newdata.siteName = null;
+    },
     deling(val) {
       if (val == "videoUrl") {
         this.newdata.videoUrl = "";
@@ -482,58 +340,6 @@ export default {
     close(i) {
       this.fileList.splice(i, 1);
       this.newdata.picurl = this.fileList.join();
-    },
-    submith5() {
-      if (this.h5.id) {
-        this.$ajax.updateH5(
-          { id: this.h5.id, parameters: { content: this.h5.content } },
-          (res) => {
-            this.$message({
-              type: "success",
-              message: "修改成功!",
-            });
-            this.Detailshow = false;
-          }
-        );
-      } else {
-        this.$ajax.addH5(this.h5, (res) => {
-          if (res.resb == 200) {
-            let linkh5url = res.data.id;
-            this.newdata.intro = this.h5.content;
-            this.$ajax.updateEvents(this.newdata, (res) => {
-              this.$message({
-                type: "success",
-                message: "修改成功!",
-              });
-              this.Detailshow = false;
-              this.getlist();
-            });
-          }
-        });
-      }
-    },
-    detail(res) {
-      console.log(res);
-      this.Detailshow = true;
-
-      if (res.h5id) {
-        this.h5.id = res.h5id;
-        this.$ajax.getH5Details({ id: res.h5id }, (res) => {
-          this.h5 = res.data;
-        });
-      } else {
-        this.newdata = { ...res };
-        this.h5.content = this.newdata.intro;
-        this.h5.caption = "";
-
-        if (this.newdata.intro == null) {
-          this.h5 = { caption: "", content: "" };
-        }
-        console.log("newdata", this.newdata);
-      }
-    },
-    gotodetail(row) {
-      this.$router.push({ path: "/partdetail", query: { id: row.id } });
     },
     handleSizeChange(val) {
       this.query.count = val;
@@ -621,71 +427,23 @@ export default {
     beginshow(data) {
       this.Addshow = true;
       this.Detailshow = false;
-      if (data) {
-        this.newdata = { ...data };
-        console.log("this.newdata", this.newdata);
-        // if (this.newdata.picurl != "") {
-        //   this.newdata.banner = "1";
-        // }
-        // if (this.newdata.videoUrl != "") {
-        //   this.newdata.banner = "0";
-        // }
-        this.fileList = data.picurl.split(",");
-        // this.newdata.time = [
-        //   new Date(
-        //     data.starttime.split("-")[0],
-        //     data.starttime.split("-")[1],
-        //     data.starttime.split("-")[2].split(" ")[0],
-        //     data.starttime.split(" ")[1].split(":")[0],
-        //     data.starttime.split(" ")[1].split(":")[1],
-        //     data.starttime.split(" ")[1].split(":")[2]
-        //   ),
-        //   new Date(
-        //     data.endtime.split("-")[0],
-        //     data.endtime.split("-")[1],
-        //     data.endtime.split("-")[2].split(" ")[0],
-        //     data.endtime.split(" ")[1].split(":")[0],
-        //     data.endtime.split(" ")[1].split(":")[1],
-        //     data.endtime.split(" ")[1].split(":")[2]
-        //   ),
-        // ];
-        this.$set(this.newdata, "time", [
-          new Date(
-            data.starttime.split("-")[0],
-            data.starttime.split("-")[1],
-            data.starttime.split("-")[2].split(" ")[0],
-            data.starttime.split(" ")[1].split(":")[0],
-            data.starttime.split(" ")[1].split(":")[1],
-            data.starttime.split(" ")[1].split(":")[2]
-          ),
-          new Date(
-            data.endtime.split("-")[0],
-            data.endtime.split("-")[1],
-            data.endtime.split("-")[2].split(" ")[0],
-            data.endtime.split(" ")[1].split(":")[0],
-            data.endtime.split(" ")[1].split(":")[1],
-            data.endtime.split(" ")[1].split(":")[2]
-          ),
-        ]);
-      } else {
-        this.fileList = [];
-        this.newdata = {
-          banner: "1",
-          issubscribe: "1",
-          picurl: "",
-          address: "",
-          caption: "",
-          endtime: "",
-          intro: "",
-          issubscribe: "1",
-          parkid: "",
-          picurl: "",
-          starttime: "",
-          thumbnail: "",
-          videoPicture: "",
-          videoUrl: "",
-        };
-      }
+      this.fileList = [];
+      this.newdata = {
+        banner: "1",
+        issubscribe: "1",
+        picurl: "",
+        address: "",
+        caption: "",
+        endtime: "",
+        intro: "",
+        issubscribe: "1",
+        parkid: "",
+        picurl: "",
+        starttime: "",
+        thumbnail: "",
+        videoPicture: "",
+        videoUrl: "",
+      };
     },
     cancel(formName) {
       this.Addshow = false;
@@ -794,24 +552,6 @@ export default {
         this.getlist();
       });
     },
-    setenableState(id, val) {
-      if (this.multipleSelection.length > 0) {
-        let idlst = [];
-        for (let i = 0; i < this.multipleSelection.length; i++) {
-          idlst.push(this.multipleSelection[i].id);
-        }
-        this.$ajax.setEventsEnableState(
-          { idlst: idlst, isenable: val },
-          (res) => {
-            this.$message({
-              type: "success",
-              message: "设置成功!",
-            });
-            this.getlist();
-          }
-        );
-      }
-    },
     delAll() {
       if (this.multipleSelection.length != 0) {
         let idlst = [];
@@ -875,13 +615,10 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-.filter {
-  position: relative;
-  height: 50px;
-}
 .addBtn {
   float: right;
   margin-right: 100px;
+  margin-bottom: 30px;
 }
 .el-dialog__wrapper {
   z-index: 999;

@@ -93,6 +93,9 @@
         width="150px"
       ></el-table-column>
       <el-table-column prop="bind" label="绑定" align="center">
+        <template slot-scope="scope">{{
+          scope.row.bind == 0 ? "无" : "有"
+        }}</template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="150px">
@@ -196,8 +199,6 @@
                 accept="image/jpeg,image/jpg,image/png"
                 :before-upload="beforeUploadpic"
                 :on-error="onerror"
-                :limit="newdata.upName || 3"
-                multiple
                 list-type="picture-card"
               >
                 <el-button size="small" type="primary" id="uppic"
@@ -244,7 +245,7 @@
                 :on-progress="handleLoading"
                 accept="image/jpeg,image/jpg,image/png"
                 :on-success="onsuccsess"
-                :before-upload="beforeUploadpic"
+                :before-upload="beforeUploadpic1"
                 :on-error="onerror"
                 list-type="picture"
               >
@@ -299,17 +300,25 @@
             </el-form-item>
 
             <el-form-item label="绑定" prop="bind">
-              <el-radio v-model="newdata.bind" label="有" :disabled="detailBol"
+              <el-radio
+                v-model="newdata.bind"
+                label="1"
+                :disabled="detailBol"
+                @change="ceshi"
                 >有</el-radio
               >
-              <el-radio v-model="newdata.bind" label="无" :disabled="detailBol"
+              <el-radio
+                v-model="newdata.bind"
+                label="0"
+                :disabled="detailBol"
+                @change="ceshi"
                 >无</el-radio
               >
             </el-form-item>
             <el-form-item
               label="绑定方法"
               prop="bindMethod"
-              v-if="newdata.bind == '有'"
+              v-if="newdata.bind == '1'"
             >
               <el-input
                 style="width: 400px"
@@ -393,7 +402,7 @@ export default {
       newdata: {
         //parkid: sessionStorage.getItem("parkid"),
         banNum: "", //批量限制
-        bind: "有", //绑定
+        bind: "1", //绑定
         bindMethod: "", //绑定方法
         caption: "", //商品名称
         manual: "", //商品使用手册
@@ -415,6 +424,9 @@ export default {
           { required: true, message: "请输入商品名称", trigger: "blur" },
         ],
         type: [{ required: true, message: "请选择商品类型", trigger: "blur" }],
+        bind: [{ required: true, message: "必填项", trigger: "blur" }],
+        thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
+        banNum: [{ required: true, message: "必填项", trigger: "blur" }],
         picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
         price: [
           { required: true, message: "请输入价格", trigger: "blur" },
@@ -440,6 +452,10 @@ export default {
     this.queryTypeList();
   },
   methods: {
+    //测试
+    ceshi(val) {
+      console.log(val);
+    },
     //缩略图上传成功
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
@@ -509,11 +525,16 @@ export default {
       if (!limit) this.$message.error("最多上传5张图片！");
       return accept && isLt5M && limit;
     },
+    beforeUploadpic1(file) {
+      // console.log("111", file);
+    },
     //详情
     detail(item) {
+      console.log("item", item);
       this.detailBol = true;
       this.Addshow = true;
       this.newdata = { ...item };
+      this.newdata.bind = "有";
       this.fileList = item.picurl.length ? item.picurl.split(",") : [];
       this.h5.content = item.manual;
     },
@@ -526,26 +547,27 @@ export default {
         console.log("data", data);
       } else {
         this.fileList = [];
-        this.newdata = {};
+        this.newdata = {
+          banNum: "", //批量限制
+          bind: "1", //绑定
+          bindMethod: "", //绑定方法
+          caption: "", //商品名称
+          manual: "", //商品使用手册
+          picurl: "", //图片路径
+          price: "", //价格
+          productClass: "", //商品分类
+          status: "1", //启用禁用
+          type: "", //商品类型
+          typeName: "", //描述
+          thumbnail: "", //缩略图
+        };
         this.h5 = { content: "" };
       }
     },
     cancel(formName) {
       this.Addshow = false;
-      this.newdata = {
-        //parkid: sessionStorage.getItem("parkid"),
-        // banNum: "", //批量限制
-        // bind: "", //绑定
-        // bindMethod: "", //绑定方法
-        // caption: "", //商品名称
-        // manual: "", //商品使用手册
-        // picurl: "", //图片路径
-        // price: "", //价格
-        // productClass: "", //商品分类
-        // status: "", //启用禁用
-        // type: "", //商品类型
-        // typeName: "", //描述
-      };
+      this.newdata = {};
+      this.$refs[formName].resetFields(); //关闭弹框后清除表单验证
     },
     add(formName) {
       this.$refs[formName].validate((valid) => {

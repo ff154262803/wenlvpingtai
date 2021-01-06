@@ -64,7 +64,7 @@
             v-if="$store.state.child.length"
           >
             <el-menu-item
-              @click="clickTWOS()"
+              @click="clickTWOS(item)"
               :index="item.path"
               :key="item.path"
               v-if="!item.hidden && item.name != '页面配置'"
@@ -115,13 +115,15 @@ export default {
   },
   methods: {
     clickTWOS(item) {
-      console.log("item", item);
       this.parkid = sessionStorage.getItem("parkid");
     },
     clickOne(item) {
+      console.log("11111");
+      console.log("item", item);
       if (item.unfold) {
         this.$store.state.child = item.children;
       }
+
       //  this.parkid = sessionStorage.getItem("parkid");
       //     console.log(this.parkid);
     },
@@ -166,8 +168,8 @@ export default {
   },
   mounted() {
     //权限设置
-    let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
-    let permissions = JSON.parse(sessionStorage.getItem("permissions"));
+    var isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
+    var permissions = JSON.parse(sessionStorage.getItem("permissions"));
     console.log("permissions", permissions);
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
     if (!isadmin) {

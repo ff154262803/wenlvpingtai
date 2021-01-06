@@ -7,11 +7,9 @@
       style="width: 300px"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
-    <div class="filter">
-      <el-button class="addBtn" type="primary" @click="beginshow()"
-        >添加活动</el-button
-      >
-    </div>
+    <el-button class="addBtn" type="primary" @click="beginshow()"
+      >添加活动</el-button
+    >
     <!-- 表格区 -->
     <el-table
       ref="multipleTable"
@@ -638,13 +636,10 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-.filter {
-  position: relative;
-  height: 50px;
-}
 .addBtn {
   float: right;
   margin-right: 100px;
+  margin-bottom: 30px;
 }
 .el-dialog__wrapper {
   z-index: 999;
