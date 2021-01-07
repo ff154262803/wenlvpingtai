@@ -66,11 +66,13 @@
         label="类型"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="price"
-        label="价格"
-        align="center"
-      ></el-table-column>
+      <el-table-column prop="price" label="价格" align="center">
+        <template slot-scope="scope">{{
+          scope.row.type == "实物商品"
+            ? scope.row.price + "元"
+            : scope.row.price + "积分"
+        }}</template>
+      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.status == 0 ? "禁用" : "启用"
@@ -264,13 +266,35 @@
                 />
               </div>
             </el-form-item>
-            <el-form-item label="价格" prop="price">
+            <el-form-item
+              label="价格"
+              prop="price"
+              v-if="newdata.type != '虚拟商品'"
+            >
               <el-input
                 v-model="newdata.price"
+                @mousewheel.native.prevent
                 placeholder="请填写价格"
+                type="number"
                 :disabled="detailBol"
                 style="width: 400px"
-              ></el-input>
+                ><template slot="append">元</template></el-input
+              >
+            </el-form-item>
+            <el-form-item
+              label="积分"
+              prop="price"
+              v-if="newdata.type == '虚拟商品'"
+            >
+              <el-input
+                @mousewheel.native.prevent
+                v-model="newdata.price"
+                placeholder="请填写积分"
+                type="number"
+                :disabled="detailBol"
+                style="width: 400px"
+                ><template slot="append">积分</template></el-input
+              >
             </el-form-item>
             <el-form-item label="描述" prop="typeName">
               <el-input
@@ -429,7 +453,11 @@ export default {
         banNum: [{ required: true, message: "必填项", trigger: "blur" }],
         picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
         price: [
-          { required: true, message: "请输入价格", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入数字",
+            trigger: "blur",
+          },
           {
             validator: validateAcquaintance, // 自定义验证
             trigger: "blur",
@@ -584,7 +612,7 @@ export default {
                   caption: this.newdata.caption,
                   manual: this.h5.content,
                   picurl: this.newdata.picurl,
-                  price: this.newdata.price,
+                  price: this.newdata.price * 1,
                   productClass: this.newdata.productClass,
                   type: this.newdata.type,
                   typeName: this.newdata.typeName,
@@ -607,6 +635,7 @@ export default {
               (this.newdata.bindMethod = this.newdata.bindMethod
                 ? this.newdata.bindMethod
                 : "");
+            this.newdata.price = this.newdata.price * 1;
             this.$ajax.addMallGoods(this.newdata, (res) => {
               this.$message({
                 type: "success",

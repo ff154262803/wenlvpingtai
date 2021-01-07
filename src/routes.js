@@ -83,6 +83,7 @@ import page from './views/basic/page'//页面链接管理
 //权限管理
 import roleManagement from './views/role/roleManagement';//角色管理
 import adminManagement from './views/role/adminManagement';//管理员管理
+import axios from 'axios'
 const metaTrue = { meta: { requireAuth: true } }
 
 const router = new VueRouter({
@@ -299,6 +300,8 @@ router.beforeEach((to, from, next) => {
     if (to.path == '/login') {
         sessionStorage.removeItem('user');
     }
+    // let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
+
     let user = sessionStorage.getItem('user');
     let permissions = JSON.parse(sessionStorage.getItem('permissions'));
     let permissionName = []
@@ -323,6 +326,32 @@ router.beforeEach((to, from, next) => {
                             }
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
+                            // let storage = JSON.parse(sessionStorage.getItem('user'));
+                            // let parkid = sessionStorage.getItem("parkid")
+                            // axios({
+                            //     method: 'post',
+                            //     url: 'http://qlv.test.zkshiwei.com:5005/api/manage/getParkDetails',
+                            //     data: {
+                            //         ukey: storage.uKey,
+                            //         id: parkid
+                            //     },
+                            //     headers: {
+                            //         'Authorization': storage && storage.uKey,
+                            //     }
+                            // }).then(response => {
+                            //     for (let i = 0; i < n.children.length; i++) {
+                            //         for (let j = 0; j < response.data.data.menu.length; j++) {
+                            //             if (n.children[i].name == response.data.data.menu[j].caption) {
+                            //                 permissionName.push(n.children[i])
+                            //             }
+                            //         }
+                            //     }
+                            //     if (n.meta.level == 1) {
+                            //         store.state.child = n.children
+                            //     } else {
+                            //         store.state.child = permissionName
+                            //     }
+                            // });
                             store.state.child = n.children
                         }
                     })

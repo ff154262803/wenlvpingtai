@@ -87,4 +87,11 @@ body {
 .el-checkbox__label {
   font-size: medium !important;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 </style>
