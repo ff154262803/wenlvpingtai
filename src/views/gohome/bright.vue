@@ -180,6 +180,7 @@ export default {
   },
   methods: {
     //添加弹框中的change事件
+    //v-model传多个值
     changehandle(event) {
       console.log(event);
       this.newdata.id = event.id;

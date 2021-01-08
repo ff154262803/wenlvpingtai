@@ -24,17 +24,17 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="caption"
+        prop="activetitle"
         label="活动标题"
         align="center"
       ></el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.isenable == 1 ? "启用" : "禁用"
+          scope.row.account == 1 ? "启用" : "禁用"
         }}</template>
       </el-table-column>
       <el-table-column
-        prop="starttime"
+        prop="begintime"
         label="开始时间"
         align="center"
       ></el-table-column>
@@ -55,14 +55,14 @@
             type="text"
             size="small"
             @click="enableState(scope.row.id, 1)"
-            v-show="scope.row.isenable == 0"
+            v-show="scope.row.account == 0"
             >启用</el-button
           >
           <el-button
             type="text"
             size="small"
             @click="enableState(scope.row.id, 0)"
-            v-show="scope.row.isenable == 1"
+            v-show="scope.row.account == 1"
             >禁用</el-button
           >
         </template>
@@ -113,8 +113,8 @@
             ref="newdata"
             label-width="120px"
           >
-            <el-form-item label="活动标题" prop="caption">
-              <el-input v-model="newdata.caption"></el-input>
+            <el-form-item label="活动标题" prop="activetitle">
+              <el-input v-model="newdata.activetitle"></el-input>
             </el-form-item>
             <el-form-item label="开始结束时间" prop="time">
               <el-date-picker
@@ -126,12 +126,12 @@
                 end-placeholder="结束日期"
               ></el-date-picker>
             </el-form-item>
-            <el-form-item label="活动地址" prop="address">
-              <el-input v-model="newdata.address"></el-input>
+            <el-form-item label="活动地址" prop="activeaddress">
+              <el-input v-model="newdata.activeaddress"></el-input>
             </el-form-item>
-            <el-form-item label="图片" prop="thumbnail">
+            <el-form-item label="图片" prop="pictureurl">
               <el-input
-                v-model="newdata.thumbnail"
+                v-model="newdata.pictureurl"
                 style="width: 200px; display: none"
               ></el-input>
               <el-button
@@ -160,10 +160,10 @@
               </el-upload>
               <div style="margin-top: 20px">
                 <img
-                  :src="newdata.thumbnail"
+                  :src="newdata.pictureurl"
                   alt=""
                   class="pic"
-                  v-if="newdata.thumbnail"
+                  v-if="newdata.pictureurl"
                   style="width: 80px"
                   ref="pic"
                 />
@@ -210,37 +210,25 @@ export default {
       Detailshow: false,
 
       newdata: {
-        banner: "1",
-        issubscribe: "1",
-        picurl: "",
-        address: "",
-        caption: "",
+        account: "1",
+        activeaddress: "",
+        activetitle: "",
+        begintime: "",
         endtime: "",
-        intro: "",
-        issubscribe: "1",
-        parkid: "",
-        picurl: "",
-        starttime: "",
-        thumbnail: "",
-        videoPicture: "",
-        videoUrl: "",
+        pictureurl: "",
       },
       rules: {
-        caption: [
+        activetitle: [
           { required: true, message: "名称不能为空", trigger: "blur" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
-        address: [
-          { required: true, message: "地址不能为空" },
+        activeaddress: [
+          { required: true, message: "地址不能为空", trigger: "blur" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
-        issubscribe: [{ required: true, message: "必选", trigger: "blur" }],
-        picurl: [{ required: true, message: "必填项", trigger: "blur" }],
-        thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
-        videoUrl: [
-          { required: true, message: "视频不能为空", trigger: "blur" },
-        ],
+        pictureurl: [{ required: true, message: "必填项", trigger: "blur" }],
+
         videoPicture: [
           { required: true, message: "视频封面不能为空", trigger: "blur" },
         ],
@@ -256,77 +244,27 @@ export default {
   },
   mounted() {
     window.v = this;
-    this.getlist();
+    this.queryActiveList();
     this.getsitelist();
   },
   methods: {
-    deling(val) {
-      if (val == "videoUrl") {
-        this.newdata.videoUrl = "";
-      }
-    },
-    //上传mp4文件成功的钩子函数
-    onsuccsessmp4(response, file, fileList) {
-      this.newdata.videoUrl = response.data.url;
-    },
-    //上传mp4文件之前的钩子函数
-    beforeUploadmp4(file) {
-      const isLt50M = file.size / 1024 / 1024 < 500;
-      const accept = file.type.indexOf("mp4") > -1;
-      if (!accept) {
-        this.$message.error("上传文件只能是mp4格式!");
-      }
-      if (!isLt50M) {
-        this.$message.error("上传文件大小不能超过 500MB!");
-      }
-      return accept && isLt50M;
-    },
     close(i) {
       this.fileList.splice(i, 1);
-      this.newdata.picurl = this.fileList.join();
-    },
-    submith5() {
-      if (this.h5.id) {
-        this.$ajax.updateH5(
-          { id: this.h5.id, parameters: { content: this.h5.content } },
-          (res) => {
-            this.$message({
-              type: "success",
-              message: "修改成功!",
-            });
-            this.Detailshow = false;
-          }
-        );
-      } else {
-        this.$ajax.addH5(this.h5, (res) => {
-          if (res.resb == 200) {
-            let linkh5url = res.data.id;
-            this.newdata.intro = this.h5.content;
-            this.$ajax.updateEvents(this.newdata, (res) => {
-              this.$message({
-                type: "success",
-                message: "修改成功!",
-              });
-              this.Detailshow = false;
-              this.getlist();
-            });
-          }
-        });
-      }
+      this.newdata.pictureurl = this.fileList.join();
     },
     detail(data) {
       this.Addshow = true;
       this.Detailshow = false;
       this.newdata = { ...data };
-      this.fileList = data.picurl.split(",");
+      this.fileList = data.pictureurl.split(",");
       this.$set(this.newdata, "time", [
         new Date(
-          data.starttime.split("-")[0],
-          data.starttime.split("-")[1],
-          data.starttime.split("-")[2].split(" ")[0],
-          data.starttime.split(" ")[1].split(":")[0],
-          data.starttime.split(" ")[1].split(":")[1],
-          data.starttime.split(" ")[1].split(":")[2]
+          data.begintime.split("-")[0],
+          data.begintime.split("-")[1],
+          data.begintime.split("-")[2].split(" ")[0],
+          data.begintime.split(" ")[1].split(":")[0],
+          data.begintime.split(" ")[1].split(":")[1],
+          data.begintime.split(" ")[1].split(":")[2]
         ),
         new Date(
           data.endtime.split("-")[0],
@@ -340,7 +278,7 @@ export default {
     },
     handleSizeChange(val) {
       this.query.count = val;
-      this.getlist();
+      this.queryActiveList();
     },
     timeform: function (format, time) {
       //转化时间格式传输给后台
@@ -391,7 +329,7 @@ export default {
     onsuccsesspic(response, file, fileList) {
       if (this.fileList.length < 10 && response.resb == 200) {
         this.fileList.push(response.data.url);
-        this.newdata.picurl = this.fileList.join();
+        this.newdata.pictureurl = this.fileList.join();
         this.fullscreenLoading = false;
       } else {
         this.$message.error("最多上传10个");
@@ -406,7 +344,7 @@ export default {
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
       if (response.resb == 200) {
-        this.$set(this.newdata, "thumbnail", response.data.url);
+        this.$set(this.newdata, "pictureurl", response.data.url);
       }
     },
     onsuccsess1(response, file, fileList) {
@@ -419,7 +357,7 @@ export default {
       this.fullscreenLoading = false;
     },
     search() {
-      this.getlist();
+      this.queryActiveList();
     },
     beginshow(data) {
       this.Addshow = true;
@@ -427,15 +365,15 @@ export default {
       if (data) {
         this.newdata = { ...data };
         console.log("this.newdata", this.newdata);
-        this.fileList = data.picurl.split(",");
+        this.fileList = data.pictureurl.split(",");
         this.$set(this.newdata, "time", [
           new Date(
-            data.starttime.split("-")[0],
-            data.starttime.split("-")[1],
-            data.starttime.split("-")[2].split(" ")[0],
-            data.starttime.split(" ")[1].split(":")[0],
-            data.starttime.split(" ")[1].split(":")[1],
-            data.starttime.split(" ")[1].split(":")[2]
+            data.begintime.split("-")[0],
+            data.begintime.split("-")[1],
+            data.begintime.split("-")[2].split(" ")[0],
+            data.begintime.split(" ")[1].split(":")[0],
+            data.begintime.split(" ")[1].split(":")[1],
+            data.begintime.split(" ")[1].split(":")[2]
           ),
           new Date(
             data.endtime.split("-")[0],
@@ -449,20 +387,12 @@ export default {
       } else {
         this.fileList = [];
         this.newdata = {
-          banner: "1",
-          issubscribe: "1",
-          picurl: "",
-          address: "",
-          caption: "",
-          endtime: "",
-          intro: "",
-          issubscribe: "1",
-          parkid: "",
-          picurl: "",
-          starttime: "",
-          thumbnail: "",
-          videoPicture: "",
-          videoUrl: "",
+          // account: "1",
+          // activeaddress: "",
+          // activetitle: "",
+          // begintime: "",
+          // endtime: "",
+          // pictureurl: "",
         };
       }
     },
@@ -473,15 +403,8 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.newdata.banner == "1") {
-            this.newdata.videoUrl = "";
-            this.newdata.videoPicture = "";
-          } else {
-            this.newdata.picurl = "";
-            this.newdata.thumbnail = "";
-          }
           if (this.newdata.time[0]) {
-            this.newdata.starttime = this.timeform(
+            this.newdata.begintime = this.timeform(
               "yyyy-MM-dd hh:mm:ss",
               this.newdata.time[0]
             );
@@ -493,66 +416,27 @@ export default {
             );
           }
           if (this.newdata.id) {
-            this.$ajax.updateEvents(
-              {
-                videoPicture: this.newdata.videoPicture
-                  ? this.newdata.videoPicture
-                  : "",
-                parkid: sessionStorage.getItem("parkid"),
-                id: this.newdata.id,
-                intro: this.newdata.intro ? this.newdata.intro : "",
-                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
-                caption: this.newdata.caption,
-                endtime: this.newdata.endtime,
-                picurl: this.newdata.picurl ? this.newdata.picurl : "",
-                address: this.newdata.address,
-                thumbnail: this.newdata.thumbnail,
-                issubscribe: this.newdata.issubscribe,
-                starttime: this.newdata.starttime,
-                siteid: this.newdata.siteid,
-                banner: this.newdata.banner,
-                isenable: "1",
-              },
+            this.$ajax.editActive(
+              { id: this.newdata.id, parameters: { ...this.newdata } },
               (res) => {
                 this.$message({
                   type: "success",
                   message: "修改成功!",
                 });
                 this.Addshow = false;
-                this.getlist();
+                this.queryActiveList();
               }
             );
           } else {
-            this.$ajax.addEvents(
-              {
-                parkid: sessionStorage.getItem("parkid"),
-                isenable: "1",
-
-                videoPicture: this.newdata.videoPicture
-                  ? this.newdata.videoPicture
-                  : "",
-                intro: this.newdata.intro ? this.newdata.intro : "",
-                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
-                caption: this.newdata.caption,
-                endtime: this.newdata.endtime,
-                picurl: this.newdata.picurl ? this.newdata.picurl : "",
-                address: this.newdata.address,
-                thumbnail: this.newdata.thumbnail,
-                issubscribe: this.newdata.issubscribe,
-                starttime: this.newdata.starttime,
-                siteid: this.newdata.siteid,
-                banner: this.newdata.banner,
-              },
-              (res) => {
-                console.log("newdata", this.newdata);
-                this.$message({
-                  type: "success",
-                  message: "提交成功!",
-                });
-                this.Addshow = false;
-                this.getlist();
-              }
-            );
+            this.$ajax.addMallActive(this.newdata, (res) => {
+              console.log("newdata", this.newdata);
+              this.$message({
+                type: "success",
+                message: "提交成功!",
+              });
+              this.Addshow = false;
+              this.queryActiveList();
+            });
           }
         } else {
           return false;
@@ -562,15 +446,15 @@ export default {
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val;
-      this.getlist();
+      this.queryActiveList();
     },
     enableState(id, val) {
-      this.$ajax.setEventsEnableState({ idlst: [id], isenable: val }, (res) => {
+      this.$ajax.status({ idlst: [id], isenable: val }, (res) => {
         this.$message({
           type: "success",
           message: "设置成功!",
         });
-        this.getlist();
+        this.queryActiveList();
       });
     },
     delAll() {
@@ -585,19 +469,21 @@ export default {
           type: "warning",
         })
           .then(() => {
-            this.$ajax.deleteEvents({ idlst: idlst }, (res) => {
+            this.$ajax.deleteActive({ idlst: idlst }, (res) => {
               this.$message({
                 type: "success",
                 message: "删除成功!",
               });
-              this.getlist();
+              this.queryActiveList();
             });
           })
           .catch(() => {});
       }
     },
-    getlist() {
-      this.$ajax.queryEventsList(this.query, (res) => {
+    //查询列表
+    queryActiveList() {
+      this.$ajax.queryActiveList(this.query, (res) => {
+        console.log("res", res.data);
         this.tableData = res.data;
         this.total = res.total;
       });

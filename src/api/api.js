@@ -735,4 +735,48 @@ export default {
     addParkPageLink(data, callback, errback) {
         this.POST(`${base}/manage/addParkPageLink`, data, callback, errback);
     },
+    //积分商城
+    //-优惠券商品活动管理
+    //--优惠券商品活动管理列表查询
+    queryActiveList(data, callback, errback) {
+        this.POST(`${base}/manage/mallactive/queryActiveList`, data, callback, errback);
+    },
+    //--优惠券商品活动管理新增
+    addMallActive(data, callback, errback) {
+        this.POST(`${base}/manage/mallactive/addMallActive`, data, callback, errback);
+    },
+    //--优惠券商品活动管理删除
+    deleteActive(data, callback, errback) {
+        this.POST(`${base}/manage/mallactive/deleteActive`, data, callback, errback);
+    },
+    //--优惠券商品活动管理启用禁用
+    status(data, callback, errback) {
+        this.POST(`${base}/manage/mallactive/status`, data, callback, errback);
+    },
+    //--优惠券商品活动管理修改
+    editActive(data, callback, errback) {
+        this.POST(`${base}/manage/mallactive/editActive`, data, callback, errback);
+    },
+    //-优惠券管理
+    //--优惠券管理查询列表
+    queryCoupList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/queryCoupList`, data, callback, errback);
+    },
+    //--优惠券管理添加
+    addCoup(data, callback, errback) {
+        this.POST(`${base}/manage/coup/addCoup`, data, callback, errback);
+    },
+    //--优惠券管理园区下拉
+    parkList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/parkList`, data, callback, errback);
+    },
+    //--优惠券管理园区删除
+    deleteCoup(data, callback, errback) {
+        this.POST(`${base}/manage/coup/deleteCoup`, data, callback, errback);
+    },
+    //--优惠券管理园区上架和下架
+    putAway(data, callback, errback) {
+        this.POST(`${base}/manage/coup/putAway`, data, callback, errback);
+    },
+
 }

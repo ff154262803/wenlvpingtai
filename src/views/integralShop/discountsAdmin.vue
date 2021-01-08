@@ -24,18 +24,18 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="caption"
+        prop="parkName"
         label="园区"
         align="center"
       ></el-table-column>
       <el-table-column
         label="商品名"
-        prop="siteName"
+        prop="mallName"
         align="center"
       ></el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.isenable == 1 ? "上架" : "下架"
+          scope.row.putAwayStatus == 1 ? "上架" : "下架"
         }}</template>
       </el-table-column>
       <el-table-column label="操作" width="250" align="center">
@@ -44,14 +44,14 @@
             type="text"
             size="small"
             @click="enableState(scope.row.id, 1)"
-            v-show="scope.row.isenable == 0"
+            v-show="scope.row.putAwayStatus == 0"
             >上架</el-button
           >
           <el-button
             type="text"
             size="small"
             @click="enableState(scope.row.id, 0)"
-            v-show="scope.row.isenable == 1"
+            v-show="scope.row.putAwayStatus == 1"
             >下架</el-button
           >
         </template>
@@ -102,16 +102,24 @@
             ref="newdata"
             label-width="120px"
           >
-            <el-form-item label="请选择所属平台" prop="banner">
-              <el-radio-group v-model="newdata.banner">
-                <el-radio label="1" checked="checked">平台通用</el-radio>
-                <el-radio label="0">园区所属</el-radio>
+            <el-form-item label="请选择所属平台" prop="belong">
+              <el-radio-group v-model="newdata.belong">
+                <!-- <el-radio label="1">平台通用</el-radio> -->
+                <el-radio label="2">园区所属</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="商品名" prop="caption">
+            <el-form-item
+              label="商品名"
+              prop="caption"
+              v-if="newdata.belong == '1'"
+            >
               <el-input v-model="newdata.caption"></el-input>
             </el-form-item>
-            <el-form-item label="分类" prop="siteid">
+            <el-form-item
+              label="分类"
+              prop="siteid"
+              v-if="newdata.belong == '1'"
+            >
               <el-select v-model="newdata.siteid">
                 <el-option
                   :label="n.caption"
@@ -121,27 +129,43 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="园区" prop="siteid">
-              <el-select v-model="newdata.siteid">
+            <el-form-item label="园区" prop="parkName">
+              <el-select
+                v-model="newdata"
+                @change="changehandle($event)"
+                value-key="parkName"
+              >
                 <el-option
-                  :label="n.caption"
-                  :value="n.id"
-                  :key="n.id"
-                  v-for="n in sitelist"
+                  v-for="item in list"
+                  :key="item.parkid"
+                  :label="item.caption"
+                  :value="{ parkId: item.parkid, parkName: item.caption }"
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="积分" prop="address">
+            <el-form-item
+              label="积分"
+              prop="address"
+              v-if="newdata.belong == '1'"
+            >
               <el-input v-model="newdata.address"></el-input>
             </el-form-item>
-            <el-form-item label="总数量" prop="address">
+            <el-form-item
+              label="总数量"
+              prop="address"
+              v-if="newdata.belong == '1'"
+            >
               <el-input v-model="newdata.address"></el-input>
             </el-form-item>
-            <el-form-item label="限制数量" prop="address">
+            <el-form-item
+              label="限制数量"
+              prop="address"
+              v-if="newdata.belong == '1'"
+            >
               <el-input v-model="newdata.address"></el-input>
             </el-form-item>
 
-            <el-form-item label="图片" prop="picurl" v-if="newdata.banner == 1">
+            <el-form-item label="图片" prop="picurl" v-if="newdata.belong == 1">
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -181,34 +205,21 @@
                 </div>
               </div>
             </el-form-item>
-            <el-form-item label="景点类型" prop="siteType">
+
+            <el-form-item label="商品名" prop="mallName">
               <el-select
-                v-model="newdata.siteType"
-                @change="getSiteType($event)"
+                v-model="newdata.mallName"
+                @change="getSiteTypeName($event)"
               >
                 <el-option
-                  v-for="item in list"
-                  :label="item.typeName"
-                  :value="item.id"
+                  v-for="item in NameList"
+                  :value="item.productClass"
                   :key="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="景点名称" prop="siteName">
-              <el-select
-                v-model="newdata.siteName"
-                @change="getSiteTypeName($event)"
-              >
-                <el-option
-                  v-for="(item, index) in NameList"
-                  :label="item"
-                  :value="item"
-                  :key="index"
-                ></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="上架/下架" prop="">
-              <el-radio-group v-model="newdata">
+              <el-radio-group v-model="newdata.putAwayStatus">
                 <el-radio label="1" checked="checked">上架</el-radio>
                 <el-radio label="0">下架</el-radio>
               </el-radio-group>
@@ -226,6 +237,7 @@
   </div>
 </template>
 <script>
+import axios from "../../api/axios";
 export default {
   name: "list",
   data() {
@@ -250,20 +262,11 @@ export default {
       Detailshow: false,
 
       newdata: {
-        banner: "1",
-        issubscribe: "1",
-        picurl: "",
-        address: "",
-        caption: "",
-        endtime: "",
-        intro: "",
-        issubscribe: "1",
-        parkid: "",
-        picurl: "",
-        starttime: "",
-        thumbnail: "",
-        videoPicture: "",
-        videoUrl: "",
+        belong: "2",
+        mallName: "",
+        parkId: "",
+        parkName: "",
+        putAwayStatus: "1",
       },
       rules: {
         caption: [
@@ -289,53 +292,65 @@ export default {
         ],
       },
       sitelist: [],
-      list: [], //获取景点信息
-      NameList: [], //景点下景点名称
+      list: [], //获取园区
+      NameList: [], //商品名称
     };
   },
   mounted() {
     window.v = this;
-    this.getlist();
+    this.queryCoupList();
     this.getsitelist();
+    this.queryParkList();
+    this.queryMallGoodsList();
   },
   methods: {
+    //获取园区下拉
+    queryParkList() {
+      this.$ajax.queryParkList(this.query, (res) => {
+        this.list = res.data;
+        console.log("查询园区列表", res.data);
+      });
+    },
+    //获取园区下拉
+    queryMallGoodsList() {
+      this.$ajax.queryMallGoodsList(
+        {
+          condition: "",
+          productClass: "",
+          type: "虚拟商品",
+        },
+        (res) => {
+          this.NameList = res.data;
+          console.log("优惠券", res.data);
+        }
+      );
+    },
     getSiteTypeName(val) {},
     //一二级联动
-    getSiteType(val) {
-      this.NameList = [];
-      this.query.typelist = [val];
-      this.$ajax.querySiteList(this.query, (res) => {
-        for (let i = 0; i < res.data.length; i++) {
-          console.log("res", res.data[i].caption);
-          this.NameList.push(res.data[i].caption);
-        }
-      });
-      this.obj = this.list.find((item) => {
-        //这里的就是上面遍历的数据源
-        return item.id === val; //筛选出匹配数据
-      });
-      this.newdata.siteName = null;
+    changehandle(event) {
+      console.log(event);
+      this.newdata.parkId = event.parkId;
+      this.newdata.parkName = event.parkName;
+      this.newdata.belong = "2";
+
+      // this.NameList = [];
+      // this.query.typelist = [val];
+      // this.$ajax.querySiteList(this.query, (res) => {
+      //   for (let i = 0; i < res.data.length; i++) {
+      //     console.log("res", res.data[i].caption);
+      //     this.NameList.push(res.data[i].caption);
+      //   }
+      // });
+      // this.obj = this.list.find((item) => {
+      //   //这里的就是上面遍历的数据源
+      //   return item.id === val; //筛选出匹配数据
+      // });
+      // this.newdata.mallName = null;
     },
     deling(val) {
       if (val == "videoUrl") {
         this.newdata.videoUrl = "";
       }
-    },
-    //上传mp4文件成功的钩子函数
-    onsuccsessmp4(response, file, fileList) {
-      this.newdata.videoUrl = response.data.url;
-    },
-    //上传mp4文件之前的钩子函数
-    beforeUploadmp4(file) {
-      const isLt50M = file.size / 1024 / 1024 < 500;
-      const accept = file.type.indexOf("mp4") > -1;
-      if (!accept) {
-        this.$message.error("上传文件只能是mp4格式!");
-      }
-      if (!isLt50M) {
-        this.$message.error("上传文件大小不能超过 500MB!");
-      }
-      return accept && isLt50M;
     },
     close(i) {
       this.fileList.splice(i, 1);
@@ -343,7 +358,7 @@ export default {
     },
     handleSizeChange(val) {
       this.query.count = val;
-      this.getlist();
+      this.queryCoupList();
     },
     timeform: function (format, time) {
       //转化时间格式传输给后台
@@ -422,27 +437,18 @@ export default {
       this.fullscreenLoading = false;
     },
     search() {
-      this.getlist();
+      this.queryCoupList();
     },
     beginshow(data) {
       this.Addshow = true;
       this.Detailshow = false;
       this.fileList = [];
       this.newdata = {
-        banner: "1",
-        issubscribe: "1",
-        picurl: "",
-        address: "",
-        caption: "",
-        endtime: "",
-        intro: "",
-        issubscribe: "1",
-        parkid: "",
-        picurl: "",
-        starttime: "",
-        thumbnail: "",
-        videoPicture: "",
-        videoUrl: "",
+        belong: "2",
+        putAwayStatus: "1",
+        mallName: "",
+        parkId: "",
+        parkName: "",
       };
     },
     cancel(formName) {
@@ -452,87 +458,15 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.newdata.banner == "1") {
-            this.newdata.videoUrl = "";
-            this.newdata.videoPicture = "";
-          } else {
-            this.newdata.picurl = "";
-            this.newdata.thumbnail = "";
-          }
-          if (this.newdata.time[0]) {
-            this.newdata.starttime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
-              this.newdata.time[0]
-            );
-          }
-          if (this.newdata.time[1]) {
-            this.newdata.endtime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
-              this.newdata.time[1]
-            );
-          }
-          if (this.newdata.id) {
-            this.$ajax.updateEvents(
-              {
-                videoPicture: this.newdata.videoPicture
-                  ? this.newdata.videoPicture
-                  : "",
-                parkid: sessionStorage.getItem("parkid"),
-                id: this.newdata.id,
-                intro: this.newdata.intro ? this.newdata.intro : "",
-                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
-                caption: this.newdata.caption,
-                endtime: this.newdata.endtime,
-                picurl: this.newdata.picurl ? this.newdata.picurl : "",
-                address: this.newdata.address,
-                thumbnail: this.newdata.thumbnail,
-                issubscribe: this.newdata.issubscribe,
-                starttime: this.newdata.starttime,
-                siteid: this.newdata.siteid,
-                banner: this.newdata.banner,
-                isenable: "1",
-              },
-              (res) => {
-                this.$message({
-                  type: "success",
-                  message: "修改成功!",
-                });
-                this.Addshow = false;
-                this.getlist();
-              }
-            );
-          } else {
-            this.$ajax.addEvents(
-              {
-                parkid: sessionStorage.getItem("parkid"),
-                isenable: "1",
-
-                videoPicture: this.newdata.videoPicture
-                  ? this.newdata.videoPicture
-                  : "",
-                intro: this.newdata.intro ? this.newdata.intro : "",
-                videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
-                caption: this.newdata.caption,
-                endtime: this.newdata.endtime,
-                picurl: this.newdata.picurl ? this.newdata.picurl : "",
-                address: this.newdata.address,
-                thumbnail: this.newdata.thumbnail,
-                issubscribe: this.newdata.issubscribe,
-                starttime: this.newdata.starttime,
-                siteid: this.newdata.siteid,
-                banner: this.newdata.banner,
-              },
-              (res) => {
-                console.log("newdata", this.newdata);
-                this.$message({
-                  type: "success",
-                  message: "提交成功!",
-                });
-                this.Addshow = false;
-                this.getlist();
-              }
-            );
-          }
+          this.$ajax.addCoup(this.newdata, (res) => {
+            console.log("newdata", this.newdata);
+            this.$message({
+              type: "success",
+              message: "提交成功!",
+            });
+            this.Addshow = false;
+            this.queryCoupList();
+          });
         } else {
           return false;
         }
@@ -541,15 +475,15 @@ export default {
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val;
-      this.getlist();
+      this.queryCoupList();
     },
     enableState(id, val) {
-      this.$ajax.setEventsEnableState({ idlst: [id], isenable: val }, (res) => {
+      this.$ajax.putAway({ idlst: [id], isenable: val }, (res) => {
         this.$message({
           type: "success",
           message: "设置成功!",
         });
-        this.getlist();
+        this.queryCoupList();
       });
     },
     delAll() {
@@ -564,19 +498,19 @@ export default {
           type: "warning",
         })
           .then(() => {
-            this.$ajax.deleteEvents({ idlst: idlst }, (res) => {
+            this.$ajax.deleteCoup({ idlst: idlst }, (res) => {
               this.$message({
                 type: "success",
                 message: "删除成功!",
               });
-              this.getlist();
+              this.queryCoupList();
             });
           })
           .catch(() => {});
       }
     },
-    getlist() {
-      this.$ajax.queryEventsList(this.query, (res) => {
+    queryCoupList() {
+      this.$ajax.queryCoupList(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
       });
