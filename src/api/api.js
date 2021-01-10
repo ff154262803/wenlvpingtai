@@ -778,5 +778,9 @@ export default {
     putAway(data, callback, errback) {
         this.POST(`${base}/manage/coup/putAway`, data, callback, errback);
     },
+    //五彩石明细记录查询
+    stoneList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/stoneList`, data, callback, errback);
+    },
 
 }

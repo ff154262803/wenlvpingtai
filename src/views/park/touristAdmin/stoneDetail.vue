@@ -24,21 +24,21 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column prop="caption" label="订单号" align="center">
+      <el-table-column prop="orderNo" label="订单号" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="用户名" align="center">
+      <el-table-column prop="userName" label="用户名" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="手机号" align="center">
+      <el-table-column prop="account" label="手机号" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="金额（元）" align="center">
+      <el-table-column prop="amount" label="金额（元）" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="类型" align="center">
+      <el-table-column prop="parcularsType" label="类型" align="center">
       </el-table-column>
-      <el-table-column prop="system" label="支付方式" align="center">
+      <el-table-column prop="payment" label="支付方式" align="center">
       </el-table-column>
-      <el-table-column prop="system" label="说明" align="center">
+      <el-table-column prop="intro" label="说明" align="center">
       </el-table-column>
-      <el-table-column label="创建时间" prop="lastlogintime" align="center">
+      <el-table-column label="创建时间" prop="createtime" align="center">
       </el-table-column>
     </el-table>
     <!--分页-->
@@ -67,10 +67,7 @@ export default {
       dataList: [],
       query: {
         condition: "",
-        page: 1,
-        size: 10,
-        count: 10,
-        timeLimit: "",
+        type: "",
       },
       multipleSelection: [],
     };
@@ -81,7 +78,7 @@ export default {
   methods: {
     queryWebUserList() {
       console.log(this.query);
-      this.$ajax.queryWebUserList(this.query, (res) => {
+      this.$ajax.stoneList(this.query, (res) => {
         this.dataList = res.data;
         this.total = res.total;
       });
