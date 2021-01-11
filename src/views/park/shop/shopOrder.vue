@@ -108,12 +108,12 @@
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             type="text"
             size="small"
             :disabled="scope.row.completeStatus == 2 ? disabled : !disabled"
             >{{ scope.row.completeStatus == 2 ? "已退款" : "退款" }}</el-button
-          >
+          > -->
           <el-button
             type="text"
             size="small"
@@ -133,7 +133,7 @@
     <!--分页-->
     <el-col :span="24" class="toolbar">
       <div class="allControl">
-        <el-button size="small">退款</el-button>
+        <!-- <el-button size="small">退款</el-button> -->
         <el-button size="small" @click="setenableState">核销</el-button>
       </div>
       <el-pagination

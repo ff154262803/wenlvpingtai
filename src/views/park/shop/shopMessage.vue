@@ -274,6 +274,7 @@
               <el-input
                 v-model="newdata.price"
                 @mousewheel.native.prevent
+                oninput="value=value.replace(/[^0-9.]/g,'')"
                 placeholder="请填写价格"
                 type="number"
                 :disabled="detailBol"
@@ -398,8 +399,15 @@ export default {
       }
     };
     var validateAcquaintance = (rule, value, callback) => {
+      let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
       if (value < 0 || value > 10000) {
         callback(new Error("价格必须在0-10000之间"));
+      } else if (!value) {
+        callback(new Error("单价不能为空"));
+      } else if (!reg.test(value)) {
+        callback(new Error("请输入正确格式的单价,必须添加两位小数"));
+      } else if (value.length > 10) {
+        callback(new Error("最多可输入10个字符"));
       } else {
         callback();
       }
@@ -605,19 +613,19 @@ export default {
             this.$ajax.updateMallGoods(
               {
                 id: this.newdata.id,
-                parameters: {
-                  banNum: this.newdata.banNum,
-                  bind: this.newdata.bind,
-                  bindMethod: this.newdata.bindMethod,
-                  caption: this.newdata.caption,
-                  manual: this.h5.content,
-                  picurl: this.newdata.picurl,
-                  price: this.newdata.price * 1,
-                  productClass: this.newdata.productClass,
-                  type: this.newdata.type,
-                  typeName: this.newdata.typeName,
-                  thumbnail: this.newdata.thumbnail,
-                },
+                banNum: this.newdata.banNum,
+                bind: this.newdata.bind,
+                bindMethod: this.newdata.bindMethod,
+                caption: this.newdata.caption,
+                manual: this.h5.content,
+                picurl: this.newdata.picurl,
+                price: this.newdata.price * 1,
+                productClass: this.newdata.productClass,
+                type: this.newdata.type,
+                typeName: this.newdata.typeName,
+                thumbnail: this.newdata.thumbnail,
+                createtime: this.newdata.createtime,
+                status: this.newdata.status,
               },
               (res) => {
                 this.$message({

@@ -119,7 +119,8 @@
             <el-form-item label="开始结束时间" prop="time">
               <el-date-picker
                 v-model="newdata.time"
-                value-format="yyyy-MM-dd hh:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                @change="dateChangebirthday1"
                 type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -248,6 +249,9 @@ export default {
     this.getsitelist();
   },
   methods: {
+    dateChangebirthday1(val) {
+      console.log("val", this.newdata.time);
+    },
     close(i) {
       this.fileList.splice(i, 1);
       this.newdata.pictureurl = this.fileList.join();
@@ -260,7 +264,7 @@ export default {
       this.$set(this.newdata, "time", [
         new Date(
           data.begintime.split("-")[0],
-          data.begintime.split("-")[1],
+          data.begintime.split("-")[1] - 1,
           data.begintime.split("-")[2].split(" ")[0],
           data.begintime.split(" ")[1].split(":")[0],
           data.begintime.split(" ")[1].split(":")[1],
@@ -268,7 +272,7 @@ export default {
         ),
         new Date(
           data.endtime.split("-")[0],
-          data.endtime.split("-")[1],
+          data.endtime.split("-")[1] - 1,
           data.endtime.split("-")[2].split(" ")[0],
           data.endtime.split(" ")[1].split(":")[0],
           data.endtime.split(" ")[1].split(":")[1],
@@ -286,7 +290,7 @@ export default {
       var date = {
         "M+": d.getMonth() + 1,
         "d+": d.getDate(),
-        "h+": d.getHours(),
+        "H+": d.getHours(),
         "m+": d.getMinutes(),
         "s+": d.getSeconds(),
         "q+": Math.floor((d.getMonth() + 3) / 3),
@@ -369,7 +373,7 @@ export default {
         this.$set(this.newdata, "time", [
           new Date(
             data.begintime.split("-")[0],
-            data.begintime.split("-")[1],
+            data.begintime.split("-")[1] - 1,
             data.begintime.split("-")[2].split(" ")[0],
             data.begintime.split(" ")[1].split(":")[0],
             data.begintime.split(" ")[1].split(":")[1],
@@ -377,7 +381,7 @@ export default {
           ),
           new Date(
             data.endtime.split("-")[0],
-            data.endtime.split("-")[1],
+            data.endtime.split("-")[1] - 1,
             data.endtime.split("-")[2].split(" ")[0],
             data.endtime.split(" ")[1].split(":")[0],
             data.endtime.split(" ")[1].split(":")[1],
@@ -405,13 +409,13 @@ export default {
         if (valid) {
           if (this.newdata.time[0]) {
             this.newdata.begintime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
+              "yyyy-MM-dd HH:mm:ss",
               this.newdata.time[0]
             );
           }
           if (this.newdata.time[1]) {
             this.newdata.endtime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
+              "yyyy-MM-dd HH:mm:ss",
               this.newdata.time[1]
             );
           }

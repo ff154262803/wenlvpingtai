@@ -782,5 +782,9 @@ export default {
     stoneList(data, callback, errback) {
         this.POST(`${base}/manage/coup/stoneList`, data, callback, errback);
     },
+    //积分消费明细记录查询
+    scoreList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/scoreList`, data, callback, errback);
+    },
 
 }

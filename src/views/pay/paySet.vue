@@ -223,20 +223,20 @@ export default {
   },
   methods: {
     queryPayOptionList() {
-      this.$ajax.queryPayOptionList({}, (res) => {
-        res.data.forEach((n) => {
-          n.price = n.price / 100;
-        });
-        this.tableData = res.data;
-      });
+      // this.$ajax.queryPayOptionList({}, (res) => {
+      //   res.data.forEach((n) => {
+      //     n.price = n.price / 100;
+      //   });
+      //   this.tableData = res.data;
+      // });
     },
     getPayType() {
-      this.$ajax.getPayType({}, (res) => {
-        let data = res.data.data;
-        this.payType.wechat = data[0] === "1";
-        this.payType.alipay = data[1] === "1";
-        this.payType.visal = data[2] === "1";
-      });
+      // this.$ajax.getPayType({}, (res) => {
+      //   let data = res.data.data;
+      //   this.payType.wechat = data[0] === "1";
+      //   this.payType.alipay = data[1] === "1";
+      //   this.payType.visal = data[2] === "1";
+      // });
     },
     setPayType() {
       let str = "";

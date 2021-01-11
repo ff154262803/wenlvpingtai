@@ -140,8 +140,8 @@ const router = new VueRouter({
                     ]
                 },
                 { path: '/newsmanagement', component: newsmanagement, name: '新闻管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/ticketAdmin', component: ticketAdmin, name: '票务管理', meta: { requireAuth: true, parent: 'parklist' } },
-                { path: '/hotelAdmin', component: hotelAdmin, name: '酒店管理', meta: { requireAuth: true, parent: 'parklist' } },
+                // { path: '/ticketAdmin', component: ticketAdmin, name: '票务管理', meta: { requireAuth: true, parent: 'parklist' } },
+                // { path: '/hotelAdmin', component: hotelAdmin, name: '酒店管理', meta: { requireAuth: true, parent: 'parklist' } },
                 {
                     path: '/touristAdmin', component: touristAdmin, name: '游客管理', meta: { requireAuth: true, parent: 'parklist' },
                     children: [
@@ -149,7 +149,7 @@ const router = new VueRouter({
                     ]
                 },
                 { path: '/homeConfiguration', component: homeConfiguration, name: '页面配置', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
-                { path: '/landscapeAdmin', component: landscapeAdmin, name: '景观设备管理', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
+                // { path: '/landscapeAdmin', component: landscapeAdmin, name: '景观设备管理', meta: { requireAuth: true, switchs: true, parent: 'parklist' } },
             ],
         },
 
@@ -157,8 +157,8 @@ const router = new VueRouter({
             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
                 { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
-                { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
-                { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
+                // { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
+                // { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
             ]
         },
         {

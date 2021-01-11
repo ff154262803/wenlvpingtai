@@ -24,17 +24,17 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column prop="mobile" label="用户名" align="center">
+      <el-table-column prop="userName" label="用户名" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="手机号" align="center">
+      <el-table-column prop="account" label="手机号" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="积分数量" align="center">
+      <el-table-column prop="num" label="积分数量" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="类型" align="center">
+      <el-table-column prop="parcularsType" label="类型" align="center">
       </el-table-column>
-      <el-table-column prop="system" label="说明" align="center">
+      <el-table-column prop="intro" label="说明" align="center">
       </el-table-column>
-      <el-table-column label="创建时间" prop="lastlogintime" align="center">
+      <el-table-column label="创建时间" prop="createtime" align="center">
       </el-table-column>
     </el-table>
     <!--分页-->
@@ -65,26 +65,26 @@ export default {
         condition: "",
         page: 1,
         size: 10,
-        count: 10,
-        timeLimit: "",
+        type: 1,
       },
       multipleSelection: [],
+      eventdata: [],
     };
   },
   mounted() {
-    this.queryWebUserList();
+    this.scoreList();
   },
   methods: {
-    queryWebUserList() {
+    scoreList() {
       console.log(this.query);
-      this.$ajax.queryWebUserList(this.query, (res) => {
+      this.$ajax.scoreList(this.query, (res) => {
         this.dataList = res.data;
         this.total = res.total;
       });
     },
     search() {
       this.query.page = 1;
-      this.queryWebUserList();
+      this.scoreList();
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -92,13 +92,13 @@ export default {
     handleSizeChange(val) {
       this.query.count = val;
       this.query.page = 1;
-      this.queryWebUserList();
+      this.scoreList();
     },
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val.toString();
       this.resLoading = true;
-      this.queryWebUserList();
+      this.scoreList();
     },
   },
 };

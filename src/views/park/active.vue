@@ -155,7 +155,8 @@
             <el-form-item label="开始结束时间" prop="time">
               <el-date-picker
                 v-model="newdata.time"
-                value-format="yyyy-MM-dd hh:mm:ss"
+                @change="dateChangebirthday1"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -380,6 +381,8 @@
   </div>
 </template>
 <script>
+let starttime = "";
+let endtime = "";
 import TinymceEditor from "../../components/editor";
 export default {
   name: "list",
@@ -458,6 +461,9 @@ export default {
     this.getsitelist();
   },
   methods: {
+    dateChangebirthday1(val) {
+      console.log("val", this.newdata.time);
+    },
     deling(val) {
       if (val == "videoUrl") {
         this.newdata.videoUrl = "";
@@ -545,7 +551,7 @@ export default {
       var date = {
         "M+": d.getMonth() + 1,
         "d+": d.getDate(),
-        "h+": d.getHours(),
+        "H+": d.getHours(),
         "m+": d.getMinutes(),
         "s+": d.getSeconds(),
         "q+": Math.floor((d.getMonth() + 3) / 3),
@@ -624,35 +630,11 @@ export default {
       if (data) {
         this.newdata = { ...data };
         console.log("this.newdata", this.newdata);
-        // if (this.newdata.picurl != "") {
-        //   this.newdata.banner = "1";
-        // }
-        // if (this.newdata.videoUrl != "") {
-        //   this.newdata.banner = "0";
-        // }
         this.fileList = data.picurl.split(",");
-        // this.newdata.time = [
-        //   new Date(
-        //     data.starttime.split("-")[0],
-        //     data.starttime.split("-")[1],
-        //     data.starttime.split("-")[2].split(" ")[0],
-        //     data.starttime.split(" ")[1].split(":")[0],
-        //     data.starttime.split(" ")[1].split(":")[1],
-        //     data.starttime.split(" ")[1].split(":")[2]
-        //   ),
-        //   new Date(
-        //     data.endtime.split("-")[0],
-        //     data.endtime.split("-")[1],
-        //     data.endtime.split("-")[2].split(" ")[0],
-        //     data.endtime.split(" ")[1].split(":")[0],
-        //     data.endtime.split(" ")[1].split(":")[1],
-        //     data.endtime.split(" ")[1].split(":")[2]
-        //   ),
-        // ];
         this.$set(this.newdata, "time", [
           new Date(
             data.starttime.split("-")[0],
-            data.starttime.split("-")[1],
+            data.starttime.split("-")[1] - 1,
             data.starttime.split("-")[2].split(" ")[0],
             data.starttime.split(" ")[1].split(":")[0],
             data.starttime.split(" ")[1].split(":")[1],
@@ -660,7 +642,7 @@ export default {
           ),
           new Date(
             data.endtime.split("-")[0],
-            data.endtime.split("-")[1],
+            data.endtime.split("-")[1] - 1,
             data.endtime.split("-")[2].split(" ")[0],
             data.endtime.split(" ")[1].split(":")[0],
             data.endtime.split(" ")[1].split(":")[1],
@@ -675,12 +657,12 @@ export default {
           picurl: "",
           address: "",
           caption: "",
+          starttime: "",
           endtime: "",
           intro: "",
           issubscribe: "1",
           parkid: "",
           picurl: "",
-          starttime: "",
           thumbnail: "",
           videoPicture: "",
           videoUrl: "",
@@ -699,17 +681,16 @@ export default {
             this.newdata.videoPicture = "";
           } else {
             this.newdata.picurl = "";
-            this.newdata.thumbnail = "";
           }
           if (this.newdata.time[0]) {
             this.newdata.starttime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
+              "yyyy-MM-dd HH:mm:ss",
               this.newdata.time[0]
             );
           }
           if (this.newdata.time[1]) {
             this.newdata.endtime = this.timeform(
-              "yyyy-MM-dd hh:mm:ss",
+              "yyyy-MM-dd HH:mm:ss",
               this.newdata.time[1]
             );
           }

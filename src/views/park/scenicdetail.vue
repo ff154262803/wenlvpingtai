@@ -269,7 +269,7 @@
                 :key="n"
                 style="margin-top: 10px"
               >
-                <img :src="$store.state.resip + n" alt="" class="pic" />
+                <img :src="n" alt="" class="pic" />
                 <img
                   src="../../../static/img/close.png"
                   alt=""
@@ -1124,7 +1124,8 @@ export default {
     },
     onsuccsesspic(response, file, fileList) {
       if (response.resb == 200) {
-        var list = this.fileList.push(response.data.shortUrl);
+        console.log(response.data.url);
+        var list = this.fileList.push(response.data.url);
         this.$ajax.updateSite(
           { id: this.detail.id, parameters: { picurl: this.fileList.join() } },
           (res) => {

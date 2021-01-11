@@ -67,9 +67,10 @@ export default {
       dataList: [],
       query: {
         condition: "",
-        type: "",
+        type: 1,
       },
       multipleSelection: [],
+      eventdata: [],
     };
   },
   mounted() {
