@@ -269,8 +269,8 @@ export default {
         return callback(new Error("账号不能为空"));
       } else if (reg.test(value)) {
         return callback(new Error("只能输入数字/字母/符号"));
-        // }else if((value+'').length<6){
-        //     return callback(new Error('密码不能少于6位'));
+      } else if ((value + "").length < 4) {
+        return callback(new Error("账号不能少于4位"));
       } else {
         callback();
       }

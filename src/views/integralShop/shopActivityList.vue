@@ -234,7 +234,7 @@ export default {
           { required: true, message: "起始日期不能为空", trigger: "blur" },
         ],
       },
-      sitelist: [],
+      // sitelist: [],
       h5: {
         content: "",
       },
@@ -243,7 +243,7 @@ export default {
   mounted() {
     window.v = this;
     this.queryActiveList();
-    this.getsitelist();
+    // this.getsitelist();
   },
   methods: {
     dateChangebirthday1(val) {
@@ -501,19 +501,19 @@ export default {
         this.total = res.total;
       });
     },
-    getsitelist() {
-      this.$ajax.querySiteList(
-        {
-          count: 999,
-          page: 1,
-          parkid: sessionStorage.getItem("parkid"),
-          typelist: [6],
-        },
-        (res) => {
-          this.sitelist = res.data;
-        }
-      );
-    },
+    // getsitelist() {
+    //   this.$ajax.querySiteList(
+    //     {
+    //       count: 999,
+    //       page: 1,
+    //       parkid: sessionStorage.getItem("parkid"),
+    //       typelist: [6],
+    //     },
+    //     (res) => {
+    //       this.sitelist = res.data;
+    //     }
+    //   );
+    // },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },

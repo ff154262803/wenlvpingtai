@@ -8,7 +8,7 @@
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
     <el-button class="addBtn" type="primary" @click="beginshow()"
-      >添加活动</el-button
+      >添加优惠券</el-button
     >
     <!-- 表格区 -->
     <el-table
@@ -84,7 +84,7 @@
       <div class="el-dialog el-dialogadd" style="width: 600px">
         <div class="el-dialog__header">
           <span class="el-dialog__title">{{
-            newdata.id ? "修改活动" : "新增活动"
+            newdata.id ? "修改优惠券" : "新增优惠券"
           }}</span>
           <button
             class="el-dialog__headerbtn"
@@ -213,12 +213,12 @@
               >
                 <el-option
                   v-for="item in NameList"
-                  :value="item.productClass"
+                  :value="item.caption"
                   :key="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="上架/下架" prop="">
+            <el-form-item label="上架/下架" prop="putAwayStatus">
               <el-radio-group v-model="newdata.putAwayStatus">
                 <el-radio label="1" checked="checked">上架</el-radio>
                 <el-radio label="0">下架</el-radio>
@@ -281,6 +281,9 @@ export default {
         issubscribe: [{ required: true, message: "必选", trigger: "blur" }],
         picurl: [{ required: true, message: "必填项", trigger: "blur" }],
         thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
+        mallName: [{ required: true, message: "必填项", trigger: "blur" }],
+        putAwayStatus: [{ required: true, message: "必填项", trigger: "blur" }],
+        parkName: [{ required: true, message: "必填项", trigger: "blur" }],
         videoUrl: [
           { required: true, message: "视频不能为空", trigger: "blur" },
         ],
@@ -299,7 +302,7 @@ export default {
   mounted() {
     window.v = this;
     this.queryCoupList();
-    this.getsitelist();
+    // this.getsitelist();
     this.queryParkList();
     this.queryMallGoodsList();
   },
@@ -515,19 +518,19 @@ export default {
         this.total = res.total;
       });
     },
-    getsitelist() {
-      this.$ajax.querySiteList(
-        {
-          count: 999,
-          page: 1,
-          parkid: sessionStorage.getItem("parkid"),
-          typelist: [6],
-        },
-        (res) => {
-          this.sitelist = res.data;
-        }
-      );
-    },
+    // getsitelist() {
+    //   this.$ajax.querySiteList(
+    //     {
+    //       count: 999,
+    //       page: 1,
+    //       parkid: sessionStorage.getItem("parkid"),
+    //       typelist: [6],
+    //     },
+    //     (res) => {
+    //       this.sitelist = res.data;
+    //     }
+    //   );
+    // },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },

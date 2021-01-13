@@ -2,7 +2,7 @@
   <div>
     <!-- 过滤区 -->
     <el-input
-      placeholder="请输入景点名称"
+      placeholder="请输入商品名称"
       v-model="query.condition"
       style="width: 300px"
     ></el-input>

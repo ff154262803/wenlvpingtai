@@ -27,7 +27,7 @@
       ></el-table-column>
       <el-table-column
         prop="title"
-        label="活动标题"
+        label="新闻标题"
         align="center"
       ></el-table-column>
       <el-table-column label="状态" align="center">
@@ -48,15 +48,6 @@
 
       <el-table-column label="操作" width="250" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="Del(scope.row.id)"
-            >删除</el-button
-          >
-          <el-button type="text" size="small" @click="detail(scope.row)"
-            >详情</el-button
-          >
-          <el-button type="text" size="small" @click="beginshow(scope.row)"
-            >修改</el-button
-          >
           <el-button
             type="text"
             size="small"
@@ -71,6 +62,15 @@
             v-show="scope.row.status == 1"
             >禁用
           </el-button>
+          <el-button type="text" size="small" @click="beginshow(scope.row)"
+            >修改</el-button
+          >
+          <el-button type="text" size="small" @click="Del(scope.row.id)"
+            >删除</el-button
+          >
+          <!-- <el-button type="text" size="small" @click="detail(scope.row)"
+            >详情</el-button
+          > -->
         </template>
       </el-table-column>
     </el-table>
@@ -135,7 +135,18 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="图片" label-width="120px" prop="picurl">
+            <el-form-item label="请选择类型" prop="banner">
+              <el-radio-group v-model="newdata.banner">
+                <el-radio :label="1">轮播图</el-radio>
+                <el-radio :label="2">视频</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              label="轮播图"
+              label-width="120px"
+              prop="picurl"
+              v-if="newdata.banner == 1"
+            >
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
@@ -156,7 +167,6 @@
                 accept="image/jpeg,image/jpg,image/png"
                 :before-upload="beforeUploadpic"
                 :on-error="onerror"
-                :limit="newdata.upName || 3"
                 multiple
                 list-type="picture-card"
               >
@@ -182,7 +192,7 @@
                 </div>
               </div>
             </el-form-item>
-            <el-form-item label="语音讲解" prop="voiceUrl">
+            <!-- <el-form-item label="语音讲解" prop="voiceUrl">
               <el-input
                 v-model="newdata.voiceUrl"
                 style="width: 200px; display: none"
@@ -216,8 +226,12 @@
                   v-if="newdata.voiceUrl != ''"
                 />
               </div>
-            </el-form-item>
-            <el-form-item label="视频讲解" prop="videoUrl">
+            </el-form-item> -->
+            <el-form-item
+              label="视频讲解"
+              prop="videoUrl"
+              v-if="newdata.banner == 2"
+            >
               <el-input
                 v-model="newdata.voiceUrl"
                 style="width: 200px; display: none"
@@ -259,7 +273,90 @@
                 />
               </div>
             </el-form-item>
-
+            <el-form-item
+              label="视频封面"
+              prop="videoPicture"
+              v-if="newdata.banner == 2"
+            >
+              <el-input
+                v-model="newdata.videoPicture"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button
+                size="small"
+                type="primary"
+                @click="uploading('uppict1')"
+                >点击上传</el-button
+              >
+              <el-upload
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                accept="image/jpeg,image/jpg,image/png"
+                :on-success="onsuccsess1"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                list-type="picture"
+              >
+                <el-button size="small" type="primary" id="uppict1"
+                  >点击上传</el-button
+                >
+              </el-upload>
+              <div style="margin-top: 20px">
+                <img
+                  :src="newdata.videoPicture"
+                  alt=""
+                  class="pic"
+                  v-if="newdata.videoPicture"
+                  style="width: 80px"
+                  ref="pic"
+                />
+              </div>
+            </el-form-item>
+            <el-form-item label="缩略图" prop="thumbnail">
+              <el-input
+                v-model="newdata.thumbnail"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button
+                size="small"
+                type="primary"
+                @click="uploading('uppict')"
+                >点击上传</el-button
+              >
+              <el-upload
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                accept="image/jpeg,image/jpg,image/png"
+                :on-success="onsuccsess"
+                :before-upload="beforeUploadpic"
+                :on-error="onerror"
+                list-type="picture"
+              >
+                <el-button size="small" type="primary" id="uppict"
+                  >点击上传</el-button
+                >
+              </el-upload>
+              <div style="margin-top: 20px">
+                <img
+                  :src="newdata.thumbnail"
+                  alt=""
+                  class="pic"
+                  v-if="newdata.thumbnail"
+                  style="width: 80px"
+                  ref="pic"
+                />
+              </div>
+            </el-form-item>
             <el-form-item
               label="详情类型"
               prop="detailType"
@@ -343,11 +440,17 @@ export default {
       Addshow: false,
       Detailshow: false,
       newdata: {
+        banner: 1,
         detailType: 1,
         details: "",
+        parkId: sessionStorage.getItem("parkid")
+          ? sessionStorage.getItem("parkid")
+          : "",
         picurl: "",
         status: 1,
         summary: "",
+        thumbnail: "",
+        videoPicture: "",
         title: "",
         videoUrl: "",
         voiceUrl: "",
@@ -357,6 +460,7 @@ export default {
           { required: true, message: "活动标题不能为空", trigger: "blur" },
         ],
         summary: [{ required: true, message: "简介不能为空", trigger: "blur" }],
+        picurl: [{ required: true, message: "简介不能为空", trigger: "blur" }],
         detailType: [
           { required: true, message: "请选择详情类型", trigger: "blur" },
         ],
@@ -375,6 +479,12 @@ export default {
     this.getlist();
   },
   methods: {
+    onsuccsess1(response, file, fileList) {
+      this.fullscreenLoading = false;
+      if (response.resb == 200) {
+        this.$set(this.newdata, "videoPicture", response.data.url);
+      }
+    },
     agreeChange() {
       if (this.newdata.detailType == 1) {
         this.newdata.details = "";
@@ -417,12 +527,12 @@ export default {
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
       console.log("pic", this.fileList);
-      if (this.fileList.length < 5 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resb == 200) {
         this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
       } else {
-        this.$message.error("最多上传5个");
+        this.$message.error("最多上传10个");
       }
     },
     //上传mp4文件之前的钩子函数
@@ -439,13 +549,12 @@ export default {
     },
     //上传mp4文件成功的钩子函数
     onsuccsessmp4(response, file, fileList) {
-      if (this.fileList.length < 5 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resb == 200) {
         this.uploadRate = 100;
         this.newdata.videoUrl = response.data.url;
       } else {
         this.$message.error("最多上传1个");
       }
-
       console.log("this.newdata.videoUrl", this.newdata.videoUrl);
     },
     close(i) {
@@ -489,24 +598,24 @@ export default {
     },
     handleLoading1(event, file, fileList) {
       this.fullscreenLoading = true;
-      console.log("event", event);
-      console.log("file", file);
-      console.log("fileList", fileList);
+      // console.log("event", event);
+      // console.log("file", file);
+      // console.log("fileList", fileList);
       this.uploadRate = Number(((event.loaded / event.total) * 100).toFixed(2));
     },
     handleLoading() {
       this.fullscreenLoading = true;
     },
     beforeUploadpic(file) {
-      const isLt5M = file.size / 1024 / 1024 < 5;
+      const isLt5M = file.size / 1024 / 1024 < 10;
       const accept =
         file.type.indexOf("jpeg") > -1 ||
         file.type.indexOf("png") > -1 ||
         file.type.indexOf("jpg") > -1;
-      const limit = this.fileList.length < 5;
+      const limit = this.fileList.length < 10;
       if (!accept) this.$message.error("上传文件只能是图片格式!");
       if (!isLt5M) this.$message.error("上传文件大小不能超过 5MB!");
-      if (!limit) this.$message.error("最多上传5张图片！");
+      if (!limit) this.$message.error("最多上传10张图片！");
       return accept && isLt5M && limit;
     },
     // onsuccsesspic(response, file, fileList) {
@@ -527,7 +636,7 @@ export default {
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
       if (response.resb == 200) {
-        this.$set(this.newdata, "thumbnail", response.shortUrl);
+        this.$set(this.newdata, "thumbnail", response.data.url);
       }
     },
     onerror() {
@@ -564,11 +673,17 @@ export default {
         this.detailBol = false;
       } else {
         this.newdata = {
+          banner: 1,
           detailType: 1,
           details: "",
+          parkId: sessionStorage.getItem("parkid")
+            ? sessionStorage.getItem("parkid")
+            : "",
           picurl: "",
           status: 1,
           summary: "",
+          thumbnail: "",
+          videoPicture: "",
           title: "",
           videoUrl: "",
           voiceUrl: "",
@@ -615,6 +730,11 @@ export default {
               {
                 id: this.newdata.id,
                 parameters: {
+                  parkId: sessionStorage.getItem("parkid")
+                    ? sessionStorage.getItem("parkid") * 1
+                    : "",
+                  thumbnail: this.newdata.thumbnail,
+                  videoPicture: this.newdata.videoPicture,
                   picurl: this.newdata.picurl,
                   details: this.h5.content
                     ? this.h5.content
@@ -625,6 +745,7 @@ export default {
                   status: 1,
                   videoUrl: this.newdata.videoUrl,
                   voiceUrl: this.newdata.voiceUrl,
+                  banner: this.newdata.banner,
                 },
               },
               (res) => {
@@ -645,6 +766,8 @@ export default {
                 parkId: sessionStorage.getItem("parkid")
                   ? sessionStorage.getItem("parkid") * 1
                   : "",
+                thumbnail: this.newdata.thumbnail,
+                videoPicture: this.newdata.videoPicture,
                 picurl: this.newdata.picurl,
                 details: this.h5.content
                   ? this.h5.content
@@ -655,6 +778,7 @@ export default {
                 status: 1,
                 videoUrl: this.newdata.videoUrl,
                 voiceUrl: this.newdata.voiceUrl,
+                banner: this.newdata.banner,
               },
               (res) => {
                 this.$message({

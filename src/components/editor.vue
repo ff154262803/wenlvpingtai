@@ -62,7 +62,7 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: "lists image table code link textcolor imagetools",
+      default: "lists image table code link textcolor imagetools paste",
     },
 
     toolbar: {
@@ -90,25 +90,7 @@ export default {
         convert_urls: false,
         image_dimensions: true,
         paste_data_images: false,
-        // images_upload_base_path: '/some/basepath',
-        // init_instance_callback: (editor) => {
-        //   if (this.value) {
-        //     editor.setContent(_this.value);
-        //   }
-        //   this.hasInit = true;
-        //   editor.on("NodeChange Change KeyUp SetContent", () => {
-        //     this.hasChange = true;
-        //     this.$emit("input", editor.getContent());
-        //   });
-        //   editor.uploadImages(function (success) {
-        //     console.log(success);
-        //   });
-        // },
-        // setup(editor) {
-        //   editor.on("FullscreenStateChanged", (e) => {
-        //     _this.fullscreen = e.state;
-        //   });
-        // },
+
         images_upload_handler: (blobInfo, success, failure) => {
           let param = new FormData(); //创建form对象
           param.append("file", blobInfo.blob()); //通过append向form对象添加数据
@@ -135,7 +117,6 @@ export default {
   methods: {},
   watch: {
     value(newValue) {
-      // newValue = newValue.replace(/<p><img\s?src="data.*?<\/p>/g, "");
       this.myValue = newValue;
       console.log("newvalue", newValue);
     },

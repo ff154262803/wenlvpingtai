@@ -125,7 +125,7 @@
                 ? disabled
                 : !disabled
             "
-            >{{ scope.row.completeStatus == 1 ? "已核销" : "核销" }}</el-button
+            >{{ scope.row.completeStatus == 1 ? "核销" : "核销" }}</el-button
           >
         </template>
       </el-table-column>
@@ -183,7 +183,7 @@ export default {
       query: {
         page: 1,
         count: 10,
-        parkid: sessionStorage.getItem("parkid"),
+        // parkid: sessionStorage.getItem("parkid"),
         completeStatus: "",
         condition: "",
         endDate: "",

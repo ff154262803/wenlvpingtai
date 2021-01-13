@@ -149,7 +149,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="具体地址" prop="address">
+            <el-form-item label="简介" prop="address">
               <el-input v-model="newdata.address"></el-input>
             </el-form-item>
             <el-form-item label="开始结束时间" prop="time">

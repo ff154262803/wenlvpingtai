@@ -15,6 +15,7 @@
       v-model="query.type"
       @clear="setValueNull"
     >
+      <el-option value=" " label="不限"></el-option>
       <el-option value="1" label="充值"></el-option>
       <el-option value="2" label="消费"></el-option>
     </el-select>
@@ -32,7 +33,10 @@
       </el-table-column>
       <el-table-column prop="num" label="积分数量" align="center">
       </el-table-column>
-      <el-table-column prop="parcularsType" label="类型" align="center">
+      <el-table-column label="类型" align="center">
+        <template slot-scope="scope">{{
+          scope.row.parcularsType == 1 ? "充值" : "消费"
+        }}</template>
       </el-table-column>
       <el-table-column prop="intro" label="说明" align="center">
       </el-table-column>
@@ -70,10 +74,6 @@ export default {
         type: " ",
       },
       multipleSelection: [],
-      eventdata: [
-        { title: "充值", id: 1 },
-        { title: "消费", id: 2 },
-      ],
     };
   },
   mounted() {

@@ -122,7 +122,7 @@
             style="width: 200px"
           ></el-input>
         </el-form-item>
-        <el-form-item label="获得积分：" label-width="120px" prop="point">
+        <el-form-item label="获得五彩石：" label-width="120px" prop="point">
           <el-input
             v-model.number="addData.point"
             style="width: 200px"
@@ -223,12 +223,13 @@ export default {
   },
   methods: {
     queryPayOptionList() {
-      // this.$ajax.queryPayOptionList({}, (res) => {
-      //   res.data.forEach((n) => {
-      //     n.price = n.price / 100;
-      //   });
-      //   this.tableData = res.data;
-      // });
+      this.$ajax.queryPayOptionList({}, (res) => {
+        //console.log("res", res);
+        res.data.forEach((n) => {
+          n.price = n.price / 100;
+        });
+        this.tableData = res.data;
+      });
     },
     getPayType() {
       // this.$ajax.getPayType({}, (res) => {

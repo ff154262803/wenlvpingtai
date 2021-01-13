@@ -15,6 +15,7 @@
       v-model="query.type"
       @clear="setValueNull"
     >
+      <el-option value=" " label="不限"></el-option>
       <el-option value="1" label="充值"></el-option>
       <el-option value="2" label="消费"></el-option>
     </el-select>
