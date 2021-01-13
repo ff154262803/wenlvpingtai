@@ -34,7 +34,7 @@
         }}</template>
       </el-table-column>
       <el-table-column
-        prop="begintime"
+        prop="starttime"
         label="开始时间"
         align="center"
       ></el-table-column>
@@ -173,7 +173,7 @@
           </el-form>
         </div>
         <div class="el-dialog__footer">
-          <div class="dialog-footer">
+          <div class="dialog-footer" v-if="!issumbit">
             <el-button @click="cancel('newdata')">取 消</el-button>
             <el-button type="primary" @click="add('newdata')">确 定</el-button>
           </div>
@@ -200,21 +200,18 @@ export default {
       multipleSelection: [],
       total: 0,
       query: {
-        parkid: sessionStorage.getItem("parkid")
-          ? sessionStorage.getItem("parkid")
-          : "",
         condition: "",
         page: 1,
         count: 10,
       },
       Addshow: false,
       Detailshow: false,
-
+      issumbit: false,
       newdata: {
         account: "1",
         activeaddress: "",
         activetitle: "",
-        begintime: "",
+        starttime: "",
         endtime: "",
         pictureurl: "",
       },
@@ -257,18 +254,20 @@ export default {
       this.newdata.pictureurl = this.fileList.join();
     },
     detail(data) {
+      console.log("data", data);
+      this.issumbit = true;
       this.Addshow = true;
       this.Detailshow = false;
       this.newdata = { ...data };
       this.fileList = data.pictureurl.split(",");
       this.$set(this.newdata, "time", [
         new Date(
-          data.begintime.split("-")[0],
-          data.begintime.split("-")[1] - 1,
-          data.begintime.split("-")[2].split(" ")[0],
-          data.begintime.split(" ")[1].split(":")[0],
-          data.begintime.split(" ")[1].split(":")[1],
-          data.begintime.split(" ")[1].split(":")[2]
+          data.starttime.split("-")[0],
+          data.starttime.split("-")[1] - 1,
+          data.starttime.split("-")[2].split(" ")[0],
+          data.starttime.split(" ")[1].split(":")[0],
+          data.starttime.split(" ")[1].split(":")[1],
+          data.starttime.split(" ")[1].split(":")[2]
         ),
         new Date(
           data.endtime.split("-")[0],
@@ -372,12 +371,12 @@ export default {
         this.fileList = data.pictureurl.split(",");
         this.$set(this.newdata, "time", [
           new Date(
-            data.begintime.split("-")[0],
-            data.begintime.split("-")[1] - 1,
-            data.begintime.split("-")[2].split(" ")[0],
-            data.begintime.split(" ")[1].split(":")[0],
-            data.begintime.split(" ")[1].split(":")[1],
-            data.begintime.split(" ")[1].split(":")[2]
+            data.starttime.split("-")[0],
+            data.starttime.split("-")[1] - 1,
+            data.starttime.split("-")[2].split(" ")[0],
+            data.starttime.split(" ")[1].split(":")[0],
+            data.starttime.split(" ")[1].split(":")[1],
+            data.starttime.split(" ")[1].split(":")[2]
           ),
           new Date(
             data.endtime.split("-")[0],
@@ -391,12 +390,12 @@ export default {
       } else {
         this.fileList = [];
         this.newdata = {
-          // account: "1",
-          // activeaddress: "",
-          // activetitle: "",
-          // begintime: "",
-          // endtime: "",
-          // pictureurl: "",
+          account: "1",
+          activeaddress: "",
+          activetitle: "",
+          starttime: "",
+          endtime: "",
+          pictureurl: "",
         };
       }
     },
@@ -408,7 +407,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.newdata.time[0]) {
-            this.newdata.begintime = this.timeform(
+            this.newdata.starttime = this.timeform(
               "yyyy-MM-dd HH:mm:ss",
               this.newdata.time[0]
             );
@@ -420,8 +419,18 @@ export default {
             );
           }
           if (this.newdata.id) {
+            console.log("newdata", this.newdata);
             this.$ajax.editActive(
-              { id: this.newdata.id, parameters: { ...this.newdata } },
+              {
+                account: 1,
+                activeaddress: this.newdata.activeaddress,
+                activetitle: this.newdata.activetitle,
+                starttime: this.newdata.starttime,
+                createTime: this.newdata.createtime,
+                endtime: this.newdata.endtime,
+                id: this.newdata.id,
+                pictureurl: this.newdata.pictureurl,
+              },
               (res) => {
                 this.$message({
                   type: "success",

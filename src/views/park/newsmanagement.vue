@@ -230,6 +230,7 @@
                   $store.state.ip + '/manage/ferriswheel/resources/upload'
                 "
                 :data="uploaddata"
+                :on-progress="handleLoading1"
                 :show-file-list="true"
                 accept="video/mp4"
                 :on-success="onsuccsessmp4"
@@ -242,8 +243,9 @@
                 >
               </el-upload>
               <el-progress
-                v-if="!newdata.videoUrl"
+                v-if="fullscreenLoading == true"
                 :percentage="uploadRate"
+                type="line"
                 style="width: 600px"
               ></el-progress>
               <div style="margin-top: 20px" v-if="newdata.videoUrl != ''">
@@ -365,6 +367,7 @@ export default {
       h5: {
         content: "",
       },
+      fullscreenLoading: false,
     };
   },
   mounted() {
@@ -406,6 +409,9 @@ export default {
       }
       if (val == "videoUrl") {
         this.newdata.videoUrl = "";
+        if (this.newdata.videoUrl == "") {
+          this.fullscreenLoading = false;
+        }
       }
     },
     //上传图片成功后的钩子函数
@@ -480,6 +486,13 @@ export default {
     handleSizeChange(val) {
       this.query.count = val;
       this.getlist();
+    },
+    handleLoading1(event, file, fileList) {
+      this.fullscreenLoading = true;
+      console.log("event", event);
+      console.log("file", file);
+      console.log("fileList", fileList);
+      this.uploadRate = Number(((event.loaded / event.total) * 100).toFixed(2));
     },
     handleLoading() {
       this.fullscreenLoading = true;

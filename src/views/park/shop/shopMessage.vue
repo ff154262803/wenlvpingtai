@@ -399,7 +399,12 @@ export default {
       }
     };
     var validateAcquaintance = (rule, value, callback) => {
-      let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
+      // let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
+      let reg = /^(([1-9]\d*|0)|((([1-9]{1}\d*)|(0{1}))(\.\d{2})))$/;
+      console.log("rule", rule);
+      console.log("value", value);
+      console.log("callback", callback);
+      console.log("reg", reg);
       if (value < 0 || value > 10000) {
         callback(new Error("价格必须在0-10000之间"));
       } else if (!value) {

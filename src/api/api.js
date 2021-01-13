@@ -770,6 +770,10 @@ export default {
     parkList(data, callback, errback) {
         this.POST(`${base}/manage/coup/parkList`, data, callback, errback);
     },
+    //--优惠券管理园区下拉
+    coupList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/coupList`, data, callback, errback);
+    },
     //--优惠券管理园区删除
     deleteCoup(data, callback, errback) {
         this.POST(`${base}/manage/coup/deleteCoup`, data, callback, errback);

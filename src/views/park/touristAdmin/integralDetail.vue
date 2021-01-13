@@ -8,13 +8,15 @@
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
     <span>类型：</span>
-    <el-select placeholder="全部类型" v-model="query">
-      <el-option
-        v-for="n in eventdata"
-        :key="n.id"
-        :label="n.caption"
-        :value="n.id"
-      ></el-option>
+    <el-select
+      placeholder="请选择"
+      @change="search"
+      clearable
+      v-model="query.type"
+      @clear="setValueNull"
+    >
+      <el-option value="1" label="充值"></el-option>
+      <el-option value="2" label="消费"></el-option>
     </el-select>
     <!--表格内容-->
     <el-table
@@ -65,19 +67,25 @@ export default {
         condition: "",
         page: 1,
         size: 10,
-        type: 1,
+        type: " ",
       },
       multipleSelection: [],
-      eventdata: [],
+      eventdata: [
+        { title: "充值", id: 1 },
+        { title: "消费", id: 2 },
+      ],
     };
   },
   mounted() {
     this.scoreList();
   },
   methods: {
+    setValueNull() {
+      this.query.type = " ";
+    },
     scoreList() {
-      console.log(this.query);
       this.$ajax.scoreList(this.query, (res) => {
+        console.log("res", res.data);
         this.dataList = res.data;
         this.total = res.total;
       });
