@@ -240,7 +240,7 @@ export default {
       this.$ajax.checkDeleteType(
         { id: id },
         (res) => {
-          if ((res.resb = 200)) {
+          if ((res.resbCode = 200)) {
             this.$confirm("您确定要删除该类型吗?", "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
@@ -259,7 +259,7 @@ export default {
           }
         },
         (err) => {
-          if ((err.resb = 996)) {
+          if ((err.resbCode = 996)) {
             this.$confirm("该类型已被使用您确定要删除该类型吗?", "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",

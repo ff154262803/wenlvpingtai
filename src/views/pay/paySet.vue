@@ -10,6 +10,7 @@
           label="微信"
           v-model="payType.wechat"
           @change="setPayType"
+          checked
         ></el-checkbox>
         <el-checkbox
           label="支付宝"
@@ -224,11 +225,14 @@ export default {
   methods: {
     queryPayOptionList() {
       this.$ajax.queryPayOptionList({}, (res) => {
-        //console.log("res", res);
-        res.data.forEach((n) => {
-          n.price = n.price / 100;
-        });
-        this.tableData = res.data;
+        if (res.resbCode == 200) {
+          console.log("200成功");
+          //console.log("res", res);
+          res.data.forEach((n) => {
+            n.price = n.price / 100;
+          });
+          this.tableData = res.data;
+        }
       });
     },
     getPayType() {

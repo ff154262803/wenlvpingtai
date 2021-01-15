@@ -39,7 +39,7 @@ export default {
     },
     ajaxNext(data, callback, errback) {
         // console.log(data);
-        switch (data.resb) {
+        switch (data.resbCode) {
             case 200:
                 callback(data);
                 break;
@@ -580,6 +580,10 @@ export default {
     queryPermission(data, callback, errback) {
         this.GET(`${base}/manage/permission/queryPermission`, data, callback, errback);
     },
+    //权限查询
+    switchPark(data, callback, errback) {
+        this.POST(`${base}/manage/switchPark`, data, callback, errback);
+    },
     //获取园区中的权限
     getParkPermissionList(data, callback, errback) {
         this.POST(`${base}/manage/permission/getParkPermissionList`, data, callback, errback);
@@ -693,9 +697,13 @@ export default {
     queryOrderList(data, callback, errback) {
         this.POST(`${base}/manage/systemOrder/queryOrderList`, data, callback, errback);
     },
-    //商品订单核销和退款操作
+    //商品订单核销操作
     completeOrder(data, callback, errback) {
         this.POST(`${base}/manage/systemOrder/completeOrder`, data, callback, errback);
+    },
+    //商品订单退款操作
+    refund(data, callback, errback) {
+        this.POST(`${base}/manage/systemOrder/refund`, data, callback, errback);
     },
     //小程序道具绑定
     //道具绑定列表查询
@@ -790,5 +798,9 @@ export default {
     scoreList(data, callback, errback) {
         this.POST(`${base}/manage/coup/scoreList`, data, callback, errback);
     },
+    //商店下拉
+    // business(data, callback, errback) {
+    //     this.POST(`${base}/manage/product/business`, data, callback, errback);
+    // },
 
 }

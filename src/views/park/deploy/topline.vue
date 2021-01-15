@@ -320,7 +320,7 @@ export default {
         if (valid) {
           if (this.h5.content) {
             this.$ajax.addH5(this.h5, (res) => {
-              if (res.resb == 200) {
+              if (res.resbCode == 200) {
                 this.addData.h5id = res.data.id;
                 this.addData.starttime = this.addData.time[0];
                 this.addData.endtime = this.addData.time[1];

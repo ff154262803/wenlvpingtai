@@ -77,10 +77,12 @@ export default {
       init: {
         language_url: `${this.baseUrl}/static/tiny/zh_CN.js`,
         language: "zh_CN",
-        skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`,
-        // content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`,
+        // skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`,
+        skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide`,
+        // content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`, //背景颜色
+        content_css: `${this.baseUrl}/static/tiny/skins/content/default/content.css`, //背景颜色
         // skin_url: `${this.baseUrl}/static/tiny/skins/ui/oxide-dark`, // 暗色系
-        content_css: `${this.baseUrl}/static/tiny/skins/content/dark/content.css`, // 暗色系
+        // content_css: `${this.baseUrl}/static/tiny/skins/content/dark/content.css`, // 暗色系
         height: 500,
         plugins: this.plugins,
         toolbar: this.toolbar,
@@ -118,7 +120,6 @@ export default {
   watch: {
     value(newValue) {
       this.myValue = newValue;
-      console.log("newvalue", newValue);
     },
     myValue(newValue) {
       this.$emit("input", newValue);
@@ -126,5 +127,9 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style >
+body.mceContentBody {
+  background: #fff;
+  color: #000;
+}
 </style>

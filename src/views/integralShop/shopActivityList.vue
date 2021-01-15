@@ -330,7 +330,7 @@ export default {
       return accept && isLt5M && limit;
     },
     onsuccsesspic(response, file, fileList) {
-      if (this.fileList.length < 10 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resbCode == 200) {
         this.fileList.push(response.data.url);
         this.newdata.pictureurl = this.fileList.join();
         this.fullscreenLoading = false;
@@ -346,13 +346,13 @@ export default {
     },
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "pictureurl", response.data.url);
       }
     },
     onsuccsess1(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "videoPicture", response.data.url);
       }
     },

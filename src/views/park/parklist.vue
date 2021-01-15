@@ -7,6 +7,19 @@
       style="width: 300px"
     ></el-input>
     <el-button icon="el-icon-search" class="btn" @click="search"></el-button>
+    <!-- <el-select
+      v-model="query.parkid"
+      placeholder="请选择"
+      @change="getparkid($event)"
+    >
+      <el-option
+        v-for="item in parkidList"
+        :key="item.caption"
+        :label="item.caption"
+        :value="item.parkid"
+      >
+      </el-option>
+    </el-select> -->
     <el-button class="addBtn" type="primary" @click="beginshow">添加</el-button>
     <div class="filter">
       <strong>分类：</strong>
@@ -248,6 +261,7 @@ export default {
       }
     };
     return {
+      parkidList: [],
       tableData: [],
       multipleSelection: [],
       total: 0,
@@ -294,6 +308,7 @@ export default {
       areacity: [],
       province: [],
       city: [],
+      // val: "",
     };
   },
   mounted() {
@@ -303,6 +318,12 @@ export default {
     this.getarea();
   },
   methods: {
+    // getparkid(val) {
+    //   // this.val = val;
+    //   this.$ajax.switchPark({ id: val }, (res) => {
+    //     console.log("res", res.data);
+    //   });
+    // },
     beginshow(formName) {
       this.Addshow = true;
       this.newdata = {
@@ -486,6 +507,7 @@ export default {
     get() {
       this.$ajax.queryParkList(this.query, (res) => {
         this.tableData = res.data;
+        this.parkidList = res.data;
         this.total = res.total;
         console.log("this.tableData", this.tableData);
       });
@@ -494,6 +516,15 @@ export default {
       console.log(row);
       this.$router.push({ path: "/base", query: { id: row.parkid } });
       sessionStorage.setItem("parkid", row.parkid);
+      if (!JSON.parse(sessionStorage.getItem("user")).isadmin) {
+        this.$ajax.switchPark({ id: row.parkid }, (res) => {
+          sessionStorage.setItem(
+            "permissions",
+            JSON.stringify(res.data.authRole.permissions)
+          );
+          console.log("res", res.data);
+        });
+      }
     },
     del(id) {
       this.$confirm("您确定要删除选中园区吗?", "提示", {

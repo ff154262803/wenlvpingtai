@@ -657,7 +657,7 @@ export default {
       return accept && isLt5M;
     },
     onsuccsesspic(response, file, fileList) {
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.fileList.push(response.data.shortUrl);
         this.addData.picurl = this.fileList.join();
         this.fullscreenLoading = false;
@@ -669,7 +669,7 @@ export default {
 
     // UpDown(id) {
     //     this.$ajax.checkDeleteType({id: id}, res => {
-    //         if (res.resb = 200) {
+    //         if (res.resbCode = 200) {
     //             this.$confirm('您确定要删除该类型吗?', '提示', {
     //                 confirmButtonText: '确定',
     //                 cancelButtonText: '取消',
@@ -687,7 +687,7 @@ export default {
     //         }
     //
     //     }, err => {
-    //         if (err.resb = 996) {
+    //         if (err.resbCode = 996) {
     //             this.$confirm('该类型已被使用您确定要删除该类型吗?', '提示', {
     //                 confirmButtonText: '确定',
     //                 cancelButtonText: '取消',

@@ -1123,7 +1123,7 @@ export default {
       return accept && isLt5M;
     },
     onsuccsesspic(response, file, fileList) {
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         console.log(response.data.url);
         var list = this.fileList.push(response.data.url);
         this.$ajax.updateSite(

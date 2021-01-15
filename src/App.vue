@@ -56,9 +56,7 @@ body {
   vertical-align: baseline;
   margin-right: 10px;
 }
-.mce-content-body {
-  background: pink !important;
-}
+
 .toolbar {
   background: #f2f2f2;
   padding: 10px;

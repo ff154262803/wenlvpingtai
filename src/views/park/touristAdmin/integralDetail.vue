@@ -1,7 +1,7 @@
 <template>
   <div class="classificationPage">
     <el-input
-      placeholder="用户名、账号"
+      placeholder="请输入手机号"
       v-model="query.condition"
       clearable
       style="width: 300px"
@@ -16,8 +16,8 @@
       @clear="setValueNull"
     >
       <el-option value=" " label="不限"></el-option>
-      <el-option value="1" label="充值"></el-option>
-      <el-option value="2" label="消费"></el-option>
+      <el-option value="1" label="奖励"></el-option>
+      <el-option value="2" label="兑换"></el-option>
     </el-select>
     <!--表格内容-->
     <el-table
@@ -31,11 +31,16 @@
       </el-table-column>
       <el-table-column prop="account" label="手机号" align="center">
       </el-table-column>
-      <el-table-column prop="num" label="积分数量" align="center">
+      <el-table-column label="积分数量" align="center">
+        <template slot-scope="scope">{{
+          scope.row.addOrReduce == 1
+            ? "+ " + scope.row.num
+            : "- " + scope.row.num
+        }}</template>
       </el-table-column>
       <el-table-column label="类型" align="center">
         <template slot-scope="scope">{{
-          scope.row.parcularsType == 1 ? "充值" : "消费"
+          scope.row.addOrReduce == 1 ? "奖励" : "兑换"
         }}</template>
       </el-table-column>
       <el-table-column prop="intro" label="说明" align="center">

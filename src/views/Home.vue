@@ -130,6 +130,8 @@ export default {
     backRoute() {
       if (this.$store.state.child.length) {
         this.$store.state.child = [];
+        console.log("this.$store.state.child", this.$store.state.child);
+        sessionStorage.removeItem("permissions");
       }
       this.$route.meta.parent
         ? this.$router.replace({ path: this.$route.meta.parent })

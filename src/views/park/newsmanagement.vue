@@ -481,7 +481,7 @@ export default {
   methods: {
     onsuccsess1(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "videoPicture", response.data.url);
       }
     },
@@ -527,7 +527,7 @@ export default {
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
       console.log("pic", this.fileList);
-      if (this.fileList.length < 10 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resbCode == 200) {
         this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
@@ -549,7 +549,7 @@ export default {
     },
     //上传mp4文件成功的钩子函数
     onsuccsessmp4(response, file, fileList) {
-      if (this.fileList.length < 10 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resbCode == 200) {
         this.uploadRate = 100;
         this.newdata.videoUrl = response.data.url;
       } else {
@@ -575,7 +575,7 @@ export default {
         );
       } else {
         this.$ajax.addH5(this.h5, (res) => {
-          if (res.resb == 200) {
+          if (res.resbCode == 200) {
             let linkh5url = res.data.id;
             this.$ajax.updateEvents(
               { id: this.newdata.id, parameters: { h5id: linkh5url } },
@@ -619,7 +619,7 @@ export default {
       return accept && isLt5M && limit;
     },
     // onsuccsesspic(response, file, fileList) {
-    //   if (this.fileList.length < 5 && response.resb == 200) {
+    //   if (this.fileList.length < 5 && response.resbCode == 200) {
     //     this.fileList.push(response.shortUrl)
     //     this.newdata.picurl = this.fileList.join()
     //     this.fullscreenLoading = false;
@@ -635,7 +635,7 @@ export default {
     },
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "thumbnail", response.data.url);
       }
     },

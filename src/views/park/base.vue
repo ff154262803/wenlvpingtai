@@ -774,7 +774,7 @@ export default {
       this.fullscreenLoading = true;
     },
     onsuccsess(response, file, fileList) {
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$ajax.updatePark(
           {
             id: this.parkid,

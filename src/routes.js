@@ -211,7 +211,7 @@ const router = new VueRouter({
         },
         //基础配置
         {
-            path: '/', component: Home, name: 'underlying', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'topline', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/topline', component: topline, name: '公告管理', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/message', component: message, name: '消息推送 ', meta: { requireAuth: true, parent: '/base' } },
@@ -220,7 +220,7 @@ const router = new VueRouter({
         },
         //景点管理
         {
-            path: '/', component: Home, name: 'scenicSpotAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'sencelist', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/sencelist', component: sencelist, name: '景点列表', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/procam', component: procam, name: '全景资源管理', meta: { requireAuth: true, parent: '/base' } },
@@ -229,7 +229,7 @@ const router = new VueRouter({
         },
         //商品管理
         {
-            path: '/', component: Home, name: 'shopAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'shopMessage', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/shopMessage', component: shopMessage, name: '商品信息设置', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/shopOrder', component: shopOrder, name: '商品订单管理', meta: { requireAuth: true, parent: '/base' } },
@@ -243,7 +243,7 @@ const router = new VueRouter({
         },
         //活动管理
         {
-            path: '/', component: Home, name: 'activityAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'schedule', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/schedule', component: schedule, name: '活动列表', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/schedunum', component: schedunum, name: '预约统计', meta: { requireAuth: true, parent: '/base' } },
@@ -251,7 +251,7 @@ const router = new VueRouter({
         },
         //游客服务
         {
-            path: '/', component: Home, name: 'touristAdministration', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
+            path: '/', component: Home, name: 'lostManage', hidden: true, unfold: true, meta: { requireAuth: true, parent: 'parklist', level: 3 },
             children: [
                 { path: '/lostManage', component: lostManage, name: '失物管理', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/leaseItem', component: leaseItem, name: '租赁管理', meta: { requireAuth: true, parent: '/lostManage' } }
@@ -313,7 +313,14 @@ router.beforeEach((to, from, next) => {
                 if (n.name != to.name) {
                     if (n.children) n.children.map(m => {
                         if (permissions) {
-                            if (m.name == '基础配置') {
+                            // console.log('permissions', permissions);
+                            // console.log('m', m);
+                            // console.log('to', to);
+                            // console.log('n.meta.level', n.meta.level);
+                            if (m.name == to.name) {
+                                console.log('to.name', to.name);
+                                console.log('m.name', m.name);
+                                console.log('m,n', m.name == to.name);
                                 for (let i = 0; i < n.children.length; i++) {
                                     for (let j = 0; j < permissions.length; j++) {
                                         if (n.children[i].name == permissions[j].name) {
@@ -323,10 +330,16 @@ router.beforeEach((to, from, next) => {
                                 }
                                 console.log('permissionName', permissionName);
                                 store.state.child = permissionName
+
                             }
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
+                            console.log('to.name', to.name);
+                            console.log('m.name', m.name);
+                            console.log('m,n', m.name == to.name);
+                            console.log('level', n.meta.level - 1);
                             store.state.child = n.children
+                            console.log('n.children', n.children);
                         }
                     })
                 }

@@ -323,7 +323,7 @@ export default {
         );
       } else {
         this.$ajax.addH5(this.h5, (res) => {
-          if (res.resb == 200) {
+          if (res.resbCode == 200) {
             this.addData.h5id = res.data.id;
             this.updateLeaseRes();
           }

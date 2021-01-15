@@ -92,10 +92,10 @@ export default {
                   sessionStorage.setItem("user", JSON.stringify(storage));
                 } else {
                   sessionStorage.setItem("user", JSON.stringify(storage));
-                  sessionStorage.setItem(
-                    "permissions",
-                    JSON.stringify(res.data.authRole.permissions)
-                  );
+                  // sessionStorage.setItem(
+                  //   "permissions",
+                  //   JSON.stringify(res.data.authRole.permissions)
+                  // );
                 }
                 console.log(res, "用户登录");
                 if (res.data.isadmin) {

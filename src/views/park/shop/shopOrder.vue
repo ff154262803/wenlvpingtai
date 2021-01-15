@@ -70,7 +70,7 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="orderno" label="订单号" align="center">
+      <el-table-column prop="orderNo" label="订单号" align="center">
       </el-table-column>
       <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
@@ -108,12 +108,14 @@
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
-          <!-- <el-button
+          <el-button
             type="text"
             size="small"
+            v-if="isadmin == true"
+            @click="refund(scope.row.orderNo)"
             :disabled="scope.row.completeStatus == 2 ? disabled : !disabled"
             >{{ scope.row.completeStatus == 2 ? "已退款" : "退款" }}</el-button
-          > -->
+          >
           <el-button
             type="text"
             size="small"
@@ -194,6 +196,7 @@ export default {
       GiveBackData: {},
       tableData: [],
       multipleSelection: [],
+      isadmin: JSON.parse(sessionStorage.getItem("user")).isadmin,
     };
   },
   mounted() {
@@ -212,9 +215,9 @@ export default {
     //查询
     queryOrderList() {
       this.$ajax.queryOrderList(this.query, (res) => {
+        console.log(res.data);
         this.tableData = res.data;
         this.total = res.total;
-        console.log("this.tableData", this.tableData);
       });
     },
     //改变分类
@@ -238,6 +241,25 @@ export default {
       this.query.startDate = time ? time[0] : "";
       this.query.endDate = time ? time[1] : "";
       this.queryOrderList();
+    },
+    //核销操作单行
+    refund(orderNo) {
+      console.log(orderNo);
+      this.$confirm("您确定要退款选中商品订单吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$ajax.refund({ orderNo: orderNo }, (res) => {
+            this.$message({
+              type: "success",
+              message: "设置成功!",
+            });
+            this.queryOrderList();
+          });
+        })
+        .catch(() => {});
     },
     //核销操作单行
     enableState(id) {

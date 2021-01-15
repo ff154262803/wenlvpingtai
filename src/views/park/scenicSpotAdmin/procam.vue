@@ -284,7 +284,7 @@ export default {
     },
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "picurl", response.shortUrl);
       }
     },

@@ -284,9 +284,6 @@ export default {
         mallName: [{ required: true, message: "必填项", trigger: "blur" }],
         putAwayStatus: [{ required: true, message: "必填项", trigger: "blur" }],
         parkName: [{ required: true, message: "必填项", trigger: "blur" }],
-        videoUrl: [
-          { required: true, message: "视频不能为空", trigger: "blur" },
-        ],
         videoPicture: [
           { required: true, message: "视频封面不能为空", trigger: "blur" },
         ],
@@ -350,11 +347,7 @@ export default {
       // });
       // this.newdata.mallName = null;
     },
-    deling(val) {
-      if (val == "videoUrl") {
-        this.newdata.videoUrl = "";
-      }
-    },
+
     close(i) {
       this.fileList.splice(i, 1);
       this.newdata.picurl = this.fileList.join();
@@ -410,7 +403,7 @@ export default {
       return accept && isLt5M && limit;
     },
     onsuccsesspic(response, file, fileList) {
-      if (this.fileList.length < 10 && response.resb == 200) {
+      if (this.fileList.length < 10 && response.resbCode == 200) {
         this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
@@ -426,13 +419,13 @@ export default {
     },
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "thumbnail", response.data.url);
       }
     },
     onsuccsess1(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "videoPicture", response.data.url);
       }
     },
@@ -462,13 +455,15 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$ajax.addCoup(this.newdata, (res) => {
-            console.log("newdata", this.newdata);
-            this.$message({
-              type: "success",
-              message: "提交成功!",
-            });
-            this.Addshow = false;
-            this.queryCoupList();
+            if (res.resbCode == 200) {
+              console.log("newdata", this.newdata);
+              this.$message({
+                type: "success",
+                message: "提交成功!",
+              });
+              this.Addshow = false;
+              this.queryCoupList();
+            }
           });
         } else {
           return false;

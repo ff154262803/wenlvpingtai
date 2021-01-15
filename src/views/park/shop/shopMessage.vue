@@ -418,6 +418,7 @@ export default {
       }
     };
     return {
+      merchantList: [], //商家名称
       detailBol: false,
       typeNamelist: [], //商品分类名称
       typelist: ["实物商品", "虚拟商品"], //商品类型
@@ -500,7 +501,7 @@ export default {
     //缩略图上传成功
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.$set(this.newdata, "thumbnail", response.data.url);
       }
     },
@@ -545,7 +546,7 @@ export default {
     },
     //上传图片成功后的钩子函数
     onsuccsesspic(response, file, fileList) {
-      if (response.resb == 200) {
+      if (response.resbCode == 200) {
         this.fileList.push(response.data.url);
         this.newdata.picurl = this.fileList.join();
         this.fullscreenLoading = false;
