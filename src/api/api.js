@@ -8,20 +8,21 @@ let base = ip.state.ip; // 'http://39.107.112.17:5000/api'
 export default {
     POST(url, data, callback, errback) {
         var storage = JSON.parse(sessionStorage.getItem('user'));
-        data.ver = '1.0';
-        if (storage) {
-            if (!data.uid) data.uid = storage.uid;
-            data.uKey = storage.uKey;
+        if (typeof (data) === "object") {
+            data.ver = '1.0';
+            if (storage) {
+                if (!data.uid) data.uid = storage.uid;
+                data.uKey = storage.uKey;
+            }
         }
-        console.log(storage);
         axios({
             url: url, method: 'post', data: data,
             headers: {
                 'Authorization': storage && storage.uKey,
+                'Content-Type': 'application/json;charset=UTF-8'
             }
         })
             .then(res => {
-                //   console.log(res);
                 this.ajaxNext(res.data, callback, errback);
             });
     },

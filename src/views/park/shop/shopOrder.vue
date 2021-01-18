@@ -37,24 +37,29 @@
     <div class="filter">
       <strong>状态：</strong>
       <span
-        @click="query.completeStatus = ''"
-        :class="query.completeStatus == '' ? 'active' : ''"
+        @click="query.status = ''"
+        :class="query.status == '' ? 'active' : ''"
         >不限</span
       >
       <span
-        @click="query.completeStatus = '0'"
-        :class="query.completeStatus == '0' ? 'active' : ''"
+        @click="query.status = '05'"
+        :class="query.status == '05' ? 'active' : ''"
         >待核销</span
       >
       <span
-        @click="query.completeStatus = '1'"
-        :class="query.completeStatus == '1' ? 'active' : ''"
+        @click="query.status = '09'"
+        :class="query.status == '09' ? 'active' : ''"
         >已核销</span
       >
       <span
-        @click="query.completeStatus = '2'"
-        :class="query.completeStatus == '2' ? 'active' : ''"
+        @click="query.status = '04'"
+        :class="query.status == '04' ? 'active' : ''"
         >已退款</span
+      >
+      <span
+        @click="query.status = '01'"
+        :class="query.status == '01' ? 'active' : ''"
+        >已支付</span
       >
     </div>
     <!--表格内容-->
@@ -74,7 +79,7 @@
       </el-table-column>
       <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
-      <el-table-column prop="ordertype" label="分类" align="center">
+      <el-table-column prop="productClass" label="分类" align="center">
       </el-table-column>
       <el-table-column prop="username" label="用户名" align="center">
       </el-table-column>
@@ -97,11 +102,15 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.completeStatus == "0"
+          scope.row.status == "01"
+            ? "已支付"
+            : scope.row.status == "10"
+            ? "退款中"
+            : scope.row.status == "05"
             ? "待核销"
-            : scope.row.completeStatus == "1"
+            : scope.row.status == "09"
             ? "已核销"
-            : scope.row.completeStatus == "2"
+            : scope.row.status == "04"
             ? "已退款"
             : ""
         }}</template>
@@ -113,21 +122,27 @@
             size="small"
             v-if="isadmin == true"
             @click="refund(scope.row.orderNo)"
-            :disabled="scope.row.completeStatus == 2 ? disabled : !disabled"
-            >{{ scope.row.completeStatus == 2 ? "已退款" : "退款" }}</el-button
+            :disabled="
+              scope.row.status == '04'
+                ? disabled
+                : scope.row.status == '10'
+                ? disabled
+                : !disabled
+            "
+            >{{ scope.row.status == "04" ? "退款" : "退款" }}</el-button
           >
           <el-button
             type="text"
             size="small"
             @click="enableState(scope.row.id)"
             :disabled="
-              scope.row.completeStatus == 2
+              scope.row.status == '05'
                 ? disabled
-                : scope.row.completeStatus == 1
+                : scope.row.status == '09'
                 ? disabled
                 : !disabled
             "
-            >{{ scope.row.completeStatus == 1 ? "核销" : "核销" }}</el-button
+            >{{ scope.row.status == "05" ? "核销" : "核销" }}</el-button
           >
         </template>
       </el-table-column>
@@ -186,7 +201,7 @@ export default {
         page: 1,
         count: 10,
         // parkid: sessionStorage.getItem("parkid"),
-        completeStatus: "",
+        status: "",
         condition: "",
         endDate: "",
         productClass: "",
@@ -242,7 +257,7 @@ export default {
       this.query.endDate = time ? time[1] : "";
       this.queryOrderList();
     },
-    //核销操作单行
+    //退款操作单行
     refund(orderNo) {
       console.log(orderNo);
       this.$confirm("您确定要退款选中商品订单吗?", "提示", {
@@ -251,7 +266,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$ajax.refund({ orderNo: orderNo }, (res) => {
+          this.$ajax.refund(orderNo, (res) => {
             this.$message({
               type: "success",
               message: "设置成功!",

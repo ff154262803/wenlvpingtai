@@ -36,6 +36,13 @@
       <el-table-column prop="amount" label="金额（元）" align="center">
       </el-table-column>
       <el-table-column prop="parcularsType" label="类型" align="center">
+        <template slot-scope="scope">{{
+          scope.row.parcularsType == 1
+            ? "五彩石"
+            : scope.row.parcularsType == 2
+            ? "积分"
+            : "优惠券"
+        }}</template>
       </el-table-column>
       <el-table-column prop="payment" label="支付方式" align="center">
       </el-table-column>
@@ -84,9 +91,9 @@ export default {
       this.query.type = " ";
     },
     queryWebUserList() {
-      console.log(this.query);
       this.$ajax.stoneList(this.query, (res) => {
         this.dataList = res.data;
+        console.log("res.data", res.data);
         this.total = res.total;
       });
     },

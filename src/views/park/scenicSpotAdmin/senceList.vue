@@ -294,14 +294,15 @@ export default {
         remark: [{ max: 200, message: "最多200个字符", trigger: "blur" }],
         phonenumber: [{ validator: checkPhone, trigger: "blur" }],
         lowlevel: [
-          { required: true, message: "请选择最低显示层级", trigger: "change" },
+          { required: true, message: "请选择最低显示层级", trigger: "blur" },
+        ],
+        opentime: [
+          { required: true, message: "请输入开放时间", trigger: "blur" },
         ],
         highlevel: [
-          { required: true, message: "请选择最高显示层级", trigger: "change" },
+          { required: true, message: "请选择最高显示层级", trigger: "blur" },
         ],
-        type: [
-          { required: true, message: "请选择景点类型", trigger: "change" },
-        ],
+        type: [{ required: true, message: "请选择景点类型", trigger: "blur" }],
       },
     };
   },

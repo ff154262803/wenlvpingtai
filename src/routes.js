@@ -318,9 +318,9 @@ router.beforeEach((to, from, next) => {
                             // console.log('to', to);
                             // console.log('n.meta.level', n.meta.level);
                             if (m.name == to.name) {
-                                console.log('to.name', to.name);
-                                console.log('m.name', m.name);
-                                console.log('m,n', m.name == to.name);
+                                // console.log('to.name', to.name);
+                                // console.log('m.name', m.name);
+                                // console.log('m,n', m.name == to.name);
                                 for (let i = 0; i < n.children.length; i++) {
                                     for (let j = 0; j < permissions.length; j++) {
                                         if (n.children[i].name == permissions[j].name) {
@@ -328,18 +328,18 @@ router.beforeEach((to, from, next) => {
                                         }
                                     }
                                 }
-                                console.log('permissionName', permissionName);
+                                // console.log('permissionName', permissionName);
                                 store.state.child = permissionName
 
                             }
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
-                            console.log('to.name', to.name);
-                            console.log('m.name', m.name);
-                            console.log('m,n', m.name == to.name);
-                            console.log('level', n.meta.level - 1);
+                            // console.log('to.name', to.name);
+                            // console.log('m.name', m.name);
+                            // console.log('m,n', m.name == to.name);
+                            // console.log('level', n.meta.level - 1);
                             store.state.child = n.children
-                            console.log('n.children', n.children);
+                            // console.log('n.children', n.children);
                         }
                     })
                 }
