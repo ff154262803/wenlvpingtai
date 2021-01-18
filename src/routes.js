@@ -68,6 +68,7 @@ import hotelAdmin from './views/park/hotelAdmin';//酒店管理
 import touristAdmin from './views/park/touristAdmin/touristAdmin';//游客管理
 import stoneDetail from './views/park/touristAdmin/stoneDetail';//五彩石明细记录
 import integralDetail from './views/park/touristAdmin/integralDetail';//积分明细记录
+import discountAdmin from './views/park/touristAdmin/discountAdmin';//优惠券明细记录
 //首页配置
 import homeConfiguration from './views/park/homeConfiguration'//首页配置
 //景观设备管理
@@ -263,7 +264,8 @@ const router = new VueRouter({
             children: [
                 { path: '/touristAdmin', component: stoneDetail, name: '游客列表', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/stoneDetail', component: stoneDetail, name: '五彩石明细记录', meta: { requireAuth: true, parent: '/base' } },
-                { path: '/integralDetail', component: integralDetail, name: '积分明细记录', meta: { requireAuth: true, parent: '/base' } }
+                { path: '/integralDetail', component: integralDetail, name: '积分明细记录', meta: { requireAuth: true, parent: '/base' } },
+                { path: '/discountAdmin', component: discountAdmin, name: '优惠券明细记录', meta: { requireAuth: true, parent: '/base' } }
             ]
         },
         //租赁管理
@@ -301,7 +303,6 @@ router.beforeEach((to, from, next) => {
         sessionStorage.removeItem('user');
     }
     // let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
-
     let user = sessionStorage.getItem('user');
     let permissions = JSON.parse(sessionStorage.getItem('permissions'));
     let permissionName = []
@@ -344,7 +345,6 @@ router.beforeEach((to, from, next) => {
                     })
                 }
             })
-
             next();
         }
     } else {

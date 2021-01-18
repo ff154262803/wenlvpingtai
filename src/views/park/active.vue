@@ -432,7 +432,7 @@ export default {
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         address: [
-          { required: true, message: "地址不能为空" },
+          { required: true, message: "地址不能为空", trigger: "blur" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
@@ -517,6 +517,9 @@ export default {
           }
         });
       }
+      this.$nextTick(() => {
+        this.$refs["newdata"].resetFields();
+      });
     },
     detail(res) {
       console.log(res);
@@ -667,6 +670,7 @@ export default {
           videoPicture: "",
           videoUrl: "",
         };
+        this.$refs["newdata"].resetFields();
       }
     },
     cancel(formName) {

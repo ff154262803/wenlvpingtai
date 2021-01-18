@@ -122,7 +122,12 @@
         </div>
         <div class="el-dialog__body">
           <el-form :model="addData" :rules="rules" ref="addData">
-            <el-form-item label="标题" label-width="65px" prop="title">
+            <el-form-item
+              label="标题"
+              label-width="65px"
+              prop="title"
+              placeholder="请输入标题"
+            >
               <el-input v-model="addData.title" style="width: 200px"></el-input>
             </el-form-item>
             <el-form-item label="有效期" label-width="65px" prop="time">

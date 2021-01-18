@@ -799,6 +799,10 @@ export default {
     scoreList(data, callback, errback) {
         this.POST(`${base}/manage/coup/scoreList`, data, callback, errback);
     },
+    //优惠券明细记录查询
+    couponList(data, callback, errback) {
+        this.POST(`${base}/manage/coup/couponList`, data, callback, errback);
+    },
     //商店下拉
     // business(data, callback, errback) {
     //     this.POST(`${base}/manage/product/business`, data, callback, errback);

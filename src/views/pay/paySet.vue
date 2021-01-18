@@ -47,38 +47,41 @@
       <el-table-column
         prop="caption"
         label="名称"
-        width="150"
         align="center"
       ></el-table-column>
       <el-table-column
         prop="point"
         label="五彩石"
-        width="100"
         align="center"
       ></el-table-column>
       <el-table-column
         prop="price"
         label="金额（元）"
-        width="100"
         align="center"
       ></el-table-column>
       <el-table-column
         prop="discount"
         label="折扣"
-        width="100"
         align="center"
       ></el-table-column>
-      <el-table-column prop="num" label="折扣期限" align="center">
+      <el-table-column
+        prop="discountprice"
+        label="折扣后价格（元）"
+        width="150"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="num" label="折扣期限" align="center" width="200">
         <template slot-scope="scope">{{
-          scope.row.starttime + "——" + scope.row.endtime
+          scope.row.starttime + "至" + scope.row.endtime
         }}</template>
       </el-table-column>
       <el-table-column
         prop="createtime"
         label="创建时间"
         align="center"
+        width="200"
       ></el-table-column>
-      <el-table-column label="操作" width="150" align="center">
+      <el-table-column label="操作" width="100" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="edit(scope.row)"
             >修改</el-button
@@ -106,6 +109,7 @@
       :title="addData.id ? '修改阶梯' : '添加阶梯'"
       :visible.sync="addBol"
       :close-on-click-modal="false"
+      @close="handleDialogClose('addData')"
     >
       <el-form :model="addData" :rules="rules" ref="addData">
         <el-form-item label="名称：" label-width="120px" prop="caption">
@@ -120,6 +124,14 @@
         <el-form-item label="支付折扣：" label-width="120px" prop="discount">
           <el-input
             v-model.number="addData.discount"
+            style="width: 200px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="折扣后价格：" label-width="120px" prop="discount">
+          <el-input
+            v-model.number="addData.discountprice"
+            :value="countNum"
+            :disabled="true"
             style="width: 200px"
           ></el-input>
         </el-form-item>
@@ -142,7 +154,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addBol = false">取 消</el-button>
+        <el-button @click="cancel('addData')">取 消</el-button>
         <el-button type="primary" @click="submit('addData')">确 定</el-button>
       </div>
     </el-dialog>
@@ -222,15 +234,37 @@ export default {
     this.getPayType();
     this.queryPayOptionList();
   },
+  computed: {
+    countNum() {
+      if (this.addData.price && this.addData.discount) {
+        this.addData.discountprice = (
+          (Number(this.addData.price) * Number(this.addData.discount)) /
+          10
+        ).toFixed(2);
+      }
+    },
+  },
   methods: {
+    cancel(formName) {
+      this.addBol = false;
+      this.$refs[formName].resetFields();
+    },
+    handleDialogClose(formName) {
+      this.addBol = false;
+      this.addData = {};
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields();
+      });
+    },
     queryPayOptionList() {
       this.$ajax.queryPayOptionList({}, (res) => {
         if (res.resbCode == 200) {
           console.log("200成功");
           //console.log("res", res);
-          res.data.forEach((n) => {
-            n.price = n.price / 100;
-          });
+          // res.data.forEach((n) => {
+          //   n.price = n.price / 100;
+          //   n.discountprice = n.discountprice / 10;
+          // });
           this.tableData = res.data;
         }
       });
@@ -261,7 +295,7 @@ export default {
         if (valid) {
           this.addData.starttime = this.addData.time[0];
           this.addData.endtime = this.addData.time[1];
-          this.addData.price = this.addData.price * 100;
+          this.addData.price = this.addData.price;
           if (this.addData.id) {
             this.$ajax.updatePayOption(this.addData, (res) => {
               this.$message({
@@ -284,6 +318,7 @@ export default {
       });
     },
     edit(data) {
+      console.log(data);
       this.addBol = true;
       this.addData = data;
       this.$set(this.addData, "time", [data.starttime, data.endtime]);

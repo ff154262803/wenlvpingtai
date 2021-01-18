@@ -6,7 +6,7 @@
       clearable
       style="width: 300px"
     ></el-input>
-    <div class="filter">
+    <!-- <div class="filter">
       <strong>分类：</strong>
       <span
         @click="query.productClass = ''"
@@ -20,7 +20,7 @@
         @click="query.productClass = item"
         >{{ item }}</span
       >
-    </div>
+    </div> -->
     <div class="filter">
       <strong>时间：</strong>
       <el-date-picker
@@ -79,8 +79,8 @@
       </el-table-column>
       <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="分类" align="center">
-      </el-table-column>
+      <!-- <el-table-column prop="productClass" label="分类" align="center">
+      </el-table-column> -->
       <el-table-column prop="username" label="用户名" align="center">
       </el-table-column>
       <el-table-column prop="mobile" label="手机号" align="center">
@@ -123,26 +123,20 @@
             v-if="isadmin == true"
             @click="refund(scope.row.orderNo)"
             :disabled="
-              scope.row.status == '04'
+              scope.row.status == '05'
                 ? disabled
                 : scope.row.status == '10'
                 ? disabled
                 : !disabled
             "
-            >{{ scope.row.status == "04" ? "退款" : "退款" }}</el-button
+            >退款</el-button
           >
           <el-button
             type="text"
             size="small"
             @click="enableState(scope.row.id)"
-            :disabled="
-              scope.row.status == '05'
-                ? disabled
-                : scope.row.status == '09'
-                ? disabled
-                : !disabled
-            "
-            >{{ scope.row.status == "05" ? "核销" : "核销" }}</el-button
+            :disabled="scope.row.status == '01' ? !disabled : disabled"
+            >核销</el-button
           >
         </template>
       </el-table-column>
@@ -278,6 +272,7 @@ export default {
     },
     //核销操作单行
     enableState(id) {
+      console.log(id);
       this.$confirm("您确定要核销选中商品订单吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

@@ -696,6 +696,7 @@ export default {
         this.h5 = { content: "" };
         this.detailBol = false;
       }
+      this.$refs["newdata"].resetFields();
     },
     cancel(formName) {
       this.Addshow = false;

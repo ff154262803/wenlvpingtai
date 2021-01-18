@@ -342,6 +342,7 @@ export default {
         remark: "",
         picurl: "",
       };
+      this.$refs[formName].resetFields(); //关闭弹框后清除表单验证
     },
     add(formName) {
       console.log(this.newdata);
