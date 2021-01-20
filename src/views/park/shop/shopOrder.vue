@@ -44,12 +44,12 @@
       <span
         @click="query.status = '05'"
         :class="query.status == '05' ? 'active' : ''"
-        >待核销</span
+        >已核销</span
       >
       <span
-        @click="query.status = '09'"
-        :class="query.status == '09' ? 'active' : ''"
-        >已核销</span
+        @click="query.status = '01'"
+        :class="query.status == '01' ? 'active' : ''"
+        >待核销</span
       >
       <span
         @click="query.status = '04'"
@@ -57,9 +57,9 @@
         >已退款</span
       >
       <span
-        @click="query.status = '01'"
-        :class="query.status == '01' ? 'active' : ''"
-        >已支付</span
+        @click="query.status = '10'"
+        :class="query.status == '10' ? 'active' : ''"
+        >退款中</span
       >
     </div>
     <!--表格内容-->
@@ -103,12 +103,10 @@
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">{{
           scope.row.status == "01"
-            ? "已支付"
+            ? "待核销"
             : scope.row.status == "10"
             ? "退款中"
             : scope.row.status == "05"
-            ? "待核销"
-            : scope.row.status == "09"
             ? "已核销"
             : scope.row.status == "04"
             ? "已退款"
@@ -122,13 +120,7 @@
             size="small"
             v-if="isadmin == true"
             @click="refund(scope.row.orderNo)"
-            :disabled="
-              scope.row.status == '05'
-                ? disabled
-                : scope.row.status == '10'
-                ? disabled
-                : !disabled
-            "
+            :disabled="scope.row.status == '05' ? !disabled : disabled"
             >退款</el-button
           >
           <el-button

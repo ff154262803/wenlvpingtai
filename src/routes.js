@@ -303,9 +303,9 @@ router.beforeEach((to, from, next) => {
         sessionStorage.removeItem('user');
     }
     // let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
-    let user = sessionStorage.getItem('user');
-    let permissions = JSON.parse(sessionStorage.getItem('permissions'));
-    let permissionName = []
+    var user = sessionStorage.getItem('user');
+    var permissions = JSON.parse(sessionStorage.getItem('permissions'));
+    var permissionName = []
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({ path: '/login' })
@@ -314,33 +314,20 @@ router.beforeEach((to, from, next) => {
                 if (n.name != to.name) {
                     if (n.children) n.children.map(m => {
                         if (permissions) {
-                            // console.log('permissions', permissions);
-                            // console.log('m', m);
-                            // console.log('to', to);
-                            // console.log('n.meta.level', n.meta.level);
-                            if (m.name == to.name) {
-                                // console.log('to.name', to.name);
-                                // console.log('m.name', m.name);
-                                // console.log('m,n', m.name == to.name);
-                                for (let i = 0; i < n.children.length; i++) {
-                                    for (let j = 0; j < permissions.length; j++) {
-                                        if (n.children[i].name == permissions[j].name) {
+                            if (m.name == '基础信息') {
+                                for (let j = 0; j < permissions.length; j++) {
+                                    for (let i = 0; i < n.children.length; i++) {
+                                        if (n.children[i].name === permissions[j].name) {
                                             permissionName.push(n.children[i])
                                         }
                                     }
                                 }
-                                // console.log('permissionName', permissionName);
                                 store.state.child = permissionName
-
                             }
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
-                            // console.log('to.name', to.name);
-                            // console.log('m.name', m.name);
-                            // console.log('m,n', m.name == to.name);
-                            // console.log('level', n.meta.level - 1);
+                            console.log(n.children);
                             store.state.child = n.children
-                            // console.log('n.children', n.children);
                         }
                     })
                 }
