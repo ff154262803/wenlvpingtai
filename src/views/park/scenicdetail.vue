@@ -1141,7 +1141,7 @@ export default {
     },
     beforeUploadmp3(file) {
       const isLt50M = file.size / 1024 / 1024 < 50;
-      const accept = file.type.indexOf("mp3") > -1;
+      const accept = file.type === "audio/mp3" || file.type === "audio/mpeg";
       if (!accept) {
         this.$message.error("上传文件只能是mp3格式!");
       }
@@ -1164,13 +1164,13 @@ export default {
       );
     },
     beforeUploadmp4(file) {
-      const isLt50M = file.size / 1024 / 1024 < 50;
+      const isLt50M = file.size / 1024 / 1024 < 500;
       const accept = file.type.indexOf("mp4") > -1;
       if (!accept) {
         this.$message.error("上传文件只能是mp4格式!");
       }
       if (!isLt50M) {
-        this.$message.error("上传文件大小不能超过 50MB!");
+        this.$message.error("上传文件大小不能超过 500MB!");
       }
       return accept && isLt50M;
     },

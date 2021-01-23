@@ -4,9 +4,9 @@
     <el-form :model="newdata" ref="newdata" label-width="120px">
       <el-form-item label="目标平台" prop="plats">
         <el-checkbox-group v-model="newdata.type">
-          <el-checkbox label="3">小程序</el-checkbox>
-          <el-checkbox label="1">安卓</el-checkbox>
-          <el-checkbox label="2">ios</el-checkbox>
+          <el-checkbox label="3" checked>小程序</el-checkbox>
+          <!-- <el-checkbox label="1">安卓</el-checkbox>
+          <el-checkbox label="2">ios</el-checkbox> -->
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="通知标题" prop="title">

@@ -9,12 +9,8 @@ Vue.use(Vuex)
 const state = {
   count: 10,
   child: [],//储存左侧导航栏内容
-  // ip:'https://unicom-test.zkshiwei.com:12015/api',//请求地址ip
-  // ip:'http://platform.hw.zkshiwei.com:30020/api',//请求地址ip
-
-  ip: 'http://192.192.0.241:5005/api',//开发请求地址
+  ip: 'http://192.192.0.241:5007/api',//开发请求地址
   // ip: 'http://qlv.test.zkshiwei.com:5005/api',//测试请求地址
-  //resip: 'http://192.192.0.241:5005/',
   resip: 'https://ferris-wheel.oss-cn-beijing.aliyuncs.com/',
   //resip: 'http://qlv.test.zkshiwei.com/res/',
   // role: {

@@ -314,15 +314,21 @@ router.beforeEach((to, from, next) => {
                 if (n.name != to.name) {
                     if (n.children) n.children.map(m => {
                         if (permissions) {
-                            if (m.name == '基础信息') {
-                                for (let j = 0; j < permissions.length; j++) {
-                                    for (let i = 0; i < n.children.length; i++) {
-                                        if (n.children[i].name === permissions[j].name) {
-                                            permissionName.push(n.children[i])
+                            if (n.meta.level == 3) {
+                                console.log('进入');
+                                if (m.name == '基础信息') {
+                                    for (let j = 0; j < permissions.length; j++) {
+                                        for (let i = 0; i < n.children.length; i++) {
+                                            if (n.children[i].name == permissions[j].name) {
+                                                permissionName.push(n.children[i])
+                                            }
                                         }
                                     }
+                                    store.state.child = n.children
                                 }
-                                store.state.child = permissionName
+                            } else if (m.name == to.name && n.meta.level - 1) {
+                                console.log(n.children);
+                                store.state.child = n.children
                             }
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
