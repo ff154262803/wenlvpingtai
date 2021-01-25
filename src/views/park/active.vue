@@ -502,20 +502,42 @@ export default {
           }
         );
       } else {
-        this.$ajax.addH5(this.h5, (res) => {
-          if (res.resbCode == 200) {
-            let linkh5url = res.data.id;
-            this.newdata.intro = this.h5.content;
-            this.$ajax.updateEvents(this.newdata, (res) => {
-              this.$message({
-                type: "success",
-                message: "修改成功!",
-              });
-              this.Detailshow = false;
-              this.getlist();
+        // this.$ajax.addH5(this.h5, (res) => {
+        // if (res.resbCode == 200) {
+        // let linkh5url = res.data.id;
+        console.log("走的是这个");
+        this.newdata.intro = this.h5.content;
+        this.$ajax.updateEvents(
+          {
+            videoPicture: this.newdata.videoPicture
+              ? this.newdata.videoPicture
+              : "",
+            parkid: sessionStorage.getItem("parkid"),
+            id: this.newdata.id,
+            intro: this.newdata.intro ? this.newdata.intro : "",
+            videoUrl: this.newdata.videoUrl ? this.newdata.videoUrl : "",
+            caption: this.newdata.caption,
+            endtime: this.newdata.endtime,
+            picurl: this.newdata.picurl ? this.newdata.picurl : "",
+            address: this.newdata.address,
+            thumbnail: this.newdata.thumbnail,
+            issubscribe: this.newdata.issubscribe,
+            starttime: this.newdata.starttime,
+            siteid: this.newdata.siteid,
+            banner: this.newdata.banner,
+            isenable: "1",
+          },
+          (res) => {
+            this.$message({
+              type: "success",
+              message: "修改成功!",
             });
+            this.Detailshow = false;
+            this.getlist();
           }
-        });
+        );
+        // }
+        // });
       }
       this.$nextTick(() => {
         this.$refs["newdata"].resetFields();
@@ -525,20 +547,22 @@ export default {
       console.log(res);
       this.Detailshow = true;
 
-      if (res.h5id) {
-        this.h5.id = res.h5id;
-        this.$ajax.getH5Details({ id: res.h5id }, (res) => {
-          this.h5 = res.data;
-        });
-      } else {
+      // if (res.h5id) {
+      //   this.h5.id = res.h5id;
+      //   this.$ajax.getH5Details({ id: res.h5id }, (res) => {
+      //     this.h5 = res.data;
+      //   });
+      // } else
+      {
         this.newdata = { ...res };
+        console.log("newdata", this.newdata);
+
         this.h5.content = this.newdata.intro;
         this.h5.caption = "";
 
         if (this.newdata.intro == null) {
           this.h5 = { caption: "", content: "" };
         }
-        console.log("newdata", this.newdata);
       }
     },
     gotodetail(row) {

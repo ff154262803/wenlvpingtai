@@ -135,7 +135,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="账号权限" prop="pemissions">
+        <el-form-item label="账号权限">
           <el-tree
             :default-expand-all="true"
             :data="roleTree"

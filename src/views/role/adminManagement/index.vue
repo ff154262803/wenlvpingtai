@@ -59,12 +59,14 @@
         <template slot-scope="scope">{{
           scope.row.parkRoles == null
             ? "系统管理员"
-            : scope.row.parkRoles[0].roleName
+            : scope.row.parkRoles.map((n) => n.roleName).join("、")
         }}</template>
       </el-table-column>
       <el-table-column label="所属园区" align="center"
         ><template slot-scope="scope">{{
-          scope.row.parkRoles == null ? "无" : scope.row.parkRoles[0].parkName
+          scope.row.parkRoles == null
+            ? "无"
+            : scope.row.parkRoles.map((n) => n.parkName).join("、")
         }}</template>
       </el-table-column>
       <el-table-column
@@ -350,7 +352,8 @@ export default {
       this.query.page = 1;
       this.queryManageUserList();
     },
-    search() {
+    search(val) {
+      console.log(val);
       this.query.page = 1;
       this.queryManageUserList();
     },

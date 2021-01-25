@@ -460,7 +460,18 @@ export default {
           { required: true, message: "活动标题不能为空", trigger: "blur" },
         ],
         summary: [{ required: true, message: "简介不能为空", trigger: "blur" }],
-        picurl: [{ required: true, message: "简介不能为空", trigger: "blur" }],
+        picurl: [
+          { required: true, message: "轮播图不能为空", trigger: "blur" },
+        ],
+        thumbnail: [
+          { required: true, message: "缩略图不能为空", trigger: "blur" },
+        ],
+        videoUrl: [
+          { required: true, message: "视频讲解不能为空", trigger: "blur" },
+        ],
+        videoPicture: [
+          { required: true, message: "视频封面不能为空", trigger: "blur" },
+        ],
         detailType: [
           { required: true, message: "请选择详情类型", trigger: "blur" },
         ],

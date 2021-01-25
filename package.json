@@ -15,7 +15,7 @@
     "@tinymce/tinymce-vue": "^3.0.1",
     "axios": "^0.18.0",
     "echarts": "^4.4.0",
-    "element-ui": "^2.4.2",
+    "element-ui": "^2.15.0",
     "font-awesome": "^4.7.0",
     "nprogress": "^0.2.0",
     "tinymce": "^5.0.16",
