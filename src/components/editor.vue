@@ -44,6 +44,7 @@ import "tinymce/plugins/nonbreaking";
 import "tinymce/plugins/autosave";
 import "tinymce/plugins/fullpage";
 import "tinymce/plugins/toc";
+// import "tinymce/plugins/lineheight";
 export default {
   components: {
     Editor,
@@ -62,13 +63,13 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: "lists image table code link textcolor imagetools paste",
+      default: "lists image table code link textcolor imagetools paste ",
     },
 
     toolbar: {
       type: [String, Array],
       default:
-        "undo redo removeformat bold italic underline alignleft aligncenter alignright alignjustify styleselect fontsizeselect  image|forecolor backcolor",
+        "undo redo removeformat bold italic underline alignleft aligncenter alignright alignjustify   styleselect fontsizeselect  image|forecolor backcolor",
     },
   },
   data() {
@@ -92,7 +93,7 @@ export default {
         convert_urls: false,
         image_dimensions: true,
         paste_data_images: false,
-
+        content_style: "p {margin: 0px; border:0px ; padding: 0px;}", //设置行间距
         images_upload_handler: (blobInfo, success, failure) => {
           let param = new FormData(); //创建form对象
           param.append("file", blobInfo.blob()); //通过append向form对象添加数据

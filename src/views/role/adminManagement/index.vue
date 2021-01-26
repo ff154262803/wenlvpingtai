@@ -186,7 +186,7 @@
           prop="ParkRoles"
           v-if="forminfo.isadmin == false"
         >
-          <div
+          <el-row
             style="margin-bottom: 20px"
             v-for="(key, val) in forminfo.parkRoles"
             :key="val"
@@ -222,7 +222,7 @@
               v-if="forminfo.parkRoles.length != 1"
               >删除</el-button
             >
-          </div>
+          </el-row>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="!detailBol">
@@ -288,6 +288,12 @@ export default {
         count: 10,
         parkid: "",
       },
+      query1: {
+        condition: "",
+        page: 1,
+        count: 10,
+        parkid: "",
+      },
       ParkTypeList: [],
       multipleSelection: [],
       Addshow: false,
@@ -320,8 +326,8 @@ export default {
     //添加弹框中下拉框上下级联动
     changeSelect(item) {
       console.log("item", item);
-      this.query.parkid = item;
-      this.$ajax.queryRole(this.query, (res) => {
+      this.query1.parkid = item;
+      this.$ajax.queryRole(this.query1, (res) => {
         this.roleList = res.data;
         console.log(this.roleList, "roleList");
       });
@@ -486,9 +492,12 @@ export default {
 
     //修改
     Edit(item) {
-      console.log(item, "修改");
       this.Addshow = true;
       this.forminfo = { ...item };
+      if (this.forminfo.parkRoles == null) {
+        this.forminfo.parkRoles = [{ city: "", roleid: "" }];
+      }
+      console.log("修改", this.forminfo);
     },
     //详情
     detail(item) {

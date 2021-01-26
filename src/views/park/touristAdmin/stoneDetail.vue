@@ -46,8 +46,8 @@
       </el-table-column>
       <el-table-column prop="payment" label="支付方式" align="center">
       </el-table-column>
-      <el-table-column prop="intro" label="说明" align="center">
-      </el-table-column>
+      <!-- <el-table-column prop="intro" label="说明" align="center">
+      </el-table-column> -->
       <el-table-column label="创建时间" prop="createtime" align="center">
       </el-table-column>
     </el-table>
