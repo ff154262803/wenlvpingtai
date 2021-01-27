@@ -69,7 +69,7 @@ export default {
     toolbar: {
       type: [String, Array],
       default:
-        "undo redo removeformat bold italic underline alignleft aligncenter alignright alignjustify   styleselect fontsizeselect  image|forecolor backcolor",
+        "undo redo removeformat bold italic underline alignleft aligncenter alignright alignjustify  lineheight_formats  styleselect fontsizeselect  image|forecolor backcolor",
     },
   },
   data() {

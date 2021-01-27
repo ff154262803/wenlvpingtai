@@ -432,8 +432,8 @@ export default {
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         address: [
-          { required: true, message: "地址不能为空", trigger: "blur" },
-          { max: 20, message: "最多20个字符", trigger: "blur" },
+          { required: true, message: "简介不能为空", trigger: "blur" },
+          { max: 30, message: "最多30个字符", trigger: "blur" },
         ],
         type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
         issubscribe: [{ required: true, message: "必选", trigger: "blur" }],
