@@ -48,6 +48,12 @@ export default {
                 Message.error(data.resbInfo);
                 router.push('login')
                 break;
+            case 400:
+                Message.error(data.resbInfo);
+                break;
+            case 444:
+                Message.error(data.resbInfo);
+                break;
             case 996:
                 errback(data);
                 break;

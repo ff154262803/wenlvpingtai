@@ -431,6 +431,8 @@ export default {
         caption: "",
         productClass: "",
         type: "",
+        page: 1,
+        count: 10,
       },
       Addshow: false,
       newdata: {

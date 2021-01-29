@@ -324,12 +324,14 @@ router.beforeEach((to, from, next) => {
                                             }
                                         }
                                     }
-                                    store.state.child = n.children
+                                    store.state.child = permissionName
+                                    console.log('permissionName', permissionName);
                                 }
                             } else if (m.name == to.name && n.meta.level - 1) {
                                 console.log(n.children);
                                 store.state.child = n.children
                             }
+
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
                             console.log(n.children);

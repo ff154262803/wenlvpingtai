@@ -127,7 +127,7 @@
       class="demo-box"
       width="670px"
       :close-on-click-modal="false"
-      @close="cancel"
+      @close="cancel('newdata')"
     >
       <el-form :model="forminfo" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="类型" prop="isadmin">
@@ -303,6 +303,7 @@ export default {
         managename: [
           { required: true, message: "请输入用户名", trigger: "blur" },
         ],
+
         account: [{ required: true, validator: acccont, trigger: "blur" }],
         password: [{ required: true, validator: pass, trigger: "blur" }],
         isadmin: [{ required: true, trigger: "blur" }],
@@ -325,14 +326,11 @@ export default {
     },
     //添加弹框中下拉框上下级联动
     changeSelect(item) {
-      console.log("item", item);
       this.query1.parkid = item;
       this.$ajax.queryRole(this.query1, (res) => {
         this.roleList = res.data;
-        console.log(this.roleList, "roleList");
       });
       if (this.forminfo.parkRoles.length) {
-        console.log("存在");
         for (let i = 1; i < this.forminfo.parkRoles.length; i++) {
           console.log("roleid", this.forminfo.parkRoles[i]);
           // this.forminfo.parkRoles[i].roleid = null;
@@ -418,6 +416,9 @@ export default {
     },
 
     cancel(item) {
+      if (item) {
+        this.queryManageUserList();
+      }
       this.Addshow = false;
       this.newdata = {};
       setTimeout(() => {
@@ -430,15 +431,25 @@ export default {
     //添加弹框中园区和角色的下拉框
     addSelect() {
       if (5 > this.forminfo.parkRoles.length) {
-        this.forminfo.parkRoles.push({ city: "", roleid: "" });
+        // this.forminfo.parkRoles.push({ city: "", roleid: "" });
+        this.forminfo.parkRoles.push({ parkid: "", roleid: "" });
+        // this.forminfo.parkRoles.push({ roleid: "" });
       }
     },
     //删除弹框中园区和角色的下拉框
     delSelect(item) {
-      var index = this.forminfo.parkRoles.indexOf(item);
-      if (index !== -1) {
-        this.forminfo.parkRoles.splice(index, 1);
-      }
+      this.$confirm("您确定要删除当前园区和角色吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          var index = this.forminfo.parkRoles.indexOf(item);
+          if (index !== -1) {
+            this.forminfo.parkRoles.splice(index, 1);
+          }
+        })
+        .catch(() => {});
     },
     add() {
       //console.log(this.$refs.form);
@@ -451,6 +462,7 @@ export default {
                 type: "success",
                 message: "修改成功!",
               });
+              this.Addshow = false;
               this.queryManageUserList();
               console.log(this.forminfo, "修改成功");
             });
@@ -462,13 +474,11 @@ export default {
                 type: "success",
                 message: "提交成功!",
               });
+              this.Addshow = false;
               this.queryManageUserList();
               console.log(this.forminfo, "提交成功");
             });
           }
-
-          this.Addshow = false;
-          this.forminfo = {};
         } else {
           return false;
         }
@@ -495,7 +505,9 @@ export default {
       this.Addshow = true;
       this.forminfo = { ...item };
       if (this.forminfo.parkRoles == null) {
-        this.forminfo.parkRoles = [{ city: "", roleid: "" }];
+        // this.forminfo.parkRoles = [{ city: "", roleid: "" }];
+        this.forminfo.parkRoles = [{ parkid: "", roleid: "" }];
+        // this.forminfo.parkRoles = [{ roleid: "" }];
       }
       console.log("修改", this.forminfo);
     },

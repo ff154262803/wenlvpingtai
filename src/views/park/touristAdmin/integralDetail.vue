@@ -43,8 +43,8 @@
           scope.row.addOrReduce == 1 ? "奖励" : "兑换"
         }}</template>
       </el-table-column>
-      <!-- <el-table-column prop="intro" label="说明" align="center">
-      </el-table-column> -->
+      <el-table-column prop="intro" label="说明" align="center">
+      </el-table-column>
       <el-table-column label="创建时间" prop="createtime" align="center">
       </el-table-column>
     </el-table>

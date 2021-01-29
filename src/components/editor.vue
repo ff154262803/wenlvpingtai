@@ -9,6 +9,7 @@ import axios from "../api/axios";
 import tinymce from "tinymce/tinymce";
 import "tinymce/themes/silver/theme";
 import Editor from "@tinymce/tinymce-vue";
+import "tinymce/icons/default/icons";
 import "tinymce/plugins/image";
 import "tinymce/plugins/table";
 import "tinymce/plugins/link";
@@ -89,11 +90,11 @@ export default {
         toolbar: this.toolbar,
         // toolbar: false,
         branding: false,
-        menubar: false,
+        menubar: true,
         convert_urls: false,
         image_dimensions: true,
         paste_data_images: false,
-        content_style: "p {margin: 0px; border:0px ; padding: 0px;}", //设置行间距
+        // content_style: "p {margin: 0px; border:0px ; padding: 0px;}", //设置行间距
         images_upload_handler: (blobInfo, success, failure) => {
           let param = new FormData(); //创建form对象
           param.append("file", blobInfo.blob()); //通过append向form对象添加数据

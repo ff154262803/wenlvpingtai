@@ -249,6 +249,13 @@ export default {
         callback();
       }
     };
+    var checkPrice1 = (rule, value, callback) => {
+      if (!/^(([0-9]+\d*)|([0-9]+\d*\.\d{1,2}))$/.test(value) || value > 100) {
+        callback(new Error("请输入最大100的数字"));
+      } else {
+        callback();
+      }
+    };
     var checkPhone = (rule, value, callback) => {
       if (!value) {
         callback();
@@ -302,7 +309,13 @@ export default {
         packnumber: [{ validator: checkPhone, trigger: "blur" }],
         price: [{ required: true, validator: checkPrice, trigger: "blur" }],
         type: [{ required: true, message: "请选择园区类型", trigger: "blur" }],
-        id: [{ required: true, message: "请选择园区id", trigger: "blur" }],
+        id: [
+          {
+            required: true,
+            validator: checkPrice1,
+            trigger: "blur",
+          },
+        ],
       },
       area: [],
       areacity: [],
