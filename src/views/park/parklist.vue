@@ -329,6 +329,7 @@ export default {
     this.get();
     this.getlist();
     this.getarea();
+    // this.update();
   },
   methods: {
     // getparkid(val) {
@@ -526,17 +527,22 @@ export default {
       });
     },
     update(row) {
-      console.log(row);
-      this.$router.push({ path: "/base", query: { id: row.parkid } });
-      sessionStorage.setItem("parkid", row.parkid);
       if (!JSON.parse(sessionStorage.getItem("user")).isadmin) {
         this.$ajax.switchPark({ id: row.parkid }, (res) => {
           sessionStorage.setItem(
             "permissions",
             JSON.stringify(res.data.authRole.permissions)
           );
-          console.log("res", res.data);
+          console.log("res", res);
+          if (res.resbCode == 200) {
+            this.$router.push({ path: "/welcome", query: { id: row.parkid } });
+            sessionStorage.setItem("parkid", row.parkid);
+          }
         });
+      } else {
+        console.log(row);
+        this.$router.push({ path: "/base", query: { id: row.parkid } });
+        sessionStorage.setItem("parkid", row.parkid);
       }
     },
     del(id) {

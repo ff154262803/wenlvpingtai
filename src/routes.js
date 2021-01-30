@@ -84,6 +84,7 @@ import page from './views/basic/page'//页面链接管理
 //权限管理
 import roleManagement from './views/role/roleManagement';//角色管理
 import adminManagement from './views/role/adminManagement';//管理员管理
+import welcome from './views/welcome';//管理员管理
 import axios from 'axios'
 const metaTrue = { meta: { requireAuth: true } }
 
@@ -111,6 +112,7 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'base', hidden: true, meta: { requireAuth: true, level: 2 },
             children: [
+                { path: '/welcome', component: welcome, name: '欢迎进入园区', hidden: true, meta: { requireAuth: true, parent: 'parklist' } },
                 { path: '/base', component: base, name: '基础信息', meta: { requireAuth: true, parent: 'parklist' } },
                 {
                     path: '/topline', component: topline, redirect: 'topline', name: '基础配置', meta: { requireAuth: true, parent: 'parklist' },
@@ -199,7 +201,7 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/', component: Home, name: 'scenicdetail', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
+            path: '/', component: Home, name: 'scenicdetail', title: '', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
                 { path: '/scenicdetail', component: scenicdetail, name: '景点信息', meta: { requireAuth: true, parent: 'sencelist' } },
             ]
@@ -304,18 +306,18 @@ router.beforeEach((to, from, next) => {
     }
     // let isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
     var user = sessionStorage.getItem('user');
-    var permissions = JSON.parse(sessionStorage.getItem('permissions'));
     var permissionName = []
     if (to.meta.requireAuth) { // 是否需要登录
         if (!user && to.path != '/login') { // 如果登录超时跳转页面的话需要增加是否登录超时的判断，如果超时需要重新登录
             next({ path: '/login' })
         } else {
+            var permissions = JSON.parse(sessionStorage.getItem('permissions'));
             router.options.routes.map(n => {
                 if (n.name != to.name) {
                     if (n.children) n.children.map(m => {
                         if (permissions) {
-                            if (n.meta.level == 3) {
-                                console.log('进入');
+                            if (n.meta.level == 2) {
+                                // console.log('进入');
                                 if (m.name == '基础信息') {
                                     for (let j = 0; j < permissions.length; j++) {
                                         for (let i = 0; i < n.children.length; i++) {
@@ -325,22 +327,20 @@ router.beforeEach((to, from, next) => {
                                         }
                                     }
                                     store.state.child = permissionName
-                                    console.log('permissionName', permissionName);
+                                    // console.log('permissionName', permissionName);
                                 }
                             } else if (m.name == to.name && n.meta.level - 1) {
-                                console.log(n.children);
                                 store.state.child = n.children
                             }
-
                         }
                         else if (m.name == to.name && n.meta.level - 1) {
-                            console.log(n.children);
                             store.state.child = n.children
                         }
                     })
                 }
             })
             next();
+
         }
     } else {
         next()

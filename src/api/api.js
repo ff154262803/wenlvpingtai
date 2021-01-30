@@ -49,10 +49,12 @@ export default {
                 router.push('login')
                 break;
             case 400:
+                // Message.error('该类型链接已存在');
                 Message.error(data.resbInfo);
                 break;
             case 444:
                 Message.error(data.resbInfo);
+                // Message.error(data.resbInfo.split('。')[1]);
                 break;
             case 996:
                 errback(data);

@@ -130,11 +130,17 @@ export default {
     backRoute() {
       if (this.$store.state.child.length) {
         this.$store.state.child = [];
-        sessionStorage.removeItem("permissions");
+        // sessionStorage.removeItem("permissions");
       }
-      this.$route.meta.parent
-        ? this.$router.replace({ path: this.$route.meta.parent })
-        : history.back();
+      if (!JSON.parse(sessionStorage.getItem("user")).isadmin) {
+        this.$route.meta.parent
+          ? this.$router.replace({ path: "welcome" })
+          : history.back();
+      } else {
+        this.$route.meta.parent
+          ? this.$router.replace({ path: this.$route.meta.parent })
+          : history.back();
+      }
       if (this.$route.query.id == 3) {
         sessionStorage.removeItem("parkid");
       }
@@ -170,8 +176,8 @@ export default {
   mounted() {
     //权限设置
     var isadmin = JSON.parse(sessionStorage.getItem("user")).isadmin;
-    var permissions = JSON.parse(sessionStorage.getItem("permissions"));
-    console.log("permissions", permissions);
+    // var permissions = JSON.parse(sessionStorage.getItem("permissions"));
+    // console.log("permissions", permissions);
     let showItem = this.$router.options.routes.filter((n) => !n.hidden);
     if (!isadmin) {
       showItem = showItem.filter((ele) => {

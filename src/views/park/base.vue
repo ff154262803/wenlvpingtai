@@ -195,7 +195,7 @@
             </div>
           </el-col>
           <el-col :span="2">
-            <div class="icon" @click="edit('menu')">
+            <div class="icon" @click="edit('menu')" v-if="isadmin == true">
               <img src="../../../static/img/edit.png" alt="" />
             </div>
           </el-col>
@@ -559,6 +559,7 @@ export default {
       }
     };
     return {
+      isadmin: JSON.parse(sessionStorage.getItem("user")).isadmin,
       uploaddata: {
         type: "",
         uKey: JSON.parse(sessionStorage.getItem("user")).uKey,
