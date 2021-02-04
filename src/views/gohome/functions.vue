@@ -7,10 +7,13 @@
     </div>
     <template>
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="index" label="序号"> </el-table-column>
-        <el-table-column prop="themeName" label="功能名称"> </el-table-column>
-        <el-table-column prop="themeImgUrl" label="功能链接"> </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column type="index" label="序号" align="center">
+        </el-table-column>
+        <el-table-column prop="themeName" label="功能名称" align="center">
+        </el-table-column>
+        <el-table-column prop="themeImgUrl" label="功能链接" align="center">
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100" align="center">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small"
               >修改</el-button
@@ -39,7 +42,12 @@
         <el-form-item label="功能链接" label-width="100px" prop="themeImgUrl">
           <el-input v-model="form.themeImgUrl" style="width: 300px"></el-input>
         </el-form-item>
-        <el-form-item label="缩略图" prop="imgUrl" class="imgurl">
+        <el-form-item
+          label="缩略图"
+          label-width="80px"
+          prop="imgUrl"
+          class="imgurl"
+        >
           <el-upload
             class="avatar-uploader"
             :action="$store.state.ip + '/manage/ferriswheel/resources/upload'"
@@ -50,6 +58,7 @@
           >
             <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <span class="recommend">图片推荐大小200*200，并且为圆形png图</span>
           </el-upload>
         </el-form-item>
       </el-form>

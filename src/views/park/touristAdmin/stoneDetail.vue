@@ -18,6 +18,7 @@
       <el-option value=" " label="不限"></el-option>
       <el-option value="1" label="充值"></el-option>
       <el-option value="2" label="消费"></el-option>
+      <el-option value="3" label="奖励"></el-option>
     </el-select>
     <!--表格内容-->
     <el-table
@@ -38,10 +39,10 @@
       <el-table-column prop="parcularsType" label="类型" align="center">
         <template slot-scope="scope">{{
           scope.row.parcularsType == 1
-            ? "五彩石"
+            ? "充值"
             : scope.row.parcularsType == 2
-            ? "积分"
-            : "优惠券"
+            ? "消费"
+            : "奖励"
         }}</template>
       </el-table-column>
       <el-table-column prop="payment" label="支付方式" align="center">

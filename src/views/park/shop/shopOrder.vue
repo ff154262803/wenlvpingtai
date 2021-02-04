@@ -201,7 +201,7 @@ export default {
     };
   },
   mounted() {
-    this.queryTypeList();
+    // this.queryTypeList();
     this.queryOrderList();
   },
   methods: {

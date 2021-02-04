@@ -207,6 +207,9 @@
                   >点击上传</el-button
                 >
               </el-upload>
+              <span class="recommend"
+                >最多上传5张图片，图片推荐大小750*470</span
+              >
               <div style="margin-top: 20px">
                 <div class="pic" v-for="(n, i) in fileList" :key="n">
                   <img :src="n" alt="" class="pic" />
@@ -870,6 +873,10 @@ export default {
 };
 </script>
 <style>
+.recommend {
+  margin-left: 20px;
+  color: #c0c4cc;
+}
 .el-upload-list--picture-card .el-upload-list__item {
   width: 80px;
   height: 80px;
