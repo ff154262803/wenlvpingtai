@@ -131,6 +131,8 @@
             <el-form-item label="简介" prop="summary">
               <el-input
                 v-model="newdata.summary"
+                maxlength="20"
+                show-word-limit
                 style="width: 600px"
                 :disabled="detailBol"
               ></el-input>

@@ -55,7 +55,9 @@ import leaseItem from './views/park/lease/leaseItem'//租赁管理
 import leaseRes from './views/park/lease/leaseRes'//租赁物品
 import leaseDistribution from './views/park/lease/leaseDistribution'//租赁分布
 import scenicdetail from './views/park/scenicdetail'//景点详情
+//充值设置
 import paySet from './views/pay/paySet'//充值设置
+import topUp from './views/pay/topUp.vue'//充值设置
 import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 //新闻管理
@@ -85,6 +87,11 @@ import page from './views/basic/page'//页面链接管理
 import roleManagement from './views/role/roleManagement';//角色管理
 import adminManagement from './views/role/adminManagement';//管理员管理
 import welcome from './views/welcome';//管理员管理
+
+//五彩石商城
+import shopIndex from './views/shopAdmin/shopIndex';//商城首页
+import shopOrders from './views/shopAdmin/shopOrders';//商品订单
+import salesStatistics from './views/shopAdmin/salesStatistics';//销量统计
 import axios from 'axios'
 const metaTrue = { meta: { requireAuth: true } }
 
@@ -160,8 +167,17 @@ const router = new VueRouter({
             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
                 { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
+                { path: '/topUp', component: topUp, name: '充值管理', meta: { requireAuth: true, parent: '/' } },
                 // { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
                 // { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
+            ]
+        },
+        {
+            path: '/', component: Home, name: 'shopIndex', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
+            children: [
+                { path: '/shopIndex', component: shopIndex, name: '商城首页', meta: { title: "五彩石商城", requireAuth: true, parent: '/' } },
+                { path: '/shopOrders', component: shopOrders, name: '商品订单', meta: { requireAuth: true, parent: '/' } },
+                { path: '/salesStatistics', component: salesStatistics, name: '销量统计', meta: { requireAuth: true, parent: '/' } },
             ]
         },
         {
@@ -200,6 +216,7 @@ const router = new VueRouter({
                 { path: '/page', component: page, name: '页面链接管理', meta: { requireAuth: true, parent: '/' } }
             ]
         },
+
         {
             path: '/', component: Home, name: 'scenicdetail', title: '', hidden: true, unfold: true, meta: { requireAuth: true, level: 3 },
             children: [
@@ -267,7 +284,7 @@ const router = new VueRouter({
                 { path: '/touristAdmin', component: stoneDetail, name: '游客列表', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/stoneDetail', component: stoneDetail, name: '五彩石明细记录', meta: { requireAuth: true, parent: '/base' } },
                 { path: '/integralDetail', component: integralDetail, name: '积分明细记录', meta: { requireAuth: true, parent: '/base' } },
-                { path: '/discountAdmin', component: discountAdmin, name: '优惠券明细记录', meta: { requireAuth: true, parent: '/base' } }
+                { path: '/discountAdmin', component: discountAdmin, name: '优惠券明细记录', meta: { requireAuth: true, parent: '/base' } },
             ]
         },
         //租赁管理

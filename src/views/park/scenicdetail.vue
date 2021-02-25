@@ -459,6 +459,56 @@
             </div>
           </el-col>
         </el-row>
+        <el-row class="list" style="height: 80px">
+          <el-col :span="22">
+            <div>
+              <span>福袋：</span>
+              <div
+                class="pic"
+                v-for="(n, i) in fileList1"
+                :key="n"
+                style="margin-top: 10px"
+              >
+                <img :src="n" alt="" class="pic" />
+                <img
+                  src="../../../static/img/close.png"
+                  alt=""
+                  class="close"
+                  @click="close1(i)"
+                />
+              </div>
+            </div>
+          </el-col>
+          <el-upload
+            class="upload-demo"
+            style="display: none"
+            :data="uploaddata"
+            :action="$store.state.ip + '/manage/ferriswheel/resources/upload'"
+            :on-progress="handleLoading"
+            accept="image/jpeg,image/jpg,image/png"
+            :on-success="onsuccsesspic1"
+            :before-upload="beforeUploadpic"
+            :on-error="onerror"
+            multiple
+            :limit="5"
+            :on-exceed="handleExceed1"
+            list-type="picture"
+          >
+            <el-button size="small" type="primary" id="lucky"
+              >点击上传</el-button
+            >
+          </el-upload>
+          <el-col :span="2">
+            <div class="icon">
+              <img
+                src="../../../static/img/upload.png"
+                alt=""
+                v-show="fileList1.length < 5"
+                @click="uploading('lucky')"
+              />
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </div>
     <!--修改景点名-->
@@ -945,6 +995,7 @@ export default {
       placeSearch: "",
       showedit: false,
       fileList: [],
+      fileList1: [],
       detailrules: {
         caption: [
           { required: true, message: "请输入景点名", trigger: "blur" },
@@ -1084,10 +1135,30 @@ export default {
         }
       );
     },
+    close1(i) {
+      this.fileList1.splice(i, 1);
+      this.$ajax.updateSite(
+        { id: this.detail.id, parameters: { postcard: this.fileList1.join() } },
+        (res) => {
+          this.$message({
+            type: "success",
+            message: "修改成功!",
+          });
+          this.getdetail();
+        }
+      );
+    },
     handleExceed(files, fileList) {
       this.$message.warning(
         `当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
           files.length + fileList.length
+        } 个文件`
+      );
+    },
+    handleExceed1(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList1.length
         } 个文件`
       );
     },
@@ -1128,6 +1199,26 @@ export default {
         var list = this.fileList.push(response.data.url);
         this.$ajax.updateSite(
           { id: this.detail.id, parameters: { picurl: this.fileList.join() } },
+          (res) => {
+            this.$message({
+              type: "success",
+              message: "修改成功!",
+            });
+            this.getdetail();
+            this.fullscreenLoading = false;
+          }
+        );
+      }
+    },
+    onsuccsesspic1(response, file, fileList) {
+      if (response.resbCode == 200) {
+        console.log(response.data.url);
+        var list = this.fileList1.push(response.data.url);
+        this.$ajax.updateSite(
+          {
+            id: this.detail.id,
+            parameters: { postcard: this.fileList1.join() },
+          },
           (res) => {
             this.$message({
               type: "success",
@@ -1236,6 +1327,9 @@ export default {
             ? JSON.parse(res.data.electronicfencelist)
             : [];
           this.fileList = res.data.picurl ? res.data.picurl.split(",") : [];
+          this.fileList1 = res.data.postcard
+            ? res.data.postcard.split(",")
+            : [];
           this.y = res.data.lat ? res.data.lat : this.GDMap.getCenter().lat;
           this.x = res.data.lon ? res.data.lon : this.GDMap.getCenter().lng;
 
@@ -1511,8 +1605,8 @@ export default {
 }
 
 .mapbox {
-  top: 600px;
-  left: 0px;
+  top: 490px;
+  left: 780px;
   height: 500px;
 }
 .el-dialog__wrapper {

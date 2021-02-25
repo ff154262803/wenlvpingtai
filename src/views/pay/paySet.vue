@@ -116,10 +116,7 @@
           <el-input v-model="addData.caption" style="width: 200px"></el-input>
         </el-form-item>
         <el-form-item label="支付金额(元)：" label-width="120px" prop="price">
-          <el-input
-            v-model.number="addData.price"
-            style="width: 200px"
-          ></el-input>
+          <el-input v-model="addData.price" style="width: 200px"></el-input>
         </el-form-item>
         <el-form-item label="支付折扣：" label-width="120px" prop="discount">
           <el-input
