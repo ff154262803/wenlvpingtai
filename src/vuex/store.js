@@ -10,6 +10,7 @@ const state = {
   count: 10,
   child: [],//储存左侧导航栏内容
   ip: 'http://192.192.0.241:5007/travelmanage/api',//开发请求地址
+  // ip: 'http://192.192.1.188:5007/travelmanage/api',//武浩本地请求地址
   // ip: 'http://47.95.215.6:5000/travelmanage/api',//测试请求地址
   resip: 'https://ferris-wheel.oss-cn-beijing.aliyuncs.com/',
   //resip: 'http://qlv.test.zkshiwei.com/res/',

@@ -6,23 +6,10 @@
       clearable
       style="width: 300px"
     ></el-input>
-    <!-- <div class="filter">
-      <strong>分类：</strong>
-      <span
-        @click="query.productClass = ''"
-        :class="query.productClass == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span
-        v-for="item in typeNamelist"
-        :key="item"
-        :class="query.productClass == item ? 'active' : ''"
-        @click="query.productClass = item"
-        >{{ item }}</span
-      >
-    </div> -->
+    <el-button icon="el-icon-search" circle></el-button>
+    <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
     <div class="filter">
-      <strong>统计时间：</strong>
+      <strong>订单日期：</strong>
       <el-date-picker
         v-model="query.createtime"
         type="daterange"
@@ -47,13 +34,34 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="商品名称" align="center">
+      <el-table-column prop="orderNo" label="提现单号" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="商品分类" align="center">
+      <el-table-column prop="mobile" label="用户名" align="center">
       </el-table-column>
-      <el-table-column prop="username" label="日销量" align="center">
+      <el-table-column prop="mobile" label="提现账户" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="总销量" align="center">
+      <el-table-column prop="productClass" label="支付金额" align="center">
+      </el-table-column>
+      <el-table-column prop="amount" label="充值金额" align="center">
+      </el-table-column>
+      <el-table-column
+        prop="createtime"
+        label="申请时间"
+        width="150"
+        align="center"
+      >
+      </el-table-column>
+      <el-table-column prop="amount" label="状态" align="center">
+      </el-table-column>
+      <el-table-column label="操作" width="150" align="center">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="withdraw(scope.row)"
+            >提现</el-button
+          >
+          <el-button type="text" size="small" @click="details(scope.row)"
+            >详情</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
     <!--分页-->
@@ -75,12 +83,110 @@
       </el-pagination>
       <el-button size="small">确定</el-button>
     </el-col>
+    <el-dialog title="审核详情" :visible.sync="detail" width="1000px">
+      <el-form
+        :model="formData"
+        :rules="rules"
+        ref="formData"
+        label-width="100px"
+        class="form"
+      >
+        <table
+          border="1"
+          cellspacing="0"
+          width="800px"
+          align="center"
+          style="margin-top: 30px"
+        >
+          <tr>
+            <td colSpan="4" style="background-color: #9d9d9d">提现信息</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">提现单号：</td>
+            <td colSpan="3" align="center">暂无</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">提现账户：</td>
+            <td align="center">{{ formData.orderNo }}</td>
+            <td align="center" style="background-color: #bbbbbb">支付金额：</td>
+            <td align="center">{{ formData.username }}</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">用户名：</td>
+            <td align="center">{{ formData.mobile }}</td>
+            <td align="center" style="background-color: #bbbbbb">提现金额：</td>
+            <td align="center">{{ formData.updatetime }}</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">提现账户：</td>
+            <td align="center">{{ formData.mobile }}</td>
+            <td align="center" style="background-color: #bbbbbb">申请日期：</td>
+            <td align="center">{{ formData.updatetime }}</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">状态：</td>
+            <td align="center">{{ formData.mobile }}</td>
+            <td align="center" style="background-color: #bbbbbb">到期日期：</td>
+            <td align="center">{{ formData.updatetime }}</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">执行人：</td>
+            <td colSpan="3" align="center">暂无</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">是否驳回：</td>
+            <td colSpan="3" align="center">暂无</td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #bbbbbb">驳回理由：</td>
+            <td colSpan="3" align="center">暂无</td>
+          </tr>
+        </table>
+      </el-form>
+    </el-dialog>
+    <el-dialog title="提现审核" :visible.sync="deposit" width="500px">
+      <el-form
+        :model="formData"
+        :rules="rules"
+        ref="formData"
+        label-width="100px"
+        class="form"
+      >
+        <el-form :model="addData" :rules="rules" ref="addData">
+          <el-form-item label="提现金额：" label-width="120px" prop="caption">
+          </el-form-item>
+          <el-form-item label="提现账户：" label-width="120px" prop="price">
+          </el-form-item>
+          <el-form-item label="提现通道：" label-width="120px" prop="discount">
+            <el-select v-model="value" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="是否驳回：" label-width="120px" prop="discount">
+            <el-radio v-model="radio" label="1">否</el-radio>
+            <el-radio v-model="radio" label="2">是</el-radio>
+          </el-form-item>
+          <el-form-item label="驳回原因：" label-width="120px" prop="point">
+            <el-input
+              type="textarea"
+              :rows="2"
+              placeholder="请输入内容"
+              v-model="textarea"
+            >
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
-import axios from "axios";
-import ip from "../../vuex/store";
-let base = ip.state.ip;
 export default {
   name: "leaseItem",
   data() {
@@ -108,17 +214,21 @@ export default {
       total: 0,
       unused: 0,
       disabled: true,
+      deposit: false,
       detail: false,
       query: {
         page: 1,
         count: 10,
+        // parkid: sessionStorage.getItem("parkid"),
+        status: "",
         condition: "",
-        endTate: "",
+        endDate: "",
         productClass: "",
         startDate: "",
       },
       addData: {},
       GiveBackData: {},
+      formData: {},
       tableData: [],
       multipleSelection: [],
       isadmin: JSON.parse(sessionStorage.getItem("user")).isadmin,
@@ -126,9 +236,23 @@ export default {
   },
   mounted() {
     // this.queryTypeList();
-    this.sales();
+    this.queryOrderList();
   },
   methods: {
+    //刷新
+    refresh() {
+      this.queryOrderList();
+    },
+    //详情
+    details(row) {
+      this.detail = true;
+      this.formData = row;
+      console.log("row", row);
+    },
+    //提现
+    withdraw() {
+      this.deposit = true;
+    },
     //获取商品分类名称
     queryTypeList() {
       this.$ajax.queryTypeList({ groupId: 5 }, (res) => {
@@ -138,14 +262,11 @@ export default {
       });
     },
     //查询
-    sales() {
-      // this.$ajax.sales(this.query, (res) => {
-      //   console.log(res);
-      //   // this.tableData = res;
-      //   // this.total = res.total;
-      // });
-      axios.post(`${this.$url}/test/testRequest`, data).then((res) => {
-        console.log("res=>", res);
+    queryOrderList() {
+      this.$ajax.queryOrderList(this.query, (res) => {
+        console.log(res.data);
+        this.tableData = res.data;
+        this.total = res.total;
       });
     },
     //改变分类
@@ -167,8 +288,8 @@ export default {
     //改变时间
     clearNullTime(time) {
       this.query.startDate = time ? time[0] : "";
-      this.query.endTate = time ? time[1] : "";
-      this.sales();
+      this.query.endDate = time ? time[1] : "";
+      this.queryOrderList();
     },
     //退款操作单行
     refund(orderNo) {
@@ -184,7 +305,7 @@ export default {
               type: "success",
               message: "设置成功!",
             });
-            this.sales();
+            this.queryOrderList();
           });
         })
         .catch(() => {});
@@ -203,7 +324,7 @@ export default {
               type: "success",
               message: "设置成功!",
             });
-            this.sales();
+            this.queryOrderList();
           });
         })
         .catch(() => {});
@@ -220,7 +341,7 @@ export default {
             type: "success",
             message: "设置成功!",
           });
-          this.sales();
+          this.queryOrderList();
         });
       }
     },
@@ -230,19 +351,19 @@ export default {
     //分页
     handleSizeChange(val) {
       this.query.count = val;
-      this.sales();
+      this.queryOrderList();
     },
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val; //.toString()
       this.resLoading = true;
-      this.sales();
+      this.queryOrderList();
     },
   },
   watch: {
     query: {
       handler(newVal, oldVal) {
-        this.sales();
+        this.queryOrderList();
       },
       deep: true,
     },
@@ -263,6 +384,7 @@ export default {
   .filter {
     line-height: 40px;
     margin-top: 10px;
+    margin-bottom: 20px;
     span {
       display: inline-block;
       line-height: 30px;
@@ -307,6 +429,17 @@ export default {
       top: -10px;
       width: 20px;
     }
+  }
+  .form {
+    font-size: 18px;
+    color: black;
+  }
+  .form > table > tr {
+    height: 40px;
+  }
+  .refresh {
+    margin-left: 80px;
+    // float: right;
   }
 }
 </style>

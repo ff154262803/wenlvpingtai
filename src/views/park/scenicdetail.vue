@@ -462,7 +462,7 @@
         <el-row class="list" style="height: 80px">
           <el-col :span="22">
             <div>
-              <span>福袋：</span>
+              <span>明信片：</span>
               <div
                 class="pic"
                 v-for="(n, i) in fileList1"

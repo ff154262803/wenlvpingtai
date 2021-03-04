@@ -39,6 +39,8 @@
       <el-table-column prop="mallName" label="商品名"></el-table-column>
       <el-table-column prop="siteType" label="景点类型"></el-table-column>
       <el-table-column prop="siteName" label="景点名"></el-table-column>
+      <el-table-column prop="siteName" label="取货地点"></el-table-column>
+      <el-table-column prop="siteName" label="商家电话"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">{{
           scope.row.status == 0 ? "禁用" : "启用"
@@ -138,6 +140,30 @@
                 ></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="取货地点" prop="siteName">
+              <el-select v-model="newdata" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="商家电话" prop="siteName">
+              <el-input
+                :disabled="disabled"
+                v-model="newdata.mobile"
+                placeholder="请输入手机号"
+                style="width: 217px"
+              ></el-input>
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                @click="amend"
+              ></el-button>
+            </el-form-item>
           </el-form>
           <div class="el-dialog__footer">
             <div class="dialog-footer">
@@ -157,6 +183,7 @@
 export default {
   data() {
     return {
+      disabled: false,
       num: 999,
       obj: {},
       parkid: sessionStorage.getItem("parkid"),
@@ -183,6 +210,7 @@ export default {
         siteName: "",
         siteType: "",
         status: "1",
+        mobile: "15131045042",
       },
       rules: {
         mallName: [{ required: true, message: "请选择商品", trigger: "burl" }],
@@ -264,10 +292,15 @@ export default {
       this.newdata.siteName = null;
     },
     getSiteTypeName(val) {},
+    amend() {
+      this.disabled = false;
+    },
     beginshow(data) {
+      this.disabled = true;
       this.Addshow = true;
       if (data) {
         this.newdata = { ...data };
+        this.newdata.mobile = "15131045042";
         this.NameList = this.NameList;
       } else {
         this.NameList = [];
@@ -277,6 +310,7 @@ export default {
           siteName: "",
           siteType: "",
           status: "1",
+          mobile: "15131045042",
         };
       }
     },
@@ -288,7 +322,9 @@ export default {
         siteName: "",
         siteType: "",
         status: "1",
+        mobile: "15131045042",
       };
+      this.$refs[formName].resetFields(); //关闭弹框后清除表单验证
     },
     add(formName) {
       this.$refs[formName].validate((valid) => {

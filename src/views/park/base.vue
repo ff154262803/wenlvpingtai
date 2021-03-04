@@ -181,7 +181,7 @@
         </el-row>
       </div>
     </div>
-    <div class="box box1">
+    <div class="box box1" v-if="isadmin == true">
       <div class="menu">
         <el-row class="p">
           <el-col :span="14">
@@ -195,7 +195,7 @@
             </div>
           </el-col>
           <el-col :span="2">
-            <div class="icon" @click="edit('menu')" v-if="isadmin == true">
+            <div class="icon" @click="edit('menu')">
               <img src="../../../static/img/edit.png" alt="" />
             </div>
           </el-col>

@@ -57,7 +57,8 @@ import leaseDistribution from './views/park/lease/leaseDistribution'//租赁分�
 import scenicdetail from './views/park/scenicdetail'//景点详情
 //充值设置
 import paySet from './views/pay/paySet'//充值设置
-import topUp from './views/pay/topUp.vue'//充值设置
+import topUp from './views/pay/topUp'//充值管理
+import withdraw from './views/pay/withdraw'//提现管理
 import IntegralRecord from './views/pay/IntegralRecord'//积分记录
 import exchangeRecord from './views/pay/exchangeRecord'//兑换记录
 //新闻管理
@@ -166,8 +167,9 @@ const router = new VueRouter({
         {
             path: '/', component: Home, name: 'pay', hidden: false, unfold: true, meta: { requireAuth: true, level: 2 },
             children: [
-                { path: '/paySet', component: paySet, name: '充值设置', meta: { title: "充值设置", requireAuth: true, parent: '/' } },
+                { path: '/paySet', component: paySet, name: '五彩石管理', meta: { title: "五彩石管理", requireAuth: true, parent: '/' } },
                 { path: '/topUp', component: topUp, name: '充值管理', meta: { requireAuth: true, parent: '/' } },
+                { path: '/withdraw', component: withdraw, name: '提现管理', meta: { requireAuth: true, parent: '/' } },
                 // { path: '/IntegralRecord', component: IntegralRecord, name: '积分记录', meta: { requireAuth: true, parent: '/' } },
                 // { path: '/exchangeRecord', component: exchangeRecord, name: '兑换记录', meta: { requireAuth: true, parent: '/' } }
             ]

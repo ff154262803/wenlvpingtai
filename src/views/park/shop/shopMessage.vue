@@ -66,7 +66,21 @@
         label="类型"
         align="center"
       ></el-table-column>
-      <el-table-column prop="price" label="价格" align="center">
+      <el-table-column prop="price" label="积分价格" align="center">
+        <template slot-scope="scope">{{
+          scope.row.type == "实物商品"
+            ? scope.row.price + "元"
+            : scope.row.price + "积分"
+        }}</template>
+      </el-table-column>
+      <el-table-column prop="price" label="五彩石价格" align="center">
+        <template slot-scope="scope">{{
+          scope.row.type == "实物商品"
+            ? scope.row.price + "元"
+            : scope.row.price + "积分"
+        }}</template>
+      </el-table-column>
+      <el-table-column prop="price" label="人民币价格" align="center">
         <template slot-scope="scope">{{
           scope.row.type == "实物商品"
             ? scope.row.price + "元"
@@ -184,10 +198,12 @@
               <el-input
                 v-model="newdata.picurl"
                 style="width: 200px; display: none"
-              ></el-input>
+              >
+              </el-input>
               <el-button size="small" type="primary" @click="uploading('uppic')"
                 >点击上传</el-button
               >
+              <span class="hint">图片推荐375*234</span>
               <el-upload
                 :disabled="detailBol"
                 class="upload-demo"
@@ -235,7 +251,7 @@
                 type="primary"
                 @click="uploading('uppict')"
                 >点击上传</el-button
-              >
+              ><span class="hint">图片推荐375*234</span>
               <el-upload
                 :disabled="detailBol"
                 class="upload-demo"
@@ -266,38 +282,64 @@
                 />
               </div>
             </el-form-item>
-            <el-form-item
-              label="价格"
-              prop="price"
-              v-if="newdata.type != '虚拟商品'"
-            >
+            <el-form-item label="价格" prop="price">
+              <span class="rate">五彩石</span>
+              <el-radio-group v-model="newdata.status1" size="small">
+                <el-radio-button label="支持"></el-radio-button>
+                <el-radio-button label="不支持"></el-radio-button>
+              </el-radio-group>
               <el-input
+                v-if="newdata.status1 == '支持'"
+                class="import"
                 v-model="newdata.price"
                 @mousewheel.native.prevent
                 oninput="value=value.replace(/[^0-9.]/g,'')"
                 placeholder="请填写价格"
                 type="number"
                 :disabled="detailBol"
-                style="width: 400px"
+                style="width: 200px"
+                ><template slot="append">五彩石</template></el-input
+              >
+            </el-form-item>
+            <el-form-item label="" prop="price">
+              <span class="rate">人民币</span>
+              <el-radio-group v-model="newdata.status1" size="small">
+                <el-radio-button label="支持"></el-radio-button>
+                <el-radio-button label="不支持"></el-radio-button>
+              </el-radio-group>
+              <el-input
+                v-if="newdata.status1 == '支持'"
+                class="import"
+                v-model="newdata.price"
+                @mousewheel.native.prevent
+                oninput="value=value.replace(/[^0-9.]/g,'')"
+                placeholder="请填写价格"
+                type="number"
+                :disabled="detailBol"
+                style="width: 200px"
                 ><template slot="append">元</template></el-input
               >
             </el-form-item>
-            <el-form-item
-              label="积分"
-              prop="price"
-              v-if="newdata.type == '虚拟商品'"
-            >
+            <el-form-item label="" prop="price">
+              <span class="rate">积分</span>
+              <el-radio-group v-model="newdata.status1" size="small">
+                <el-radio-button label="支持"></el-radio-button>
+                <el-radio-button label="不支持"></el-radio-button>
+              </el-radio-group>
               <el-input
-                @mousewheel.native.prevent
+                v-if="newdata.status1 == '支持'"
+                class="import"
                 v-model="newdata.price"
-                placeholder="请填写积分"
+                @mousewheel.native.prevent
+                oninput="value=value.replace(/[^0-9.]/g,'')"
+                placeholder="请填写价格"
                 type="number"
                 :disabled="detailBol"
-                style="width: 400px"
+                style="width: 200px"
                 ><template slot="append">积分</template></el-input
               >
             </el-form-item>
-            <el-form-item label="描述" prop="typeName">
+            <el-form-item label="商品简介" prop="typeName">
               <el-input
                 v-model="newdata.typeName"
                 placeholder="请填写描述"
@@ -352,9 +394,77 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
+            <el-form-item label="购买须知" prop="bindMethod">
+              <el-input
+                style="width: 400px"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入购买须知"
+                v-model="newdata.bindMethod"
+              >
+              </el-input>
+            </el-form-item>
+            <el-form-item label="商品介绍" prop="bind">
+              <el-radio
+                v-model="newdata.bind"
+                label="1"
+                :disabled="detailBol"
+                @change="ceshi"
+                >长图</el-radio
+              >
+              <el-radio
+                v-model="newdata.bind"
+                label="0"
+                :disabled="detailBol"
+                @change="ceshi"
+                >富文本编辑器</el-radio
+              >
+            </el-form-item>
+            <el-form-item label="" prop="thumbnail" v-if="newdata.bind == '1'">
+              <el-input
+                v-model="newdata.thumbnail"
+                style="width: 200px; display: none"
+              ></el-input>
+              <el-button
+                size="small"
+                type="primary"
+                @click="uploading('uppict')"
+                >点击上传</el-button
+              ><span class="hint">图片宽度推荐350</span>
+              <el-upload
+                :disabled="detailBol"
+                class="upload-demo"
+                style="display: none"
+                :data="uploaddata"
+                :action="
+                  $store.state.ip + '/manage/ferriswheel/resources/upload'
+                "
+                :on-progress="handleLoading"
+                accept="image/jpeg,image/jpg,image/png"
+                :on-success="onsuccsess"
+                :before-upload="beforeUploadpic1"
+                :on-error="onerror"
+                list-type="picture"
+              >
+                <el-button size="small" type="primary" id="uppict"
+                  >点击上传</el-button
+                >
+              </el-upload>
+              <div style="margin-top: 20px">
+                <img
+                  :src="newdata.thumbnail"
+                  alt=""
+                  class="pic"
+                  v-if="newdata.thumbnail"
+                  style="width: 80px"
+                  ref="pic"
+                />
+              </div>
+            </el-form-item>
             <el-form-item
-              label="商品使用手册"
+              label=""
               prop="manual"
+              v-if="newdata.bind == '0'"
               v-model="newdata.manual"
             >
               <div style="height: 500px">
@@ -449,6 +559,7 @@ export default {
         type: "", //商品类型
         typeName: "", //描述
         thumbnail: "", //缩略图
+        status1: "支持", //启用禁用
       },
       //图片上传时附带的额外参数
       uploaddata: {
@@ -462,7 +573,14 @@ export default {
         type: [{ required: true, message: "请选择商品类型", trigger: "blur" }],
         bind: [{ required: true, message: "必填项", trigger: "blur" }],
         thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
-        banNum: [{ required: true, message: "必填项", trigger: "blur" }],
+        banNum: [
+          { required: true, message: "必填项", trigger: "blur" },
+          {
+            pattern: /^\d+-\d+$/,
+            message: "格式输入错误，请重新输入 例：10-20",
+            trigger: "blur",
+          },
+        ],
         picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
         price: [
           {
@@ -600,6 +718,7 @@ export default {
           type: "", //商品类型
           typeName: "", //描述
           thumbnail: "", //缩略图
+          status1: "支持", //启用禁用
         };
         this.h5 = { content: "" };
       }
@@ -759,6 +878,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.hint {
+  margin-left: 30px;
+  color: #909399;
+}
 .addBtn {
   float: right;
   margin-right: 100px;
@@ -807,5 +930,13 @@ export default {
     top: -10px;
     width: 20px;
   }
+}
+.rate {
+  display: inline-block;
+  width: 42px;
+  margin-right: 15px;
+}
+.import {
+  margin-left: 15px;
 }
 </style>

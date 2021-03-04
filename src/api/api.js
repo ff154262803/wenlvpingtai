@@ -815,5 +815,45 @@ export default {
     // business(data, callback, errback) {
     //     this.POST(`${base}/manage/product/business`, data, callback, errback);
     // },
+    //五彩石商城新增头图
+    addBanner(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/addBanner`, data, callback, errback);
+    },
+    //五彩石商城获取头图列表
+    bannerList(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/bannerList`, data, callback, errback);
+    },
+    //五彩石商城修改头图列表
+    updateBanner(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/updateBanner`, data, callback, errback);
+    },
+    //五彩石商品管理查询列表
+    querystoneMallList(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/querystoneMallList`, data, callback, errback);
+    },
+    //添加五彩石商品管理
+    addStoneMall(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/addStoneMall`, data, callback, errback);
+    },
+    //删除五彩石商品管理
+    deleteStoneMall(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/deleteStoneMall`, data, callback, errback);
+    },
+    //上架下架五彩石商品管理
+    MallPutAway(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/putAway`, data, callback, errback);
+    },
+    //五彩石商城新增兑换说明
+    addDescription(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/addDescription`, data, callback, errback);
+    },
+    //五彩石商城兑换说明列表
+    descriptionList(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/descriptionList`, data, callback, errback);
+    },
+    //五彩石商城统计销量
+    sales(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/sales`, data, callback, errback);
+    },
 
 }
