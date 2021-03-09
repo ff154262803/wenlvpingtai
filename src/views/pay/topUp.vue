@@ -5,14 +5,16 @@
       v-model="query.condition"
       clearable
       style="width: 300px"
+      @change="refresh"
     ></el-input>
-    <el-button icon="el-icon-search" circle></el-button>
+    <el-button icon="el-icon-search" circle @click="refresh"></el-button>
     <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
     <div class="filter">
       <strong>订单日期：</strong>
       <el-date-picker
         v-model="query.createtime"
-        type="daterange"
+        type="datetimerange"
+        value-format="yyyy-MM-dd HH:mm:ss"
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
@@ -36,7 +38,7 @@
       ></el-table-column>
       <el-table-column prop="orderNo" label="商户订单号" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="用户名" align="center">
+      <el-table-column prop="username" label="用户名" align="center">
       </el-table-column>
       <el-table-column prop="mobile" label="手机号" align="center">
       </el-table-column>
@@ -44,7 +46,11 @@
       </el-table-column>
       <el-table-column prop="amount" label="充值金额" align="center">
       </el-table-column>
-      <el-table-column prop="amount" label="(微信)交易单号" align="center">
+      <el-table-column
+        prop="transactionId"
+        label="(微信)交易单号"
+        align="center"
+      >
       </el-table-column>
       <el-table-column
         prop="createtime"
@@ -83,7 +89,6 @@
     <el-dialog title="订单详情" :visible.sync="detail" width="1000px">
       <el-form
         :model="formData"
-        :rules="rules"
         ref="formData"
         label-width="100px"
         class="form"
@@ -96,7 +101,9 @@
           style="margin-top: 30px"
         >
           <tr>
-            <td align="center" style="background-color: #bbbbbb">商家编号：</td>
+            <td align="center" style="background-color: #bbbbbb">
+              商家订单号：
+            </td>
             <td align="center">{{ formData.orderNo }}</td>
             <td align="center" style="background-color: #bbbbbb">用户名：</td>
             <td align="center">{{ formData.username }}</td>
@@ -105,31 +112,63 @@
             <td align="center" style="background-color: #bbbbbb">手机号：</td>
             <td align="center">{{ formData.mobile }}</td>
             <td align="center" style="background-color: #bbbbbb">充值金额：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">{{ formData.amount }}元</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">支付方式：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">
+              {{ formData.system == "web" ? "微信" : "无" }}
+            </td>
             <td align="center" style="background-color: #bbbbbb">支付状态：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">
+              {{
+                formData.status == "00"
+                  ? "待支付"
+                  : formData.status == "01"
+                  ? "已支付"
+                  : formData.status == "02"
+                  ? "已取消"
+                  : formData.status == "03"
+                  ? "已超时"
+                  : formData.status == "04"
+                  ? "已退款"
+                  : formData.status == "05"
+                  ? "已完成"
+                  : formData.status == "06"
+                  ? "待提现"
+                  : formData.status == "07"
+                  ? "提现失败"
+                  : formData.status == "08"
+                  ? "审核失败"
+                  : formData.status == "09"
+                  ? "已关闭"
+                  : formData.status == "10"
+                  ? "退款中"
+                  : formData.status == "11"
+                  ? "待取货"
+                  : formData.status == "12"
+                  ? "已取货"
+                  : "暂无"
+              }}
+            </td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">支付时间：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">{{ formData.paytime }}</td>
             <td align="center" style="background-color: #bbbbbb">
               获得五彩石：
             </td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">{{ formData.caption }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">创建时间：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">{{ formData.createtime }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">
               (微信)交易单号：
             </td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">{{ formData.transactionId }}</td>
           </tr>
         </table>
       </el-form>
@@ -168,11 +207,8 @@ export default {
       query: {
         page: 1,
         count: 10,
-        // parkid: sessionStorage.getItem("parkid"),
-        status: "",
         condition: "",
-        endDate: "",
-        productClass: "",
+        endTate: "",
         startDate: "",
       },
       addData: {},
@@ -208,11 +244,20 @@ export default {
     },
     //查询
     queryOrderList() {
-      this.$ajax.queryOrderList(this.query, (res) => {
-        console.log(res.data);
-        this.tableData = res.data;
-        this.total = res.total;
-      });
+      this.$ajax.recharge(
+        {
+          condition: this.query.condition,
+          count: this.query.count,
+          endTate: this.query.endTate,
+          page: this.query.page,
+          startDate: this.query.startDate,
+        },
+        (res) => {
+          console.log(res.data);
+          this.tableData = res.data;
+          this.total = res.total;
+        }
+      );
     },
     //改变分类
     change(callback) {
@@ -233,7 +278,7 @@ export default {
     //改变时间
     clearNullTime(time) {
       this.query.startDate = time ? time[0] : "";
-      this.query.endDate = time ? time[1] : "";
+      this.query.endTate = time ? time[1] : "";
       this.queryOrderList();
     },
     //退款操作单行
@@ -305,14 +350,15 @@ export default {
       this.queryOrderList();
     },
   },
-  watch: {
-    query: {
-      handler(newVal, oldVal) {
-        this.queryOrderList();
-      },
-      deep: true,
-    },
-  },
+  // watch: {
+  //   query: {
+  //     handler(newVal, oldVal) {
+  //       console.log("监听");
+  //       // this.queryOrderList();
+  //     },
+  //     deep: true,
+  //   },
+  // },
 };
 </script>
 

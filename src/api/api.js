@@ -61,7 +61,7 @@ export default {
                 break;
             default:
                 Message.error(data.resbInfo);
-                errback && errback();
+                errback && errback(data);
                 break;
         }
     },
@@ -854,6 +854,26 @@ export default {
     //五彩石商城统计销量
     sales(data, callback, errback) {
         this.POST(`${base}/manage/stoneMall/sales`, data, callback, errback);
+    },
+    //五彩石商城商品订单列表
+    orderList(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/orderList`, data, callback, errback);
+    },
+    //五彩石管理充值管理
+    recharge(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/recharge`, data, callback, errback);
+    },
+    //五彩石管理提现管理
+    backRMB(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/backRMB`, data, callback, errback);
+    },
+    //五彩石管理后台订单核销
+    checkOrder(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/checkOrder`, data, callback, errback);
+    },
+    //五彩石提现
+    stoneRefund(data, callback, errback) {
+        this.POST(`${base}/manage/systemOrder/stoneRefund`, data, callback, errback);
     },
 
 }

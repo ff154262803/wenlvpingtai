@@ -34,28 +34,67 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="orderNo" label="提现单号" align="center">
+      <el-table-column prop="stoneRefundNo" label="提现单号" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="用户名" align="center">
+      <el-table-column prop="username" label="用户名" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="提现账户" align="center">
+      <el-table-column prop="account" label="提现账户" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="支付金额" align="center">
+      <el-table-column label="支付金额" align="center">
+        <template slot-scope="scope">{{
+          scope.row.stoneNum + "五彩石"
+        }}</template>
       </el-table-column>
-      <el-table-column prop="amount" label="充值金额" align="center">
+      <el-table-column prop="amount" label="提现金额" align="center">
+        <template slot-scope="scope">{{ scope.row.amount + "元" }}</template>
       </el-table-column>
       <el-table-column
-        prop="createtime"
+        prop="createTime"
         label="申请时间"
         width="150"
         align="center"
       >
       </el-table-column>
-      <el-table-column prop="amount" label="状态" align="center">
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">
+          {{
+            scope.row.status == "00"
+              ? "待支付"
+              : scope.row.status == "01"
+              ? "已支付"
+              : scope.row.status == "02"
+              ? "已取消"
+              : scope.row.status == "03"
+              ? "已超时"
+              : scope.row.status == "04"
+              ? "已退款"
+              : scope.row.status == "05"
+              ? "已完成"
+              : scope.row.status == "06"
+              ? "待提现"
+              : scope.row.status == "07"
+              ? "提现失败"
+              : scope.row.status == "08"
+              ? "审核失败"
+              : scope.row.status == "09"
+              ? "已关闭"
+              : scope.row.status == "10"
+              ? "退款中"
+              : scope.row.status == "11"
+              ? "待取货"
+              : scope.row.status == "12"
+              ? "已取货"
+              : "暂无"
+          }}</template
+        >
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="withdraw(scope.row)"
+          <el-button
+            type="text"
+            size="small"
+            :disabled="scope.row.status == '06' ? !disabled : disabled"
+            @click="withdraw(scope.row)"
             >提现</el-button
           >
           <el-button type="text" size="small" @click="details(scope.row)"
@@ -86,7 +125,6 @@
     <el-dialog title="审核详情" :visible.sync="detail" width="1000px">
       <el-form
         :model="formData"
-        :rules="rules"
         ref="formData"
         label-width="100px"
         class="form"
@@ -99,39 +137,69 @@
           style="margin-top: 30px"
         >
           <tr>
-            <td colSpan="4" style="background-color: #9d9d9d">提现信息</td>
+            <td colSpan="4" align="center" style="background-color: #9d9d9d">
+              提现信息
+            </td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">提现单号：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">{{ formData.stoneRefundNo }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">提现账户：</td>
-            <td align="center">{{ formData.orderNo }}</td>
+            <td align="center">{{ formData.account }}</td>
             <td align="center" style="background-color: #bbbbbb">支付金额：</td>
-            <td align="center">{{ formData.username }}</td>
+            <td align="center">{{ formData.stoneNum + "五彩石" }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">用户名：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">{{ formData.username }}</td>
             <td align="center" style="background-color: #bbbbbb">提现金额：</td>
-            <td align="center">{{ formData.updatetime }}</td>
-          </tr>
-          <tr>
-            <td align="center" style="background-color: #bbbbbb">提现账户：</td>
-            <td align="center">{{ formData.mobile }}</td>
-            <td align="center" style="background-color: #bbbbbb">申请日期：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">{{ formData.amount + "元" }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">状态：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">
+              {{
+                formData.status == "00"
+                  ? "待支付"
+                  : formData.status == "01"
+                  ? "已支付"
+                  : formData.status == "02"
+                  ? "已取消"
+                  : formData.status == "03"
+                  ? "已超时"
+                  : formData.status == "04"
+                  ? "已退款"
+                  : formData.status == "05"
+                  ? "已完成"
+                  : formData.status == "06"
+                  ? "待提现"
+                  : formData.status == "07"
+                  ? "提现失败"
+                  : formData.status == "08"
+                  ? "审核失败"
+                  : formData.status == "09"
+                  ? "已关闭"
+                  : formData.status == "10"
+                  ? "退款中"
+                  : formData.status == "11"
+                  ? "待取货"
+                  : formData.status == "12"
+                  ? "已取货"
+                  : "暂无"
+              }}
+            </td>
+            <td align="center" style="background-color: #bbbbbb">申请日期：</td>
+            <td align="center">{{ formData.createTime }}</td>
+          </tr>
+          <tr>
             <td align="center" style="background-color: #bbbbbb">到期日期：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td colSpan="3" align="center">{{ formData.updatetime }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">执行人：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">{{ formData.operator }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">是否驳回：</td>
@@ -145,41 +213,42 @@
       </el-form>
     </el-dialog>
     <el-dialog title="提现审核" :visible.sync="deposit" width="500px">
-      <el-form
-        :model="formData"
-        :rules="rules"
-        ref="formData"
-        label-width="100px"
-        class="form"
-      >
-        <el-form :model="addData" :rules="rules" ref="addData">
+      <el-form :model="newdata" ref="newdata" label-width="100px" class="form">
+        <el-form :model="newdata" ref="newdata">
           <el-form-item label="提现金额：" label-width="120px" prop="caption">
+            {{ newdata.amount + "元" }}
           </el-form-item>
           <el-form-item label="提现账户：" label-width="120px" prop="price">
+            {{ newdata.account }}
           </el-form-item>
           <el-form-item label="提现通道：" label-width="120px" prop="discount">
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+            {{ newdata.system == "web" ? "微信" : "微信" }}
           </el-form-item>
           <el-form-item label="是否驳回：" label-width="120px" prop="discount">
-            <el-radio v-model="radio" label="1">否</el-radio>
-            <el-radio v-model="radio" label="2">是</el-radio>
+            <el-radio v-model="newdata.reject" label="1">否</el-radio>
+            <el-radio v-model="newdata.reject" label="2">是</el-radio>
           </el-form-item>
-          <el-form-item label="驳回原因：" label-width="120px" prop="point">
+          <el-form-item
+            label="驳回原因："
+            label-width="120px"
+            prop="point"
+            v-if="newdata.reject == 2"
+          >
             <el-input
               type="textarea"
               :rows="2"
               placeholder="请输入内容"
-              v-model="textarea"
+              v-model="newdata.reason"
             >
             </el-input>
+          </el-form-item>
+          <el-form-item>
+            <div class="foot">
+              <el-button type="primary" @click="onSubmit('newdata')"
+                >确定</el-button
+              >
+              <el-button @click="cancel">取消</el-button>
+            </div>
           </el-form-item>
         </el-form>
       </el-form>
@@ -210,6 +279,7 @@ export default {
       }, 100);
     };
     return {
+      options: [{ value: "1", label: "微信" }],
       typeNamelist: [], //商品分类名称
       total: 0,
       unused: 0,
@@ -219,16 +289,29 @@ export default {
       query: {
         page: 1,
         count: 10,
-        // parkid: sessionStorage.getItem("parkid"),
-        status: "",
         condition: "",
         endDate: "",
-        productClass: "",
         startDate: "",
       },
-      addData: {},
+      newdata: {
+        operator: JSON.parse(sessionStorage.getItem("user")).name,
+        reason: "",
+        refundNo: "",
+        reject: "1",
+        uid: 79,
+      },
+      addData: {
+        operator: JSON.parse(sessionStorage.getItem("user")).name,
+        reason: "",
+        refundNo: "",
+        reject: "1",
+        uid: 79,
+      },
       GiveBackData: {},
-      formData: {},
+      formData: {
+        amount: "",
+        mobile: "",
+      },
       tableData: [],
       multipleSelection: [],
       isadmin: JSON.parse(sessionStorage.getItem("user")).isadmin,
@@ -249,9 +332,36 @@ export default {
       this.formData = row;
       console.log("row", row);
     },
-    //提现
-    withdraw() {
+    //提现弹框
+    withdraw(row) {
       this.deposit = true;
+      this.newdata = row;
+      console.log(row);
+    },
+    //取消
+    cancel() {
+      this.deposit = false;
+    },
+    //提交提现按钮
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+        this.$ajax.stoneRefund(
+          {
+            operator: JSON.parse(sessionStorage.getItem("user")).name,
+            reason: this.newdata.reason,
+            reject: this.newdata.reject,
+            refundNo: this.newdata.stoneRefundNo,
+            uid: this.newdata.systemPayOrder[0].userId,
+          },
+          (res) => {
+            this.$message({
+              type: "success",
+              message: "审核成功!",
+            });
+            this.deposit = false;
+          }
+        );
+      });
     },
     //获取商品分类名称
     queryTypeList() {
@@ -263,8 +373,7 @@ export default {
     },
     //查询
     queryOrderList() {
-      this.$ajax.queryOrderList(this.query, (res) => {
-        console.log(res.data);
+      this.$ajax.backRMB(this.query, (res) => {
         this.tableData = res.data;
         this.total = res.total;
       });
@@ -441,5 +550,8 @@ export default {
     margin-left: 80px;
     // float: right;
   }
+}
+.foot {
+  float: right;
 }
 </style>

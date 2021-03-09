@@ -1,26 +1,12 @@
 <template>
   <div class="classificationPage">
     <el-input
-      placeholder="请输入手机号"
+      placeholder="请输入商品名称"
       v-model="query.condition"
       clearable
       style="width: 300px"
     ></el-input>
-    <!-- <div class="filter">
-      <strong>分类：</strong>
-      <span
-        @click="query.productClass = ''"
-        :class="query.productClass == '' ? 'active' : ''"
-        >不限</span
-      >
-      <span
-        v-for="item in typeNamelist"
-        :key="item"
-        :class="query.productClass == item ? 'active' : ''"
-        @click="query.productClass = item"
-        >{{ item }}</span
-      >
-    </div> -->
+    <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
     <div class="filter">
       <strong>统计时间：</strong>
       <el-date-picker
@@ -47,20 +33,20 @@
         width="55"
         align="center"
       ></el-table-column>
-      <el-table-column prop="caption" label="商品名称" align="center">
+      <el-table-column prop="mallName" label="商品名称" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="商品分类" align="center">
+      <el-table-column prop="mallType" label="商品分类" align="center">
       </el-table-column>
-      <el-table-column prop="username" label="日销量" align="center">
+      <el-table-column prop="orderNum" label="日销量" align="center">
       </el-table-column>
-      <el-table-column prop="mobile" label="总销量" align="center">
+      <el-table-column prop="total" label="总销量" align="center">
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-col :span="24" class="toolbar">
       <div class="allControl">
         <!-- <el-button size="small">退款</el-button> -->
-        <el-button size="small" @click="">导出</el-button>
+        <!-- <el-button size="small" @click="">导出</el-button> -->
       </div>
       <el-pagination
         background
@@ -78,9 +64,6 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import ip from "../../vuex/store";
-let base = ip.state.ip;
 export default {
   name: "leaseItem",
   data() {
@@ -110,8 +93,8 @@ export default {
       disabled: true,
       detail: false,
       query: {
-        page: 1,
-        count: 10,
+        // page: 1,
+        // count: 10,
         condition: "",
         endTate: "",
         productClass: "",
@@ -129,6 +112,10 @@ export default {
     this.sales();
   },
   methods: {
+    //刷新
+    refresh() {
+      this.sales();
+    },
     //获取商品分类名称
     queryTypeList() {
       this.$ajax.queryTypeList({ groupId: 5 }, (res) => {
@@ -139,13 +126,9 @@ export default {
     },
     //查询
     sales() {
-      // this.$ajax.sales(this.query, (res) => {
-      //   console.log(res);
-      //   // this.tableData = res;
-      //   // this.total = res.total;
-      // });
-      axios.post(`${this.$url}/test/testRequest`, data).then((res) => {
-        console.log("res=>", res);
+      this.$ajax.sales(this.query, (res) => {
+        this.tableData = res.data;
+        this.total = res.total;
       });
     },
     //改变分类
@@ -308,5 +291,9 @@ export default {
       width: 20px;
     }
   }
+}
+.refresh {
+  float: right;
+  margin-right: 100px;
 }
 </style>

@@ -68,23 +68,19 @@
       ></el-table-column>
       <el-table-column prop="price" label="积分价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.type == "实物商品"
-            ? scope.row.price + "元"
-            : scope.row.price + "积分"
+          scope.row.scorePrice == "" ? "不支持" : scope.row.scorePrice + "积分"
         }}</template>
       </el-table-column>
       <el-table-column prop="price" label="五彩石价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.type == "实物商品"
-            ? scope.row.price + "元"
-            : scope.row.price + "积分"
+          scope.row.stonePrice == ""
+            ? "不支持"
+            : scope.row.stonePrice + "五彩石"
         }}</template>
       </el-table-column>
-      <el-table-column prop="price" label="人民币价格" align="center">
+      <el-table-column label="人民币价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.type == "实物商品"
-            ? scope.row.price + "元"
-            : scope.row.price + "积分"
+          scope.row.price != "" ? scope.row.price + "元" : "不支持"
         }}</template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -282,16 +278,22 @@
                 />
               </div>
             </el-form-item>
-            <el-form-item label="价格" prop="price">
+
+            <el-form-item label="价格" prop="stonePrice">
               <span class="rate">五彩石</span>
-              <el-radio-group v-model="newdata.status1" size="small">
+
+              <el-radio-group
+                v-model="newdata.status1"
+                size="small"
+                @change="ceshi"
+              >
                 <el-radio-button label="支持"></el-radio-button>
                 <el-radio-button label="不支持"></el-radio-button>
               </el-radio-group>
               <el-input
                 v-if="newdata.status1 == '支持'"
                 class="import"
-                v-model="newdata.price"
+                v-model="newdata.stonePrice"
                 @mousewheel.native.prevent
                 oninput="value=value.replace(/[^0-9.]/g,'')"
                 placeholder="请填写价格"
@@ -303,12 +305,16 @@
             </el-form-item>
             <el-form-item label="" prop="price">
               <span class="rate">人民币</span>
-              <el-radio-group v-model="newdata.status1" size="small">
+              <el-radio-group
+                v-model="newdata.status2"
+                size="small"
+                @change="ceshi1"
+              >
                 <el-radio-button label="支持"></el-radio-button>
                 <el-radio-button label="不支持"></el-radio-button>
               </el-radio-group>
               <el-input
-                v-if="newdata.status1 == '支持'"
+                v-if="newdata.status2 == '支持'"
                 class="import"
                 v-model="newdata.price"
                 @mousewheel.native.prevent
@@ -320,16 +326,20 @@
                 ><template slot="append">元</template></el-input
               >
             </el-form-item>
-            <el-form-item label="" prop="price">
+            <el-form-item label="" prop="scorePrice">
               <span class="rate">积分</span>
-              <el-radio-group v-model="newdata.status1" size="small">
+              <el-radio-group
+                v-model="newdata.status3"
+                size="small"
+                @change="ceshi2"
+              >
                 <el-radio-button label="支持"></el-radio-button>
                 <el-radio-button label="不支持"></el-radio-button>
               </el-radio-group>
               <el-input
-                v-if="newdata.status1 == '支持'"
+                v-if="newdata.status3 == '支持'"
                 class="import"
-                v-model="newdata.price"
+                v-model="newdata.scorePrice"
                 @mousewheel.native.prevent
                 oninput="value=value.replace(/[^0-9.]/g,'')"
                 placeholder="请填写价格"
@@ -367,18 +377,10 @@
             </el-form-item>
 
             <el-form-item label="绑定" prop="bind">
-              <el-radio
-                v-model="newdata.bind"
-                label="1"
-                :disabled="detailBol"
-                @change="ceshi"
+              <el-radio v-model="newdata.bind" label="1" :disabled="detailBol"
                 >有</el-radio
               >
-              <el-radio
-                v-model="newdata.bind"
-                label="0"
-                :disabled="detailBol"
-                @change="ceshi"
+              <el-radio v-model="newdata.bind" label="0" :disabled="detailBol"
                 >无</el-radio
               >
             </el-form-item>
@@ -394,41 +396,43 @@
                 :disabled="detailBol"
               ></el-input>
             </el-form-item>
-            <el-form-item label="购买须知" prop="bindMethod">
+            <el-form-item label="购买须知" prop="buyNotice">
               <el-input
                 style="width: 400px"
                 type="textarea"
                 :rows="2"
                 placeholder="请输入购买须知"
-                v-model="newdata.bindMethod"
+                v-model="newdata.buyNotice"
               >
               </el-input>
             </el-form-item>
-            <el-form-item label="商品介绍" prop="bind">
+            <el-form-item label="商品介绍" prop="present">
               <el-radio
-                v-model="newdata.bind"
+                v-model="newdata.present"
                 label="1"
                 :disabled="detailBol"
-                @change="ceshi"
                 >长图</el-radio
               >
               <el-radio
-                v-model="newdata.bind"
+                v-model="newdata.present"
                 label="0"
                 :disabled="detailBol"
-                @change="ceshi"
                 >富文本编辑器</el-radio
               >
             </el-form-item>
-            <el-form-item label="" prop="thumbnail" v-if="newdata.bind == '1'">
+            <el-form-item
+              label=""
+              prop="presentUrl"
+              v-if="newdata.present == '1'"
+            >
               <el-input
-                v-model="newdata.thumbnail"
+                v-model="newdata.presentUrl"
                 style="width: 200px; display: none"
               ></el-input>
               <el-button
                 size="small"
                 type="primary"
-                @click="uploading('uppict')"
+                @click="uploading('uppict1')"
                 >点击上传</el-button
               ><span class="hint">图片宽度推荐350</span>
               <el-upload
@@ -441,21 +445,21 @@
                 "
                 :on-progress="handleLoading"
                 accept="image/jpeg,image/jpg,image/png"
-                :on-success="onsuccsess"
+                :on-success="onsuccsess1"
                 :before-upload="beforeUploadpic1"
                 :on-error="onerror"
                 list-type="picture"
               >
-                <el-button size="small" type="primary" id="uppict"
+                <el-button size="small" type="primary" id="uppict1"
                   >点击上传</el-button
                 >
               </el-upload>
               <div style="margin-top: 20px">
                 <img
-                  :src="newdata.thumbnail"
+                  :src="newdata.presentUrl"
                   alt=""
                   class="pic"
-                  v-if="newdata.thumbnail"
+                  v-if="newdata.presentUrl"
                   style="width: 80px"
                   ref="pic"
                 />
@@ -464,7 +468,7 @@
             <el-form-item
               label=""
               prop="manual"
-              v-if="newdata.bind == '0'"
+              v-if="newdata.present == '0'"
               v-model="newdata.manual"
             >
               <div style="height: 500px">
@@ -511,16 +515,70 @@ export default {
     var validateAcquaintance = (rule, value, callback) => {
       // let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
       let reg = /^(([1-9]\d*|0)|((([1-9]{1}\d*)|(0{1}))(\.\d{2})))$/;
-      if (value < 0 || value > 10000) {
-        callback(new Error("价格必须在0-10000之间"));
-      } else if (!value) {
-        callback(new Error("单价不能为空"));
-      } else if (!reg.test(value)) {
-        callback(new Error("请输入正确格式的单价,必须添加两位小数"));
-      } else if (value.length > 10) {
-        callback(new Error("最多可输入10个字符"));
-      } else {
-        callback();
+      if (value == null || value == "") {
+        if (!value) {
+          callback();
+        }
+      } else if (value) {
+        if (value < 0 || value > 10000) {
+          callback(new Error("价格必须在0-10000之间"));
+        } else if (!value) {
+          callback(new Error("单价不能为空"));
+        } else if (!reg.test(value)) {
+          callback(new Error("请输入正确格式的单价,必须添加两位小数"));
+        } else if (value.length > 10) {
+          callback(new Error("最多可输入10个字符"));
+        } else if (this.status1 == "不支持") {
+          callback();
+        } else {
+          callback();
+        }
+      }
+    };
+    var validateAcquaintance1 = (rule, value, callback) => {
+      // let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
+      let reg = /^(([1-9]\d*|0)|((([1-9]{1}\d*)|(0{1}))(\.\d{2})))$/;
+      if (value == null || value == "") {
+        if (!value) {
+          callback();
+        }
+      } else if (value) {
+        if (value < 0 || value > 10000) {
+          callback(new Error("价格必须在0-10000之间"));
+        } else if (!value) {
+          callback(new Error("单价不能为空"));
+        } else if (!reg.test(value)) {
+          callback(new Error("请输入正确格式的单价,必须添加两位小数"));
+        } else if (value.length > 10) {
+          callback(new Error("最多可输入10个字符"));
+        } else if (this.status1 == "不支持") {
+          callback();
+        } else {
+          callback();
+        }
+      }
+    };
+    var validateAcquaintance2 = (rule, value, callback) => {
+      // let reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{2})$/;
+      let reg = /^(([1-9]\d*|0)|((([1-9]{1}\d*)|(0{1}))(\.\d{2})))$/;
+      if (value == null || value == "") {
+        if (!value) {
+          callback();
+        }
+      } else if (value) {
+        if (value < 0 || value > 10000) {
+          callback(new Error("价格必须在0-10000之间"));
+        } else if (!value) {
+          callback(new Error("单价不能为空"));
+        } else if (!reg.test(value)) {
+          callback(new Error("请输入正确格式的单价,必须添加两位小数"));
+        } else if (value.length > 10) {
+          callback(new Error("最多可输入10个字符"));
+        } else if (this.status1 == "不支持") {
+          callback();
+        } else {
+          callback();
+        }
       }
     };
     return {
@@ -550,16 +608,23 @@ export default {
         banNum: "", //批量限制
         bind: "1", //绑定
         bindMethod: "", //绑定方法
+        buyNotice: "", //购买须知
         caption: "", //商品名称
-        manual: "", //商品使用手册
+        manual: "", //富文本
         picurl: "", //图片路径
-        price: "", //价格
+        present: "1", //商品介绍 1：长图 2：富文本
+        presentUrl: "", //长图
+        price: "", //人民币价格
         productClass: "", //商品分类
+        scorePrice: "", //积分价格
         status: "1", //启用禁用
+        stonePrice: "", //五彩石价格
+        thumbnail: "", //缩略图
         type: "", //商品类型
         typeName: "", //描述
-        thumbnail: "", //缩略图
-        status1: "支持", //启用禁用
+        status1: "支持", //五彩石
+        status2: "支持", //人民币
+        status3: "支持", //积分
       },
       //图片上传时附带的额外参数
       uploaddata: {
@@ -571,10 +636,28 @@ export default {
           { required: true, message: "请输入商品名称", trigger: "blur" },
         ],
         type: [{ required: true, message: "请选择商品类型", trigger: "blur" }],
-        bind: [{ required: true, message: "必填项", trigger: "blur" }],
-        thumbnail: [{ required: true, message: "必填项", trigger: "blur" }],
+        present: [
+          { required: true, message: "请选择商品介绍", trigger: "blur" },
+        ],
+        buyNotice: [
+          { required: true, message: "请输入购买须知", trigger: "blur" },
+        ],
+        bind: [{ required: true, message: "请选择是否绑定", trigger: "blur" }],
+        bindMethod: [
+          { required: true, message: "请输入绑定方法", trigger: "blur" },
+        ],
+        thumbnail: [
+          { required: true, message: "请上传缩略图", trigger: "blur" },
+        ],
+        presentUrl: [
+          { required: true, message: "请上传长图", trigger: "blur" },
+        ],
         banNum: [
-          { required: true, message: "必填项", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入批量限制 例：10-20",
+            trigger: "blur",
+          },
           {
             pattern: /^\d+-\d+$/,
             message: "格式输入错误，请重新输入 例：10-20",
@@ -582,16 +665,41 @@ export default {
           },
         ],
         picurl: [{ required: true, message: "请添加商品图", trigger: "blur" }],
-        price: [
+        scorePrice: [
           {
             required: true,
-            message: "请输入数字",
-            trigger: "blur",
-          },
-          {
+            // message: "请输入积分价格",
             validator: validateAcquaintance, // 自定义验证
             trigger: "blur",
           },
+          // {
+          //   validator: validateAcquaintance, // 自定义验证
+          //   trigger: "blur",
+          // },
+        ],
+        price: [
+          {
+            required: true,
+            message: "请输入价格",
+            validator: validateAcquaintance1,
+            trigger: "blur",
+          },
+          // {
+          //   validator: validateAcquaintance, // 自定义验证
+          //   trigger: "blur",
+          // },
+        ],
+        stonePrice: [
+          {
+            required: true,
+            message: "请输入五彩石价格",
+            validator: validateAcquaintance2,
+            trigger: "blur",
+          },
+          // {
+          //   validator: validateAcquaintance,
+          //   trigger: "blur",
+          // },
         ],
         typeName: [{ required: true, message: "请输入描述", trigger: "blur" }],
         productClass: [
@@ -612,13 +720,35 @@ export default {
   methods: {
     //测试
     ceshi(val) {
-      console.log(val);
+      this.$forceUpdate();
+      if (val == "不支持") {
+        this.newdata.stonePrice = "";
+      }
+    },
+    ceshi1(val) {
+      this.$forceUpdate();
+      if (val == "不支持") {
+        this.newdata.price = "";
+      }
+    },
+    ceshi2(val) {
+      this.$forceUpdate();
+      if (val == "不支持") {
+        this.newdata.scorePrice = "";
+      }
     },
     //缩略图上传成功
     onsuccsess(response, file, fileList) {
       this.fullscreenLoading = false;
       if (response.resbCode == 200) {
         this.$set(this.newdata, "thumbnail", response.data.url);
+      }
+    },
+    //上图上传成功
+    onsuccsess1(response, file, fileList) {
+      this.fullscreenLoading = false;
+      if (response.resbCode == 200) {
+        this.$set(this.newdata, "presentUrl", response.data.url);
       }
     },
     //按照类型查询
@@ -695,32 +825,48 @@ export default {
       this.newdata.bind = "有";
       this.fileList = item.picurl.length ? item.picurl.split(",") : [];
       this.h5.content = item.manual;
+      this.newdata.status1 = item.stonePrice ? "支持" : "不支持";
+      this.newdata.status2 = item.price ? "支持" : "不支持";
+      this.newdata.status3 = item.scorePrice ? "支持" : "不支持";
     },
     beginshow(data) {
       (this.detailBol = false), (this.Addshow = true);
       if (data) {
         this.newdata = { ...data };
         this.h5.content = data.manual;
+        this.newdata.status1 = data.stonePrice ? "支持" : "不支持";
+        this.newdata.status2 = data.price ? "支持" : "不支持";
+        this.newdata.status3 = data.scorePrice ? "支持" : "不支持";
         this.fileList = data.picurl.length ? data.picurl.split(",") : [];
         console.log("data", data);
+        console.log("newdata", this.newdata);
       } else {
         this.fileList = [];
         this.newdata = {
+          //parkid: sessionStorage.getItem("parkid"),
           banNum: "", //批量限制
           bind: "1", //绑定
           bindMethod: "", //绑定方法
+          buyNotice: "", //购买须知
           caption: "", //商品名称
-          manual: "", //商品使用手册
+          manual: "", //富文本
           picurl: "", //图片路径
-          price: "", //价格
+          present: "1", //商品介绍 1：长图 2：富文本
+          presentUrl: "", //长图
+          price: "", //人民币价格
           productClass: "", //商品分类
+          scorePrice: "", //积分价格
           status: "1", //启用禁用
+          stonePrice: "", //五彩石价格
+          thumbnail: "", //缩略图
           type: "", //商品类型
           typeName: "", //描述
-          thumbnail: "", //缩略图
-          status1: "支持", //启用禁用
+          status1: "支持", //五彩石
+          status2: "支持", //人民币
+          status3: "支持", //积分
         };
         this.h5 = { content: "" };
+        console.log("newdata", this.newdata);
       }
     },
     cancel(formName) {
@@ -733,23 +879,33 @@ export default {
         if (valid) {
           if (this.newdata.id) {
             console.log("进入修改");
+            this.newdata.status1 == "不支持"
+              ? (this.newdata.stonePrice = "")
+              : this.newdata.stonePrice;
+            this.newdata.status2 == "不支持"
+              ? (this.newdata.price = "")
+              : this.newdata.price;
+            this.newdata.status3 == "不支持"
+              ? (this.newdata.scorePrice = "")
+              : this.newdata.scorePrice;
             this.$ajax.updateMallGoods(
-              {
-                id: this.newdata.id,
-                banNum: this.newdata.banNum,
-                bind: this.newdata.bind,
-                bindMethod: this.newdata.bindMethod,
-                caption: this.newdata.caption,
-                manual: this.h5.content,
-                picurl: this.newdata.picurl,
-                price: this.newdata.price * 1,
-                productClass: this.newdata.productClass,
-                type: this.newdata.type,
-                typeName: this.newdata.typeName,
-                thumbnail: this.newdata.thumbnail,
-                createtime: this.newdata.createtime,
-                status: this.newdata.status,
-              },
+              // {
+              //   id: this.newdata.id,
+              //   banNum: this.newdata.banNum,
+              //   bind: this.newdata.bind,
+              //   bindMethod: this.newdata.bindMethod,
+              //   caption: this.newdata.caption,
+              //   manual: this.h5.content,
+              //   picurl: this.newdata.picurl,
+              //   price: this.newdata.price * 1,
+              //   productClass: this.newdata.productClass,
+              //   type: this.newdata.type,
+              //   typeName: this.newdata.typeName,
+              //   thumbnail: this.newdata.thumbnail,
+              //   createtime: this.newdata.createtime,
+              //   status: this.newdata.status,
+              // },
+              this.newdata,
               (res) => {
                 this.$message({
                   type: "success",
@@ -761,6 +917,15 @@ export default {
               }
             );
           } else {
+            this.newdata.status1 == "不支持"
+              ? (this.newdata.stonePrice = "")
+              : this.newdata.stonePrice;
+            this.newdata.status2 == "不支持"
+              ? (this.newdata.price = "")
+              : this.newdata.price;
+            this.newdata.status3 == "不支持"
+              ? (this.newdata.scorePrice = "")
+              : this.newdata.scorePrice;
             ((this.newdata.manual = this.h5.content),
             (this.newdata.status = "1")),
               (this.newdata.bindMethod = this.newdata.bindMethod

@@ -1,28 +1,21 @@
 <template>
   <div class="classificationPage">
     <el-input
-      placeholder="请输入手机号"
+      placeholder="请输入订单号/手机号/商品名称"
       v-model="query.condition"
       clearable
       style="width: 300px"
     ></el-input>
     <el-button icon="el-icon-search" circle></el-button>
-    <el-input
-      placeholder="请输入商品名"
-      v-model="query.condition"
-      clearable
-      style="width: 300px; margin-left: 30px"
-    ></el-input>
-    <el-button icon="el-icon-search" circle></el-button>
     <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
     <div class="filter">
       <strong>支付类型：</strong>
-      <el-select v-model="value" placeholder="请选择">
+      <el-select v-model="query.payType" clearable placeholder="请选择">
         <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          v-for="item in payTypeList"
+          :key="item.id"
+          :label="item.val"
+          :value="item.id"
         >
         </el-option>
       </el-select>
@@ -46,23 +39,23 @@
         >全部</span
       >
       <span
-        @click="query.status = '05'"
-        :class="query.status == '05' ? 'active' : ''"
+        @click="query.status = '13'"
+        :class="query.status == '13' ? 'active' : ''"
         >待付款</span
       >
       <span
-        @click="query.status = '01'"
-        :class="query.status == '01' ? 'active' : ''"
+        @click="query.status = '02'"
+        :class="query.status == '02' ? 'active' : ''"
         >已取消</span
       >
       <span
-        @click="query.status = '04'"
-        :class="query.status == '04' ? 'active' : ''"
+        @click="query.status = '11'"
+        :class="query.status == '11' ? 'active' : ''"
         >待取货</span
       >
       <span
-        @click="query.status = '10'"
-        :class="query.status == '10' ? 'active' : ''"
+        @click="query.status = '12'"
+        :class="query.status == '12' ? 'active' : ''"
         >已取货</span
       >
     </div>
@@ -86,6 +79,13 @@
       <el-table-column prop="caption" label="商品名称" align="center">
       </el-table-column>
       <el-table-column prop="productClass" label="支付类型" align="center">
+        <template slot-scope="scope">
+          {{
+            scope.row.paychannel == "五彩石支付"
+              ? scope.row.paychannel
+              : "微信支付"
+          }}
+        </template>
       </el-table-column>
       <el-table-column prop="amount" label="交易单价" align="center">
       </el-table-column>
@@ -95,15 +95,59 @@
       </el-table-column>
       <el-table-column label="订单状态" align="center">
         <template slot-scope="scope">{{
-          scope.row.status == "01"
-            ? "待核销"
-            : scope.row.status == "10"
-            ? "退款中"
-            : scope.row.status == "05"
-            ? "已核销"
+          scope.row.status == "00"
+            ? "待支付"
+            : scope.row.status == "01"
+            ? "已支付"
+            : scope.row.status == "02"
+            ? "已取消"
+            : scope.row.status == "03"
+            ? "已超时"
             : scope.row.status == "04"
             ? "已退款"
-            : ""
+            : scope.row.status == "05"
+            ? "已完成"
+            : scope.row.status == "06"
+            ? "待提现"
+            : scope.row.status == "07"
+            ? "提现失败"
+            : scope.row.status == "08"
+            ? "审核失败"
+            : scope.row.status == "09"
+            ? "已关闭"
+            : scope.row.status == "10"
+            ? "退款中"
+            : scope.row.status == "11"
+            ? "待取货"
+            : scope.row.status == "12"
+            ? "已取货"
+            : scope.row.orderStatus == "00"
+            ? "待支付"
+            : scope.row.orderStatus == "01"
+            ? "已支付"
+            : scope.row.orderStatus == "02"
+            ? "已取消"
+            : scope.row.orderStatus == "03"
+            ? "已超时"
+            : scope.row.orderStatus == "04"
+            ? "已退款"
+            : scope.row.orderStatus == "05"
+            ? "已完成"
+            : scope.row.orderStatus == "06"
+            ? "待提现"
+            : scope.row.orderStatus == "07"
+            ? "提现失败"
+            : scope.row.orderStatus == "08"
+            ? "审核失败"
+            : scope.row.orderStatus == "09"
+            ? "已关闭"
+            : scope.row.orderStatus == "10"
+            ? "退款中"
+            : scope.row.orderStatus == "11"
+            ? "待取货"
+            : scope.row.orderStatus == "12"
+            ? "已取货"
+            : "暂无"
         }}</template>
       </el-table-column>
       <el-table-column
@@ -124,7 +168,17 @@
             :disabled="scope.row.status == '05' ? !disabled : disabled"
             >退款</el-button
           > -->
-          <el-button type="text" size="small" @click="enableState(scope.row.id)"
+          <el-button
+            type="text"
+            size="small"
+            :disabled="
+              scope.row.status == '12'
+                ? disabled
+                : scope.row.orderStatus == '12'
+                ? disabled
+                : !disabled
+            "
+            @click="open(scope.row)"
             >核销</el-button
           >
           <el-button type="text" size="small" @click="details(scope.row)"
@@ -155,7 +209,6 @@
     <el-dialog title="订单详情" :visible.sync="detail" width="1000px">
       <el-form
         :model="formData"
-        :rules="rules"
         ref="formData"
         label-width="100px"
         class="form"
@@ -171,10 +224,24 @@
             <td align="center">小计</td>
           </tr>
           <tr>
-            <td align="center">{{ formData.caption }}</td>
-            <td align="center">{{ formData.amount + "元" }}</td>
-            <td align="center">{{ formData.num }}</td>
-            <td align="center">{{ formData.amount }}</td>
+            <td align="center">
+              {{ formData.caption ? formData.caption : formData.mallName }}
+            </td>
+            <td align="center">
+              {{
+                formData.amount ? formData.amount + "元" : formData.price + "元"
+              }}
+            </td>
+            <td align="center">
+              {{ formData.num ? formData.num : formData.payMallNum }}
+            </td>
+            <td align="center">
+              {{
+                formData.amount
+                  ? formData.amount + "元"
+                  : formData.payNum + "元"
+              }}
+            </td>
           </tr>
         </table>
         <table
@@ -199,23 +266,149 @@
             </td>
             <td align="center">{{ formData.mobile }}</td>
             <td align="center" style="background-color: #bbbbbb">下单时间：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">
+              {{ formData.createtime ? formData.createtime : formData.paytime }}
+            </td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">支付类型：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">
+              {{
+                formData.paychannel == "五彩石支付"
+                  ? formData.paychannel
+                  : "微信支付"
+              }}
+            </td>
             <td align="center" style="background-color: #bbbbbb">支付状态：</td>
-            <td align="center">{{ formData.updatetime }}</td>
+            <td align="center">
+              {{
+                formData.status == "00"
+                  ? "待支付"
+                  : formData.status == "01"
+                  ? "已支付"
+                  : formData.status == "02"
+                  ? "已取消"
+                  : formData.status == "03"
+                  ? "已超时"
+                  : formData.status == "04"
+                  ? "已退款"
+                  : formData.status == "05"
+                  ? "已完成"
+                  : formData.status == "06"
+                  ? "待提现"
+                  : formData.status == "07"
+                  ? "提现失败"
+                  : formData.status == "08"
+                  ? "审核失败"
+                  : formData.status == "09"
+                  ? "已关闭"
+                  : formData.status == "10"
+                  ? "退款中"
+                  : formData.status == "11"
+                  ? "已完成"
+                  : formData.status == "12"
+                  ? "已完成"
+                  : formData.orderStatus == "00"
+                  ? "待支付"
+                  : formData.orderStatus == "01"
+                  ? "已支付"
+                  : formData.orderStatus == "02"
+                  ? "已取消"
+                  : formData.orderStatus == "03"
+                  ? "已超时"
+                  : formData.orderStatus == "04"
+                  ? "已退款"
+                  : formData.orderStatus == "05"
+                  ? "已完成"
+                  : formData.orderStatus == "06"
+                  ? "待提现"
+                  : formData.orderStatus == "07"
+                  ? "提现失败"
+                  : formData.orderStatus == "08"
+                  ? "审核失败"
+                  : formData.orderStatus == "09"
+                  ? "已关闭"
+                  : formData.orderStatus == "10"
+                  ? "退款中"
+                  : formData.orderStatus == "11"
+                  ? "已完成"
+                  : formData.orderStatus == "12"
+                  ? "已完成"
+                  : "暂无"
+              }}
+            </td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">订单状态：</td>
-            <td align="center">{{ formData.mobile }}</td>
+            <td align="center">
+              {{
+                formData.status == "00"
+                  ? "待支付"
+                  : formData.status == "01"
+                  ? "已支付"
+                  : formData.status == "02"
+                  ? "已取消"
+                  : formData.status == "03"
+                  ? "已超时"
+                  : formData.status == "04"
+                  ? "已退款"
+                  : formData.status == "05"
+                  ? "已完成"
+                  : formData.status == "06"
+                  ? "待提现"
+                  : formData.status == "07"
+                  ? "提现失败"
+                  : formData.status == "08"
+                  ? "审核失败"
+                  : formData.status == "09"
+                  ? "已关闭"
+                  : formData.status == "10"
+                  ? "退款中"
+                  : formData.status == "11"
+                  ? "待取货"
+                  : formData.status == "12"
+                  ? "已取货"
+                  : formData.orderStatus == "00"
+                  ? "待支付"
+                  : formData.orderStatus == "01"
+                  ? "已支付"
+                  : formData.orderStatus == "02"
+                  ? "已取消"
+                  : formData.orderStatus == "03"
+                  ? "已超时"
+                  : formData.orderStatus == "04"
+                  ? "已退款"
+                  : formData.orderStatus == "05"
+                  ? "已完成"
+                  : formData.orderStatus == "06"
+                  ? "待提现"
+                  : formData.orderStatus == "07"
+                  ? "提现失败"
+                  : formData.orderStatus == "08"
+                  ? "审核失败"
+                  : formData.orderStatus == "09"
+                  ? "已关闭"
+                  : formData.orderStatus == "10"
+                  ? "退款中"
+                  : formData.orderStatus == "11"
+                  ? "待取货"
+                  : formData.orderStatus == "12"
+                  ? "已取货"
+                  : "暂无"
+              }}
+            </td>
             <td align="center" style="background-color: #bbbbbb">取货时间：</td>
             <td align="center">{{ formData.updatetime }}</td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">取货码：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">
+              {{
+                formData.orderStatus == "12" || formData.status == "12"
+                  ? formData.pcode
+                  : "暂无"
+              }}
+            </td>
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">备注：</td>
@@ -255,15 +448,25 @@ export default {
       unused: 0,
       disabled: true,
       detail: false,
+      payTypeList: [
+        {
+          id: "1",
+          val: "微信",
+        },
+        {
+          id: "2",
+          val: "五彩石",
+        },
+      ],
       query: {
         page: 1,
         count: 10,
         // parkid: sessionStorage.getItem("parkid"),
         status: "",
         condition: "",
-        endDate: "",
-        productClass: "",
+        endTate: "",
         startDate: "",
+        payType: "",
       },
       addData: {},
       GiveBackData: {},
@@ -275,12 +478,12 @@ export default {
   },
   mounted() {
     // this.queryTypeList();
-    this.queryOrderList();
+    this.orderList();
   },
   methods: {
     //刷新
     refresh() {
-      this.queryOrderList();
+      this.orderList();
     },
     //详情
     details(row) {
@@ -297,10 +500,14 @@ export default {
       });
     },
     //查询
-    queryOrderList() {
-      this.$ajax.queryOrderList(this.query, (res) => {
-        console.log(res.data);
-        this.tableData = res.data;
+    orderList() {
+      this.$ajax.orderList(this.query, (res) => {
+        if (res.data.length == 2) {
+          var datas = res.data[0].concat(res.data[1]);
+          this.tableData = datas;
+        } else {
+          this.tableData = res.data;
+        }
         this.total = res.total;
       });
     },
@@ -323,8 +530,8 @@ export default {
     //改变时间
     clearNullTime(time) {
       this.query.startDate = time ? time[0] : "";
-      this.query.endDate = time ? time[1] : "";
-      this.queryOrderList();
+      this.query.endTate = time ? time[1] : "";
+      this.orderList();
     },
     //退款操作单行
     refund(orderNo) {
@@ -340,8 +547,51 @@ export default {
               type: "success",
               message: "设置成功!",
             });
-            this.queryOrderList();
+            this.orderList();
           });
+        })
+        .catch(() => {});
+    },
+    //取货
+    open(val) {
+      console.log("val", val);
+      this.$prompt("请输入取货码", "取货码", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /^\d{8}$/,
+        inputErrorMessage: "请输入八位取货码",
+      })
+        .then(({ value }) => {
+          if (value === val.pcode) {
+            this.$ajax.checkOrder(
+              {
+                id: val.id,
+                paychannel: val.status ? "1" : "2",
+                pcode: value,
+              },
+              (res) => {
+                console.log("res", res);
+                if (res.resbCode === 200) {
+                  this.$message({
+                    type: "success",
+                    message: "取货成功!",
+                  });
+                  this.orderList();
+                } else {
+                  console.log("1111");
+                  this.$message({
+                    type: "info",
+                    message: "取消取货",
+                  });
+                }
+              }
+            );
+          } else {
+            this.$message({
+              type: "error",
+              message: "取货失败，请输入正确的取货码",
+            });
+          }
         })
         .catch(() => {});
     },
@@ -359,7 +609,7 @@ export default {
               type: "success",
               message: "设置成功!",
             });
-            this.queryOrderList();
+            this.orderList();
           });
         })
         .catch(() => {});
@@ -376,7 +626,7 @@ export default {
             type: "success",
             message: "设置成功!",
           });
-          this.queryOrderList();
+          this.orderList();
         });
       }
     },
@@ -386,19 +636,19 @@ export default {
     //分页
     handleSizeChange(val) {
       this.query.count = val;
-      this.queryOrderList();
+      this.orderList();
     },
     handleCurrentChange(val) {
       // 切换元页
       this.query.page = val; //.toString()
       this.resLoading = true;
-      this.queryOrderList();
+      this.orderList();
     },
   },
   watch: {
     query: {
       handler(newVal, oldVal) {
-        this.queryOrderList();
+        this.orderList();
       },
       deep: true,
     },

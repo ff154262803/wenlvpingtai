@@ -39,8 +39,8 @@
       <el-table-column prop="mallName" label="商品名"></el-table-column>
       <el-table-column prop="siteType" label="景点类型"></el-table-column>
       <el-table-column prop="siteName" label="景点名"></el-table-column>
-      <el-table-column prop="siteName" label="取货地点"></el-table-column>
-      <el-table-column prop="siteName" label="商家电话"></el-table-column>
+      <el-table-column prop="address" label="取货地点"></el-table-column>
+      <el-table-column prop="mobile" label="商家电话"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">{{
           scope.row.status == 0 ? "禁用" : "启用"
@@ -140,13 +140,13 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="取货地点" prop="siteName">
-              <el-select v-model="newdata" placeholder="请选择">
+            <el-form-item label="取货地点" prop="address">
+              <el-select v-model="newdata.address" placeholder="请选择">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in location"
+                  :key="item.id"
+                  :label="item.caption"
+                  :value="item.caption"
                 >
                 </el-option>
               </el-select>
@@ -193,6 +193,7 @@ export default {
       GoodsList: [], //获取商品名称
       list: [], //获取景点信息
       NameList: [], //景点下景点名称
+      location: [], //取货地点
       //查询商品分布管理列表
       query: {
         parkid: sessionStorage.getItem("parkid"),
@@ -209,6 +210,7 @@ export default {
         mallName: "",
         siteName: "",
         siteType: "",
+        address: "",
         status: "1",
         mobile: "15131045042",
       },
@@ -231,8 +233,19 @@ export default {
     this.get();
     this.getlist();
     this.queryMallGoodsList();
+    this.getServiceCenterList(); //获取服务中心
   },
   methods: {
+    //获取服务中心
+    getServiceCenterList() {
+      this.$ajax.getServiceCenterList(
+        { id: sessionStorage.getItem("parkid") },
+        (res) => {
+          console.log(res.data);
+          this.location = res.data;
+        }
+      );
+    },
     //删除多条数据
     delAll() {
       if (this.multipleSelection.length != 0) {
@@ -300,7 +313,7 @@ export default {
       this.Addshow = true;
       if (data) {
         this.newdata = { ...data };
-        this.newdata.mobile = "15131045042";
+        // this.newdata.mobile = "15131045042";
         this.NameList = this.NameList;
       } else {
         this.NameList = [];
@@ -310,6 +323,7 @@ export default {
           siteName: "",
           siteType: "",
           status: "1",
+          address: "",
           mobile: "15131045042",
         };
       }
@@ -322,6 +336,7 @@ export default {
         siteName: "",
         siteType: "",
         status: "1",
+        address: "",
         mobile: "15131045042",
       };
       this.$refs[formName].resetFields(); //关闭弹框后清除表单验证
@@ -339,6 +354,8 @@ export default {
                   siteName: this.newdata.siteName,
                   siteType: this.newdata.siteType,
                   status: this.newdata.status,
+                  mobile: this.newdata.mobile,
+                  address: this.newdata.address,
                 },
               },
               (res) => {
