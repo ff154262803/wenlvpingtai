@@ -8,7 +8,7 @@
     >
       <el-menu-item index="heads">头图管理</el-menu-item>
       <el-menu-item index="multiprobe">兑换说明</el-menu-item>
-      <el-menu-item index="bright">商品管理</el-menu-item>
+      <el-menu-item index="bright">商品上架</el-menu-item>
     </el-menu>
     <!-- <router-view></router-view> -->
     <div class="boxd">

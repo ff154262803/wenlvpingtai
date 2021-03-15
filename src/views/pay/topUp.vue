@@ -42,7 +42,10 @@
       </el-table-column>
       <el-table-column prop="mobile" label="手机号" align="center">
       </el-table-column>
-      <el-table-column prop="productClass" label="支付方式" align="center">
+      <el-table-column label="支付方式" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.system == "web" ? "微信" : "无" }}
+        </template>
       </el-table-column>
       <el-table-column prop="amount" label="充值金额" align="center">
       </el-table-column>

@@ -203,11 +203,15 @@
           </tr>
           <tr>
             <td align="center" style="background-color: #bbbbbb">是否驳回：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td colSpan="3" align="center">
+              {{ formData.reject == 0 ? "否" : "是" }}
+            </td>
           </tr>
           <tr>
-            <td align="center" style="background-color: #bbbbbb">驳回理由：</td>
-            <td colSpan="3" align="center">暂无</td>
+            <td align="center" style="background-color: #bbbbbb">
+              驳回理由/失败原因：
+            </td>
+            <td colSpan="3" align="center">{{ formData.reason }}</td>
           </tr>
         </table>
       </el-form>
@@ -225,14 +229,14 @@
             {{ newdata.system == "web" ? "微信" : "微信" }}
           </el-form-item>
           <el-form-item label="是否驳回：" label-width="120px" prop="discount">
-            <el-radio v-model="newdata.reject" label="1">否</el-radio>
-            <el-radio v-model="newdata.reject" label="2">是</el-radio>
+            <el-radio v-model="newdata.reject" label="0">否</el-radio>
+            <el-radio v-model="newdata.reject" label="1">是</el-radio>
           </el-form-item>
           <el-form-item
             label="驳回原因："
             label-width="120px"
             prop="point"
-            v-if="newdata.reject == 2"
+            v-if="newdata.reject == 1"
           >
             <el-input
               type="textarea"
@@ -297,14 +301,14 @@ export default {
         operator: JSON.parse(sessionStorage.getItem("user")).name,
         reason: "",
         refundNo: "",
-        reject: "1",
+        reject: "0",
         uid: 79,
       },
       addData: {
         operator: JSON.parse(sessionStorage.getItem("user")).name,
         reason: "",
         refundNo: "",
-        reject: "1",
+        reject: "0",
         uid: 79,
       },
       GiveBackData: {},
@@ -359,6 +363,7 @@ export default {
               message: "审核成功!",
             });
             this.deposit = false;
+            this.queryOrderList();
           }
         );
       });

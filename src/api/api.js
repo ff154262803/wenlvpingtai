@@ -50,11 +50,16 @@ export default {
                 break;
             case 400:
                 // Message.error('该类型链接已存在');
-                Message.error(data.resbInfo);
+                if (data.resbInfo.split('。')[1]) {
+
+                    Message.error(data.resbInfo.split('。')[1]);
+                } else {
+
+                    Message.error(data.resbInfo);
+                }
                 break;
             case 444:
                 Message.error(data.resbInfo);
-                // Message.error(data.resbInfo.split('。')[1]);
                 break;
             case 996:
                 errback(data);
@@ -874,6 +879,10 @@ export default {
     //五彩石提现
     stoneRefund(data, callback, errback) {
         this.POST(`${base}/manage/systemOrder/stoneRefund`, data, callback, errback);
+    },
+    //所有商品列表下拉
+    mallList(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/mallList`, data, callback, errback);
     },
 
 }

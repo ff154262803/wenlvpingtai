@@ -118,7 +118,6 @@ export default {
               // this.descriptionList();
             });
         } else {
-          alert("表单项不能为空！！！");
           return false;
         }
       });

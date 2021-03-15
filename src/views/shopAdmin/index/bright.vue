@@ -86,9 +86,7 @@
     <div class="el-dialog__wrapper" v-show="Addshow">
       <div class="el-dialog el-dialogadd" style="width: 600px">
         <div class="el-dialog__header">
-          <span class="el-dialog__title">{{
-            newdata.id ? "修改优惠券" : "新增优惠券"
-          }}</span>
+          <span class="el-dialog__title">新增商品上架</span>
           <button
             class="el-dialog__headerbtn"
             aria-label="Close"
@@ -112,9 +110,9 @@
             </el-form-item>
             <el-form-item label="园区名称" prop="parkName">
               <el-select
-                v-model="newdata"
-                @change="changehandle($event)"
+                v-model="newdata1"
                 value-key="parkName"
+                @change="changehandle"
               >
                 <el-option
                   v-for="item in list"
@@ -124,7 +122,25 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="商品名" prop="mallName">
+            <el-form-item label="商品名称" prop="mallName">
+              <el-select
+                v-model="newdata2"
+                value-key="mallName"
+                @change="changehandle1"
+              >
+                <el-option
+                  v-for="item in showList"
+                  :key="item.id"
+                  :label="item.caption"
+                  :value="{
+                    mallId: item.id,
+                    mallName: item.caption,
+                    mallType: item.productClass,
+                  }"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- <el-form-item label="商品名" prop="mallName">
               <el-select
                 v-model="newdata.mallName"
                 @change="getSiteTypeName($event)"
@@ -135,7 +151,7 @@
                   :key="item.id"
                 ></el-option>
               </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="上架/下架" prop="putAwayStatus">
               <el-radio-group v-model="newdata.putAwayStatus">
                 <el-radio label="1" checked="checked">上架</el-radio>
@@ -176,21 +192,28 @@ export default {
       newdata: {
         belong: "2", //园区所属
         mallName: "", //商品名称
+        mallId: "", //商品id
+        mallType: "", //商品类型
         parkId: "", //园区ID
         parkName: "", //园区名称
         putAwayStatus: "1", //状态
       },
+      newdata1: {},
+      newdata2: {},
       rules: {
         caption: [
           { required: true, message: "名称不能为空", trigger: "blur" },
           { max: 20, message: "最多20个字符", trigger: "blur" },
         ],
         mallName: [{ required: true, message: "必填项", trigger: "blur" }],
-        putAwayStatus: [{ required: true, message: "必填项", trigger: "blur" }],
+        putAwayStatus: [
+          { required: true, message: "必填项", trigger: "change" },
+        ],
         parkName: [{ required: true, message: "必填项", trigger: "blur" }],
       },
       sitelist: [],
       list: [], //获取园区
+      showList: [], //获取所有商品
       NameList: [], //商品名称
     };
   },
@@ -200,6 +223,7 @@ export default {
     // this.getsitelist();
     this.queryParkList();
     this.queryMallGoodsList();
+    this.mallList();
   },
   methods: {
     //获取园区下拉
@@ -207,6 +231,13 @@ export default {
       this.$ajax.queryParkList(this.query, (res) => {
         this.list = res.data;
         console.log("查询园区列表", res.data);
+      });
+    },
+    //获取所有商品
+    mallList() {
+      this.$ajax.mallList({}, (res) => {
+        this.showList = res.data;
+        console.log("查询所有商品", res.data);
       });
     },
     //获取园区下拉
@@ -227,9 +258,11 @@ export default {
     //一二级联动
     changehandle(event) {
       console.log(event);
-      this.newdata.parkId = event.parkId;
       this.newdata.parkName = event.parkName;
-      this.newdata.belong = "2";
+    },
+    changehandle1(event) {
+      console.log(event);
+      this.newdata.mallName = event.mallName;
     },
     handleSizeChange(val) {
       this.query.count = val;
@@ -242,12 +275,16 @@ export default {
       this.Addshow = true;
       this.Detailshow = false;
       this.newdata = {
-        belong: "2",
-        putAwayStatus: "1",
-        mallName: "",
-        parkId: "",
-        parkName: "",
+        belong: "2", //园区所属
+        mallName: "", //商品名称
+        mallId: "", //商品id
+        mallType: "", //商品类型
+        parkId: "", //园区ID
+        parkName: "", //园区名称
+        putAwayStatus: "1", //状态
       };
+      this.newdata1 = {};
+      this.newdata2 = {};
     },
     cancel(formName) {
       this.Addshow = false;
@@ -257,17 +294,28 @@ export default {
     add(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$ajax.addStoneMall(this.newdata, (res) => {
-            if (res.resbCode == 200) {
-              console.log("newdata", this.newdata);
-              this.$message({
-                type: "success",
-                message: "提交成功!",
-              });
-              this.Addshow = false;
-              this.querystoneMallList();
+          this.$ajax.addStoneMall(
+            {
+              putAwayStatus: this.newdata.putAwayStatus,
+              belong: this.newdata.belong,
+              mallId: this.newdata2.mallId,
+              mallName: this.newdata2.mallName,
+              mallType: this.newdata2.mallType,
+              parkId: this.newdata1.parkId,
+              parkName: this.newdata1.parkName,
+            },
+            (res) => {
+              if (res.resbCode == 200) {
+                console.log("newdata", this.newdata);
+                this.$message({
+                  type: "success",
+                  message: "提交成功!",
+                });
+                this.Addshow = false;
+                this.querystoneMallList();
+              }
             }
-          });
+          );
         } else {
           return false;
         }

@@ -2,7 +2,13 @@
   <div>
     <el-card class="box-card">
       <div class="titles">头图一信息</div>
-      <el-form ref="form" :model="form" label-width="80px" class="form">
+      <el-form
+        ref="form"
+        :rules="rules"
+        :model="form"
+        label-width="80px"
+        class="form"
+      >
         <el-form-item label="头图标题" prop="title">
           <el-input :disabled="disabled" v-model="form.title"></el-input>
         </el-form-item>
@@ -11,7 +17,11 @@
             v-model="form.banner"
             style="width: 200px; display: none"
           ></el-input>
-          <el-button size="small" type="primary" @click="uploading('uppict')"
+          <el-button
+            size="small"
+            :disabled="disabled"
+            type="primary"
+            @click="uploading('uppict')"
             >点击上传</el-button
           >
           <el-upload
@@ -62,7 +72,13 @@
     </el-card>
     <el-card class="box-card">
       <div class="titles">头图二信息</div>
-      <el-form ref="form1" :model="form1" label-width="80px" class="form">
+      <el-form
+        ref="form1"
+        :rules="rules"
+        :model="form1"
+        label-width="80px"
+        class="form"
+      >
         <el-form-item label="头图标题" prop="title">
           <el-input :disabled="disabled1" v-model="form1.title"></el-input>
         </el-form-item>
@@ -71,7 +87,11 @@
             v-model="form1.banner"
             style="width: 200px; display: none"
           ></el-input>
-          <el-button size="small" type="primary" @click="uploading('uppict1')"
+          <el-button
+            size="small"
+            :disabled="disabled1"
+            type="primary"
+            @click="uploading('uppict1')"
             >点击上传</el-button
           >
           <el-upload
@@ -129,7 +149,13 @@
     </el-card>
     <el-card class="box-card">
       <div class="titles">头图三信息</div>
-      <el-form ref="form2" :model="form2" label-width="80px" class="form">
+      <el-form
+        ref="form2"
+        :rules="rules"
+        :model="form2"
+        label-width="80px"
+        class="form"
+      >
         <el-form-item label="头图标题" prop="title">
           <el-input :disabled="disabled2" v-model="form2.title"></el-input>
         </el-form-item>
@@ -138,7 +164,11 @@
             v-model="form2.banner"
             style="width: 200px; display: none"
           ></el-input>
-          <el-button size="small" type="primary" @click="uploading('uppict2')"
+          <el-button
+            size="small"
+            :disabled="disabled2"
+            type="primary"
+            @click="uploading('uppict2')"
             >点击上传</el-button
           >
           <el-upload
@@ -235,12 +265,15 @@ export default {
           { required: true, message: "请输入头图标题", trigger: "blur" },
           {
             min: 1,
-            max: 10,
-            message: "长度在 1 到 10 个字符",
+            max: 20,
+            message: "长度在 1 到 20 个字符",
             trigger: "blur",
           },
         ],
-        url: [{ required: true, message: "请输入头图链接", trigger: "blur" }],
+        // url: [{ required: true, message: "请输入头图连接", trigger: "blur" }],
+        banner: [
+          { required: true, message: "请输入头图链接", trigger: "blur" },
+        ],
       },
     };
   },
@@ -289,7 +322,7 @@ export default {
       }
     },
     beforeUploadpic(file) {
-      const isLt5M = file.size / 1024 / 1024 < 10;
+      const isLt5M = file.size / 1024 / 1024 < 5;
       const accept =
         file.type.indexOf("jpeg") > -1 ||
         file.type.indexOf("png") > -1 ||
@@ -322,10 +355,16 @@ export default {
       this.$ajax.bannerList(
         { parkId: sessionStorage.getItem("parkid") * 1 },
         (res) => {
-          console.log("res", res);
-          this.form = res.data[0];
-          this.form1 = res.data[1];
-          this.form2 = res.data[2];
+          if (res.data.length == 1) {
+            this.form = res.data[0];
+          } else if (res.data.length == 2) {
+            this.form = res.data[0];
+            this.form1 = res.data[1];
+          } else if (res.data.length == 3) {
+            this.form = res.data[0];
+            this.form1 = res.data[1];
+            this.form2 = res.data[2];
+          }
           console.log(this.form1);
           if (res.data.title !== "") {
             this.disabled = true;
