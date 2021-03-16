@@ -68,19 +68,23 @@
       ></el-table-column>
       <el-table-column prop="price" label="积分价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.scorePrice == "" ? "不支持" : scope.row.scorePrice + "积分"
+          scope.row.scorePrice == "" || scope.row.scorePrice == null
+            ? "不支持"
+            : scope.row.scorePrice + "积分"
         }}</template>
       </el-table-column>
       <el-table-column prop="price" label="五彩石价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.stonePrice == ""
+          scope.row.stonePrice == "" || scope.row.stonePrice == null
             ? "不支持"
             : scope.row.stonePrice + "五彩石"
         }}</template>
       </el-table-column>
       <el-table-column label="人民币价格" align="center">
         <template slot-scope="scope">{{
-          scope.row.price != "" ? scope.row.price + "元" : "不支持"
+          scope.row.price != "" || scope.row.price == null
+            ? scope.row.price + "元"
+            : "不支持"
         }}</template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -642,15 +646,15 @@ export default {
         buyNotice: [
           { required: true, message: "请输入购买须知", trigger: "blur" },
         ],
+        presentUrl: [
+          { required: true, message: "请上传长图", trigger: "blur" },
+        ],
         bind: [{ required: true, message: "请选择是否绑定", trigger: "blur" }],
         bindMethod: [
           { required: true, message: "请输入绑定方法", trigger: "blur" },
         ],
         thumbnail: [
           { required: true, message: "请上传缩略图", trigger: "blur" },
-        ],
-        presentUrl: [
-          { required: true, message: "请上传长图", trigger: "blur" },
         ],
         banNum: [
           {

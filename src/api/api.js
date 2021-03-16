@@ -828,6 +828,10 @@ export default {
     bannerList(data, callback, errback) {
         this.POST(`${base}/manage/stoneMall/bannerList`, data, callback, errback);
     },
+    //五彩石商城删除头图列表
+    deleteBanner(data, callback, errback) {
+        this.POST(`${base}/manage/stoneMall/deleteBanner`, data, callback, errback);
+    },
     //五彩石商城修改头图列表
     updateBanner(data, callback, errback) {
         this.POST(`${base}/manage/stoneMall/updateBanner`, data, callback, errback);

@@ -365,29 +365,76 @@ export default {
             this.form1 = res.data[1];
             this.form2 = res.data[2];
           }
-          console.log(this.form1);
-          if (res.data.title !== "") {
+          if (res.data[2]) {
             this.disabled = true;
             this.disabled1 = true;
             this.disabled2 = true;
+          } else if (res.data[1]) {
+            this.disabled = true;
+            this.disabled1 = true;
+          } else if (res.data[0]) {
+            this.disabled = true;
           }
+          // if (res.data.title != "") {
+          //   this.disabled = true;
+          //   this.disabled1 = true;
+          //   this.disabled2 = true;
+          // }
           // sessionStorage.getItem("parkid");
         }
       );
     },
     //清空
     empty(val) {
-      if (val === "form1") {
-        (this.form1.title = ""),
-          (this.form1.url = ""),
-          (this.form1.banner = "");
-        this.disabled1 = false;
-      } else if (val === "form2") {
-        (this.form2.title = ""),
-          (this.form2.url = ""),
-          (this.form2.banner = "");
-        this.disabled2 = false;
-      }
+      this.$confirm("此操作将清空头图, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          console.log("val", this.form1.id);
+          if (val === "form1") {
+            this.$ajax.deleteBanner({ idlst: [this.form1.id] }, (res) => {
+              if (res.resbCode == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功!",
+                });
+                this.disabled = true;
+                (this.form2.title = ""),
+                  (this.form2.url = ""),
+                  (this.form2.banner = "");
+                this.disabled1 = false;
+                this.bannerList();
+              }
+            });
+          } else if (val === "form2") {
+            this.$ajax.deleteBanner({ idlst: [this.form2.id] }, (res) => {
+              if (res.resbCode == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功!",
+                });
+                this.disabled = true;
+                (this.form2.title = ""),
+                  (this.form2.url = ""),
+                  (this.form2.banner = "");
+                this.disabled2 = false;
+                this.bannerList();
+              }
+            });
+          }
+          this.$message({
+            type: "success",
+            message: "清空成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消清空",
+          });
+        });
     },
     // 新增
     onSubmit(form) {
@@ -405,16 +452,16 @@ export default {
                 this.disabled = true;
                 // sessionStorage.getItem("parkid");
               });
-            }
-            return;
-            this.$ajax.addBanner(this.form, (res) => {
-              this.$message({
-                type: "success",
-                message: "提交成功!",
+            } else {
+              this.$ajax.addBanner(this.form, (res) => {
+                this.$message({
+                  type: "success",
+                  message: "提交成功!",
+                });
+                this.disabled = true;
+                // sessionStorage.getItem("parkid");
               });
-              this.disabled = true;
-              // sessionStorage.getItem("parkid");
-            });
+            }
           } else if (form === "form1") {
             if (this.form1.id) {
               console.log("valid", this.form1);
@@ -426,16 +473,16 @@ export default {
                 this.disabled1 = true;
                 // sessionStorage.getItem("parkid");
               });
-            }
-            return;
-            this.$ajax.addBanner(this.form1, (res) => {
-              this.$message({
-                type: "success",
-                message: "提交成功!",
+            } else {
+              this.$ajax.addBanner(this.form1, (res) => {
+                this.$message({
+                  type: "success",
+                  message: "提交成功!",
+                });
+                this.disabled1 = true;
+                // sessionStorage.getItem("parkid");
               });
-              this.disabled1 = true;
-              // sessionStorage.getItem("parkid");
-            });
+            }
           } else if (form === "form2") {
             if (this.form2.id) {
               console.log("valid", this.form2);
@@ -447,16 +494,16 @@ export default {
                 this.disabled2 = true;
                 // sessionStorage.getItem("parkid");
               });
-            }
-            return;
-            this.$ajax.addBanner(this.form2, (res) => {
-              this.$message({
-                type: "success",
-                message: "提交成功!",
+            } else {
+              this.$ajax.addBanner(this.form2, (res) => {
+                this.$message({
+                  type: "success",
+                  message: "提交成功!",
+                });
+                this.disabled2 = true;
+                // sessionStorage.getItem("parkid");
               });
-              this.disabled2 = true;
-              // sessionStorage.getItem("parkid");
-            });
+            }
           }
         } else {
           console.log("error submit!!");
